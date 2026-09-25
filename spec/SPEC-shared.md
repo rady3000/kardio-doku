@@ -2,7 +2,7 @@
 
 **Status:** Draft v0.2 (milestone 0, audit only). Source: prototype audit of
 `TTE_V2026`, `TEE_2026`, `HSM_Implantationsmaske`, `eCV_APP`
-(`HSM_Abfrage` not accessible, D-01), reconciled with `CLAUDE.md` and
+and `HSM_Abfrage`, reconciled with `CLAUDE.md` and
 `SPEC-extraction-gateway.md`.
 
 Conventions:
@@ -18,7 +18,7 @@ Conventions:
 | # | Module key | Display name | Prototype | Extraction |
 |---|---|---|---|---|
 | 1 | `tte` | Transthorakale Echokardiographie (TTE) | TTE_V2026 | v1 |
-| 2 | `device` | Device-Abfrage (SM / ICD / CRT-P / CRT-D) | HSM_Abfrage (not accessible) | v1 |
+| 2 | `device` | Device-Abfrage (SM / ICD / CRT-P / CRT-D) | HSM_Abfrage | v1 |
 | 3 | `tee` | Transösophageale Echokardiographie (TEE) | TEE_2026 | later |
 | 4 | `carotis` | Karotis-Duplexsonographie | none — `SPEC-carotis.md` | later |
 | 5 | `sm_impl` | Schrittmacher-Implantation | HSM_Implantationsmaske | later |
@@ -40,6 +40,7 @@ gateway.
 | TEE | `Patient` (free text), `Datum der Untersuchung` | ⚠ **never used** (no id; not in report) |
 | SM | `Nachname`, `Vorname`, `Geburtsdatum` | "Patient: {Nachname}, {Vorname}, {dd.mm.yyyy}" |
 | CV | `Name` ("Nachname, Vorname"), `Geschlecht` (**default Männlich**), `Geburtsdatum` | in prose: "Bei dem Patienten {Name}, geb. am {dd.mm.yyyy}, …" |
+| Device | `Patienten-Identifikation` (free text), `Datum der Nachsorge` | ⚠ **never used**; the report has no header; "Der Patient" fixed |
 
 ⚠ Split vs single name field; sex default differs (TTE weiblich, CV männlich);
 SM has no sex field but writes "Der Patient"; TEE discards its header.
@@ -70,6 +71,7 @@ identifiers; gateway §2.6.1 requires removal before import).
 | TEE | Datum der Untersuchung (unused) | Indikation | Sedierung |
 | SM | Operationsdatum | Diagnose (+ free text) | clinic fixed "Klinik für Kardiologie" |
 | CV | ⚠ none — the print shows today's date | Typ | — |
+| Device | Datum der Nachsorge (unused) | Indikation (of the implant) | device type, manufacturer, model, implant date |
 
 ### 3.2 Target / open
 
@@ -87,7 +89,7 @@ identifiers; gateway §2.6.1 requires removal before import).
 
 ### 4.1 Observed
 
-TTE, TEE: none. SM: `operator` hard-coded "Dr. med. Mohamed Rady" (printed
+TTE, TEE, Device: none. SM: `operator` hard-coded "Dr. med. Mohamed Rady" (printed
 as "Operateur:" and as the closing line). CV: blank signature lines
 "Untersucher" / "Oberarzt/Chefarzt" (print only).
 
@@ -112,6 +114,7 @@ Report footer names the examiner (SPEC-carotis §8).
 | TEE | `Zusammenfassung:` | list, or a fixed normal sentence (TEE-S) |
 | SM | none | ends with "Weiteres Vorgehen" / "Wundversorgung" bullets |
 | CV | none | "6. EMPFEHLUNGEN UND WEITERES VORGEHEN" (therapy recommendations) |
+| Device | none | fixed sentence "Zusammenfassend regelrechte Funktion des Aggregats …" + "nächste Kontrolle in 6-8 Wochen" — unconditional ⚠ |
 
 ### 5.2 Target (CLAUDE.md, SPEC-carotis §5/§7.3)
 
@@ -135,6 +138,7 @@ Report footer names the examiner (SPEC-carotis §8).
 | TEE | plain text | — | — | — | — |
 | SM | rich text + plain | via print | `docx`, Arial 11 pt | yes | ⚠ `OP-Bericht_{Nachname}_{date}.docx` |
 | CV | plain text | via print | — | yes (A4, signature lines) | — |
+| Device | none (editable textarea only; manual copy) | — | — | — | — |
 
 ⚠ The SM text, preview and DOCX renderers are separate hand-written copies and disagree.
 
@@ -165,9 +169,16 @@ Multi-workstation use is still open (D-03).
 
 ## 8. Model usage
 
-Observed: only TTE calls a model (Google Gemini, from the browser, key inlined
-into the bundle; all four `vite.config.ts` files inline a key).
-Details: SPEC-modules TTE A.2, SPEC-textgen §X and §G-4.
+Observed: two prototypes call a model (Google Gemini):
+- **TTE** — from the browser; the key is inlined into the client bundle.
+  Numbers only; no model-written text.
+- **Device-Abfrage** — from a small Express server (key server-side). ⚠ Three
+  fields are model-written summaries printed verbatim in the report (AHRE,
+  ICD therapies, indication).
+
+TEE, SM and CV define the key in `vite.config.ts`, but their client code never
+references it, so it is not in their bundles.
+Details: SPEC-modules TTE A.2 / Device A.2, SPEC-textgen §X and §G-4.
 
 Target (CLAUDE.md, gateway): extraction only, through the single gateway module
 (the only network egress); providers Mock / Mistral OCR (`TESTBETRIEB`) /

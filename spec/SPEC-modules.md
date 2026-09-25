@@ -24,7 +24,7 @@ Module overview (CLAUDE.md numbering):
 | # | Module key | Prototype | Extraction (CLAUDE.md) | Audit status |
 |---|---|---|---|---|
 | 1 | `tte` | TTE_V2026 @ `df72c6d` | yes (v1) | audited |
-| 2 | `device` | HSM_Abfrage | yes (v1) | **not accessible — D-01** |
+| 2 | `device` | HSM_Abfrage @ `df19444` | yes (v1) | audited |
 | 3 | `tee` | TEE_2026 @ `b165daf` | later | audited |
 | 4 | `carotis` | — | later | hand-written: `SPEC-carotis.md` |
 | 5 | `sm_impl` | HSM_Implantationsmaske @ `8928a6d` | later | audited |
@@ -293,15 +293,210 @@ PDF (prototype): title "Echokardiographie Befund", "Patient: …" / "Datum: …"
 | Property | Value |
 |---|---|
 | Module key | `device` |
-| Display name | Device-Abfrage |
-| Document extraction | yes (v1, CLAUDE.md) |
-| Prototype | `rady3000/HSM_Abfrage` — **not accessible in this session** |
+| Display name | Device-Abfrage (prototype: "CardioControl Portal — Mnemonic-gestützte Schrittmachernachsorge"; page title "HSM-Nachsorge: Interaktive Abfragemaske") |
+| Report title | none — the prototype writes one prose paragraph into "Zusammenfassender Arztbrief (Befundbericht)" |
+| Bilateral | no |
+| Document extraction | yes (v1) |
+| Prototype | `rady3000/HSM_Abfrage` @ `df19444` (2026-09-23) |
+| Normal preset | none |
+| Workflow | Sections follow the mnemonic **"Elf Bunte Elefanten Sitzen Silvester Beim Prosecco Dinner"** = EKG · Batterie · Elektroden (Impedanz) · Sensing · Stimulation (Reizschwelle) · Beobachtungen · Programmierung · Dokumentation, with a progress ribbon (a step turns green once any of its fields has a value). ICD and CRT sections appear only for matching device types. |
 
-## 2.–16.
+## 2. Section: Patient & Gerätedetails (sidebar)
 
-**Blocked (D-01).** As a v1 extraction module this is the most urgent gap.
-Constraint already known from gateway §2.6.4: device serial and model numbers
-are **never** extractable. No content will be written from memory.
+| Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
+|---|---|---|---|---|---|
+| `patient_name` | Patienten-Identifikation | text | — | "z.B. Mustermann, Max". ⚠ never used in the report → shared core | — |
+| `query_date` | Datum der Nachsorge | date | — | ⚠ never used in the report | today |
+| `device_type` | Schrittmachermodus | select | — | 1-Kammer HSM (VVI); 2-Kammer HSM (DDD); 1-Kammer ICD (VVI-D); 2-Kammer ICD (DDD-D); CRT-D (Dreikammer ICD); CRT-P (Dreikammer HSM). Extractable. ⚠ label says "Modus", values are device types (D-56). Controls the ICD/CRT sections. | — |
+| `device_company` | Hersteller | select | — | Medtronic; Abbott; Vitatron; Boston Scientific; Microport; Biotronik. Extractable (normalised, §11) | — |
+| `device_model` | Modellnummer | text | — | "z.B. Sensia SEDR01". ⚠ **extracted** in the prototype — gateway §2.6.4 forbids extracting model numbers (D-55) | — |
+| `implantation_date` | Sterilisations-/Implantations-Datum | date | — | Extractable (hint "Implantiert:"). ⚠ sterilisation date ≠ implantation date (D-57) | — |
+| `device_indication` | Indikation | select | — | AV-Block III°; AV-Block II° Mobitz; Sick-Sinus-Syndrom; Tachy-Brady-Syndrom; Andere. Extractable; an unmatched extracted value goes to "Andere" + free text | — |
+| `other_indication_text` | Spezifikation Indikation | text | — | visible if "Andere" | — |
+| `pocket_finding` | Aggregattasche | select | — | reizlos, unauffällig; Infektzeichen; Hämatom; Druckstelle. ⚠ placeholder bug (F-04, D-18) | — |
+| `patient_condition` | Allgemeinzustand | select | — | ist in gutem Allgemeinzustand und beschwerdefrei; berichtet über Schwindel; berichtet über Palpitationen; berichtet über Synkopen. ⚠ placeholder bug (F-04) | — |
+
+## 3. Section: „Elf" — EKG-Dokumentation
+
+| Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
+|---|---|---|---|---|---|
+| `base_rhythm` | Grundrhythmus | select | — | Sinusrhythmus; Vorhofflimmern; Vorhofflattern; Ektop. atrialer Rhythmus. Extractable (`rhythm`) | — |
+| `ecg_pacing` | EKG-Befund (mit Stimulation) | free text | — | "z.B. Regelrechtes Pacing mit LSB-Morphologie..." | — |
+| `ecg_native` | EKG-Befund (ohne Stimulation) | free text | — | "z.B. AV-Block III° sichtlich im Eigenrhythmus-Ausschnitt..." | — |
+
+## 4. Section: „Bunte" — Batteriestatus
+
+| Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
+|---|---|---|---|---|---|
+| `battery_status` | Restkapazität / Batteriestatus | text | ⚠ mixed (years / V / "OK" / ERI) | Extractable. Help text: "Biotronik: „Errechneter ERI". Medtronic: „Estimated longevity". Richtwerte: >5 Jahre ist exzellent; <3 Monate erfordert rasche Terminierung." ⚠ a bare number is printed as "{x} Jahre bis EOL" (D-58) | — |
+
+## 5. Section: „Elefanten" — Elektrodenstatus (Impedanz)
+
+| Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
+|---|---|---|---|---|---|
+| `impedance_ra` | Sondenimpedanz RA | text ⚠ | Ω | Extractable. Displayed "Ziel: 250 - 1000 Ω" — no highlight | — |
+| `impedance_rv` | Sondenimpedanz RV | text ⚠ | Ω | Extractable. "Ziel: 250 - 1000 Ω" — no highlight | — |
+
+## 6. Section: „Sitzen" — Wahrnehmung (Sensing)
+
+| Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
+|---|---|---|---|---|---|
+| `sensing_ra` | Eigenamplitude RA (P-Welle) | text ⚠ | mV | Extractable. "Empfohlen: >1.5 mV" — no highlight. ⚠ hint "Atrial Sensing Threshold" (D-59) | — |
+| `sensing_rv` | Eigenamplitude RV (R-Zacke) | text ⚠ | mV | Extractable. "Empfohlen: >5.0 mV" — no highlight. ⚠ hint "Ventricular Sensing Threshold" | — |
+
+## 7. Section: „Silvester" — Stimulation / Reizschwelle
+
+| Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
+|---|---|---|---|---|---|
+| `threshold_ra_v` | Atriale Reizschwelle — Spannung | text ⚠ | V | Extractable | — |
+| `threshold_ra_ms` | Atriale Reizschwelle — Pulsweite | text ⚠ | ms | Extractable | — |
+| `threshold_rv_v` | Ventrikuläre Reizschwelle — Spannung | text ⚠ | V | Extractable | — |
+| `threshold_rv_ms` | Ventrikuläre Reizschwelle — Pulsweite | text ⚠ | ms | Extractable | — |
+
+## 8. Section: ICD-Parameter (visible if device type contains "ICD")
+
+| Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
+|---|---|---|---|---|---|
+| `icd_vt_zone` | VT-Überwachungszone (VT-Zone) | text | bpm | "z.B. > 180 bpm". Extractable. ⚠ programmed setting, not a measurement | — |
+| `icd_vf_zone` | VF-Therapiezone (VF-Zone) | text | bpm | "z.B. > 220 bpm". Extractable | — |
+| `icd_shock_impedance` | Schockimpedanz (RV-Coil) | text ⚠ | Ω | Extractable. → DEV-B01 badge | — |
+| `icd_charge_time` | Kondensator-Ladezeit | text ⚠ | s | Extractable. → DEV-B02 badge | — |
+| `icd_last_therapy` | Vorherige Episoden / Therapien (ATP / Schocks) | text | — | Extractable **as a model-written summary** ⚠ (D-60) | — |
+
+## 9. Section: CRT-Parameter (visible if device type contains "CRT")
+
+| Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
+|---|---|---|---|---|---|
+| `crt_lv_vector` | LV-Vektorprogrammierung / Polung | select | — | Bipolar: LV an RV; Quadripolar: LV1 zu LV2; Quadripolar: LV2 zu LV4; Quadripolar: LV1 zu Gehäuse; Multisite-Pacing aktiv. Extractable; an unmatched value is written as is. ⚠ initial display "Quadripolar: LV1 zu LV2" is also a real option → printed although never chosen (F-12) | "Quadripolar: LV1 zu LV2" (display) |
+| `crt_lv_pacing_pct` | Biventrikulärer Stimulations-Anteil (BiV-Anteil) | text ⚠ | % | Extractable. → DEV-B03 | — |
+| `crt_lv_impedance` | Sondenimpedanz LV | text ⚠ | Ω | Extractable. → DEV-B04 | — |
+| `crt_lv_sensing` | Eigenamplitude LV (Sensing) | text ⚠ | mV | Extractable. → DEV-B05 | — |
+| `crt_lv_threshold` | Reizschwelle LV | text ⚠ | "V bei ms" in one string | "z.B. 1.2V bei 0.4ms". Extractable. → DEV-B06 | — |
+
+## 10. Section: „Beim" — Beobachtungen (Diagnostik-Speicher)
+
+| Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
+|---|---|---|---|---|---|
+| `ap_anteil` | AP-Anteil (Atrial Paced) | text ⚠ | % | Extractable | — |
+| `vp_anteil` | VP-Anteil (Ventricular Paced) | text ⚠ | % | Extractable | — |
+| `af_burden` | AF Burden (Vorhofflimmerlast) | text ⚠ | % | not extracted | — |
+| `ahre_episodes` | Atriale Hochfrequenz-Episoden (AHRE) | free text | — | Extractable **as a model-written summary** ⚠ (D-60). Placeholder "Keine relevanten AT-/AF-Episoden detektiert. Mode-Switch war inaktiv." | — |
+
+## 11. Section: „Prosecco" / „Dinner" — Programmierung, Dokumentation
+
+| Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
+|---|---|---|---|---|---|
+| `reprogramming` | Abschließende Programmierung | free text | — | placeholder "Sicherheitsmarge programmiert (Doppelte Sicherheit für Spannungsabgabe). Keine Modus-Änderung erforderlich. Gerät im DDD-Standard belassen." | — |
+| `summary_text` | Zusammenfassender Arztbrief (Befundbericht) | free text (generated) | — | filled by "Befund generieren", editable | — |
+| `next_follow_up` | Nächstes Kontrollintervall | text | — | "z.B. in 6 Monaten". ⚠ never used — the text always says 6–8 Wochen (F-06) | — |
+
+## 12. Derived values
+
+| Key | Label (DE) | Formula | Unit | Notes |
+|---|---|---|---|---|
+| `is_icd` | — | device type contains "icd" | — | shows ICD section + ribbon |
+| `is_crt` | — | device type contains "crt" | — | shows CRT section + ribbon |
+| `company` normalisation | Hersteller | contains jude/sjm/abbott/merlin → Abbott; medtronic → Medtronic; biotronik → Biotronik; boston/guidant → Boston Scientific; vitatron → Vitatron; microport/sorin → Microport | — | after extraction |
+| `device_type` normalisation | Gerätetyp | crt-d / crt+icd / "biventrikulär icd" / "quadra assura" → CRT-D; crt-p / crt / biventrikulär → CRT-P; vvi-d / 1-kammer icd / vr-icd → 1-Kammer ICD; ddd-d / 2-kammer icd / dr-icd → 2-Kammer ICD; vvi / 1-kammer → 1-Kammer HSM; ddd / 2-kammer → 2-Kammer HSM | — | ⚠ order-dependent string matching; "DDDR" mode → "2-Kammer HSM" even for an ICD |
+| implant date | — | first `YYYY-MM-DD` in the extracted string; report shows `DD.MM.YYYY` | — | |
+| mnemonic progress | — | a step is "complete" if any of its fields is non-empty | — | UI only |
+
+## 13. Section: Beurteilung
+
+Generated paragraph (DEV-T) ending with the fixed conclusion "Zusammenfassend regelrechte Funktion des Aggregats ohne Anhalt für Sonden- oder Wahrnehmungsstörungen." ⚠ unconditional (F-01) and a follow-up recommendation (F-06, D-49).
+
+## 14. Reference thresholds and classification
+
+| Rule | Input | Single value? | Auto-classify allowed (rule 5)? |
+|---|---|---|---|
+| DEV-B01 shock impedance badge | `icd_shock_impedance` | yes | highlight yes; ⚠ badge texts contain interpretation ("Sondenfehler?") |
+| DEV-B02 charge time badge | `icd_charge_time` | yes | highlight yes; ⚠ "Verdacht auf Kondensatoralterung" |
+| DEV-B03 BiV % badge | `crt_lv_pacing_pct` | yes | highlight yes; ⚠ "Optimierung empfohlen" = programming recommendation |
+| DEV-B04 LV impedance badge | `crt_lv_impedance` | yes | highlight yes; ⚠ "Verdacht auf Bruch/Isolationsleck" |
+| DEV-B05 LV sensing badge | `crt_lv_sensing` | yes | highlight yes |
+| DEV-B06 LV threshold badge | `crt_lv_threshold` | yes | highlight yes; ⚠ "Vektorwechsel vorgeschlagen!" = programming recommendation |
+| RA/RV impedance, sensing, threshold | — | yes | **no rule exists** — only static hint text (D-33/D-61) |
+| "Regelrechte Funktion" conclusion | all values | no | **not allowed** as an automatic conclusion (rule 5) |
+
+None of the badges affects the report text. Badge bands in SPEC-textgen §DEV-B.
+
+## 15. German sentence templates
+
+SPEC-textgen §DEV-T (report), §DEV-B (badges), §X-4 (extraction prompt).
+
+## 16. Report section order (one paragraph block, blank line between parts)
+
+1. "Regelrechte Abfrage eines {Gerätetyp} ({Hersteller} {Modell}). Das Aggregat wurde am {Datum} bei {Indikation} implantiert."
+2. Aggregattasche · Allgemeinzustand
+3. Grundrhythmus · EKG ohne / mit Stimulation
+4. "Regelrechte Messwerte:" Batterie · AF Burden · Stimulationsanteile · Wahrnehmung · Reizschwellen · Impedanzen
+5. ICD-spezifische Parameter (if ICD)
+6. CRT-spezifische Parameter (if CRT)
+7. AHRE/AT-Episoden
+8. Umprogrammierung (if any)
+9. Fixed conclusion + follow-up sentence
+
+No patient header, no date, no examiner in the output.
+
+## 17. Implementation notes
+
+- Extractable fields in the prototype (response schema): deviceModel, deviceType, implantationDate, batteryStatus, sensingRa, sensingRv, impedanceRa, impedanceRv, thresholdRaV, thresholdRaMs, thresholdRvV, thresholdRvMs, apAnteil, vpAnteil, company, indication, rhythm, ahre, icdVtZone, icdVfZone, icdShockImpedance, icdChargeTime, icdLastTherapy, crtLvVector, crtLvPacingPct, crtLvImpedance, crtLvSensing, crtLvThreshold — **all typed as strings**. Under the gateway, `deviceModel` must be removed, free-text summaries (`ahre`, `icdLastTherapy`, `indication`) are not extractable (gateway §3.4: free text never extractable), and each numeric field needs `expectedUnit` + `plausibleRange` (D-50).
+- The vendor-specific label hints (Abbott/SJM, Biotronik, Medtronic DE/EN) are the most valuable carry-over: they map to per-document-type `extractionHints` and, for header masking, to gateway §2.6.3 document types.
+- The mnemonic order is a workflow the physician already uses; the generic renderer can present sections in that order.
+
+## A. Audit — Device-Abfrage
+
+### A.1 Technical profile
+
+| Aspect | Finding |
+|---|---|
+| Framework | **Vanilla TypeScript, DOM-based** (`index.html` 784 lines, `index.tsx` 887 lines) + an **Express 5 server** (`server.ts`) for the model call. |
+| Styling | Tailwind **CDN play script**; Google Fonts CDN; pdf.js worker from `esm.sh` CDN. |
+| Dependencies | `@google/genai` "latest" (unpinned), `express`, `pdfjs-dist` 4.4.168; dev: `concurrently`, `tsx`. |
+| State | Read back from the DOM on "Befund generieren"; dropdown display text = value. Numeric fields are all `type="text"`. |
+| Persistence | none. |
+| Secrets | Key read server-side from the environment (✅ better than TTE). `vite.config.ts` also defines it for the client, but the client code never references it, so it is not in the bundle. |
+| Network | Server listens on `0.0.0.0` without authentication — anyone on the network could call `/api/analyze`. |
+| Tests | none. |
+| Quality | **2 / 5** — sensible server-side key and a response schema, but DOM state, string-typed numbers, unused fields, fixed conclusion. |
+
+### A.2 Model usage ⚠ (report prominently)
+
+| Item | Finding |
+|---|---|
+| Model | `gemini-3.5-flash`, called from `server.ts` (`POST /api/analyze`). |
+| Sent | `prompt` (common instructions + field list, verbatim SPEC-textgen §X-4) + the text layer of a PDF extracted with pdf.js (prefixed "--- EXTRAHIERTER DOKUMENTEN-TEXT ---") + the **whole file** as base64 (image or PDF). Accepts JPG/PNG/PDF/TXT. The full report, including the patient header, goes to Google. |
+| Config | `responseMimeType: application/json` + `responseSchema` (28 string properties). |
+| Returned | one string per key. |
+| Unused prompt variants | `imagePrompt` and `textAnalysisPrompt` are built but never sent. |
+| **Clinical wording from the model?** | **Yes — three deviations:** (1) `ahre` — "Zusammenfassung AHRE/AT-Episoden" is a **model-written summary** printed verbatim as "AHRE/AT-Episoden: {…}."; (2) `icdLastTherapy` — "Zusammenfassung letzter Therapien" (e.g. "1 ATP erfolgreich") printed verbatim; (3) `indication` — free text from the model, printed verbatim via "Andere". Also `rhythm` is a model judgement ("Grundrhythmus") when not literally stated. **Do not carry these over** (D-60). |
+| Other deviations | Model **and** model-number extraction (forbidden, gateway §2.6.4); no provenance/confidence; date conversion ("12-Okt-2023" → ISO) delegated to the model; values not marked unconfirmed; status line only "{n} Felder wurden erfolgreich ausgefüllt." |
+
+### A.3 Flags
+
+| # | Flag |
+|---|---|
+| F-01 | ⚠ **Unconditional normal conclusion:** "Regelrechte Abfrage …", "Regelrechte Messwerte: …" and "Zusammenfassend regelrechte Funktion des Aggregats ohne Anhalt für Sonden- oder Wahrnehmungsstörungen." are printed **whatever the values** — even with a red badge (e.g. shock impedance 150 Ω, LV threshold 3.5 V) or pocket "Infektzeichen". |
+| F-02 | ⚠ Model-written text enters the report (A.2): AHRE summary, therapy summary, indication. |
+| F-03 | ⚠ Device model number extracted (gateway §2.6.4). |
+| F-04 | ⚠ Empty/placeholder handling: an **untouched** pocket, condition or indication prints the placeholder ("Klinisch zeigt sich die Aggregattasche aggregattasche.", "Der Patient Allgemeinzustand.", "bei Indikation ausw. implantiert.") because the code compares with different placeholder strings; the intended fallbacks are normal wording ("reizlos, unauffällig", "ist in gutem Allgemeinzustand und beschwerdefrei"); AHRE empty → "Keine relevanten AHRE/AT-Episoden detektiert." (D-18) |
+| F-05 | ⚠ "Der Patient …" — masculine fixed. (D-40) |
+| F-06 | ⚠ "Die nächste Kontrolle wird in 6-8 Wochen beim niedergelassenen Kardiologen empfohlen." — always; the "Nächstes Kontrollintervall" field is ignored; a recommendation (D-49). |
+| F-07 | ⚠ Badge texts give programming advice ("Vektorwechsel vorgeschlagen!", "Optimierung empfohlen") — CLAUDE.md forbids device-programming recommendations. (D-49) |
+| F-08 | ⚠ **Decimal-comma bug:** charge time and BiV % strip every non-digit except ".", so "8,4 s" → 84 → red; "94,5 %" → 945 → green ("Exzellent"). LV threshold "1,2 V" → 1. German reports use commas. |
+| F-09 | ⚠ LV threshold badge takes the **first** number in the string — "0.4 ms / 1.2 V" is evaluated as 0.4 V. |
+| F-10 | ⚠ Inconsistent reference values: shock impedance badge red at > 115 Ω, sidebar text "Defekt > 110 Ω"; LV impedance badge green 250–1500 Ω, code comment and sidebar "200 - 1500 Ω"; RA/RV impedance hint 250–1000 Ω vs sidebar "Bruch > 2000 Ω, Isolationsdefekt < 250 Ω" (1000–2000 undefined). |
+| F-11 | ⚠ "Grenzwertig (2.0-5.0 mV): Ausreichendes Sensing." — label contradicts itself. |
+| F-12 | ⚠ CRT vector initial display "Quadripolar: LV1 zu LV2" is a real option, so it is printed even if never chosen. |
+| F-13 | ⚠ Medtronic EN hint maps "Atrial/Ventricular Sensing Threshold" to measured P/R amplitude. On many reports "sensing threshold/sensitivity" is the **programmed** value, not the measured amplitude. The mapping came from your own AI Studio instruction — please confirm (D-59). |
+| F-14 | ⚠ Field label "Schrittmachermodus" holds device types; Medtronic "Betriebsart" (a pacing mode, e.g. DDDR) is mapped onto device type. (D-56) |
+| F-15 | ⚠ "Sterilisations-/Implantations-Datum" — two different dates in one field. (D-57) |
+| F-16 | ⚠ Battery: a bare number becomes "{x} Jahre bis EOL" (a voltage like 2.85 would read "2.85 Jahre"); RRT/ERI vs EOL mixed. (D-58) |
+| F-17 | ⚠ RA sections are shown for single-chamber devices; nothing hides RA fields for VVI/VR-ICD. |
+| F-18 | ⚠ Patient name, Nachsorge date, AF Burden extraction and next follow-up are collected but unused (AF Burden is printed if typed). |
+| F-19 | "VVI-D" / "DDD-D" are not NBD/NBG codes. |
+| F-20 | Typos: "Vektor polung", "ICD-Spezifische", "CRT-Spezifische". |
+| F-21 | Help text "Reizschwelle optimal <1.0 V bei 0.4 ms. Sicherheitsmarge +100 % (Verdoppelung!)" and "Austauschkriterium (ERI/RRT) reduziert Frequenz um 11 % (Biotronik)" — textbook statements shown in UI, unsourced. |
 
 ---
 ---
@@ -457,7 +652,7 @@ Copy only (plain text) in the prototype; no header, no examiner. The sedation bl
 
 ### A.1 Technical profile
 
-Vanilla TypeScript, DOM-based (same pattern as TTE; `react` listed but unused); Tailwind v4; no persistence; Gemini key inlined but unused; no tests. **Quality 2 / 5.**
+Vanilla TypeScript, DOM-based (same pattern as TTE; `react` listed but unused); Tailwind v4; no persistence; `vite.config.ts` defines the Gemini key for the client, but no client code references it, so it is not in the bundle; no tests. **Quality 2 / 5.**
 
 ### A.2 Model usage
 
@@ -616,7 +811,7 @@ One report model → one generator (the prototype's three hand-written renderers
 
 ### A.1 Technical profile
 
-React 19 + TypeScript, Vite 6; `docx` 8.5.0, `file-saver` 2.0.5 **and** an importmap to `aistudiocdn.com`/`esm.sh`; Tailwind via CDN play script; typed `ReportData`; no persistence; key inlined but unused; no tests. **Quality 2 / 5.**
+React 19 + TypeScript, Vite 6; `docx` 8.5.0, `file-saver` 2.0.5 **and** an importmap to `aistudiocdn.com`/`esm.sh`; Tailwind via CDN play script; typed `ReportData`; no persistence; key defined in `vite.config.ts` but never referenced by client code (not in the bundle); no tests. **Quality 2 / 5.**
 
 ### A.2 Model usage
 
@@ -740,7 +935,7 @@ The prototype's pure `generateReport(data): string` is the pattern closest to th
 
 ### A.1 Technical profile
 
-React 19 + TypeScript, Vite 6; importmap to `aistudiocdn.com` + Tailwind CDN play script; typed `ReportData`; pure generator service; no persistence; key inlined but unused; no tests. **Quality 3 / 5.**
+React 19 + TypeScript, Vite 6; importmap to `aistudiocdn.com` + Tailwind CDN play script; typed `ReportData`; pure generator service; no persistence; key defined in `vite.config.ts` but never referenced by client code (not in the bundle); no tests. **Quality 3 / 5.**
 
 ### A.2 Model usage
 

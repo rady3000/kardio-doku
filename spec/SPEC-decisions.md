@@ -1,6 +1,6 @@
 # SPEC-decisions.md — Open questions for the project owner
 
-**Status:** v0.2, waiting for answers. Re-checked against `CLAUDE.md`,
+**Status:** v0.3, waiting for answers. Includes the Device-Abfrage audit. Re-checked against `CLAUDE.md`,
 `SPEC-carotis.md` and `SPEC-extraction-gateway.md`.
 
 Status tags:
@@ -14,7 +14,7 @@ Status tags:
 
 ## A. Project setup & operations
 
-**D-01 Device-Abfrage source — OPEN (urgent).** `HSM_Abfrage` could not be attached to this session, so Device-Abfrage is unaudited. CLAUDE.md makes it a **v1 extraction module**, so this is now the largest gap. Please grant access to the repo, or upload its code.
+**D-01 Device-Abfrage source — ANSWERED.** Attached after your confirmation and audited (SPEC-modules Modul 2). Device questions: D-55 to D-64.
 
 **D-02 Reference files — ANSWERED.** CLAUDE.md, SPEC-carotis.md and SPEC-extraction-gateway.md arrived. SPEC-modules now follows the Carotis format. (File placement: D-53.)
 
@@ -26,7 +26,7 @@ Status tags:
 
 **D-06 Data protection for extraction — ANSWERED** (gateway §1–2). TESTBETRIEB: synthetic/anonymized documents, Mistral OCR cloud allowed. ECHTBETRIEB: self-hosted OCR only.
 
-**D-07 Extraction scope — PARTLY.** v1 = TTE + Device, source PDFs, one- vs two-stage decided by the evaluation harness. Remaining: which echo system and which device programmers produce your printouts (label hints are vendor-specific — the prototype hints such as "G peak SL(Avg)", "LVEF_BiP_Q" look like GE EchoPAC)?
+**D-07 Extraction scope — PARTLY.** v1 = TTE + Device, source PDFs, one- vs two-stage decided by the evaluation harness. Remaining: which echo system produces your printouts (the TTE hints such as "G peak SL(Avg)", "LVEF_BiP_Q" look like GE EchoPAC)? For Device, the prototype has vendor rules for Abbott/SJM, Biotronik and Medtronic (DE + EN) — which manufacturers do you see most, and are Boston Scientific, Vitatron and MicroPort needed in v1?
 
 ## B. TTE — clinical rules
 
@@ -127,8 +127,9 @@ Status tags:
 (b) CV section 6 entirely — OAK continuation, CHA₂DS₂-VASc statement, antiarrhythmics, β-blocker, weight loss, PVI, amiodarone loading, rate target < 110/min;
 (c) SM "Weiteres Vorgehen" (Sandsack/Bettruhe, Röntgen, Entlassung) and "Wundversorgung" (Fäden durch Hausarzt) — procedural orders rather than therapy?;
 (d) TEE M-TEER/T-TEER suitability sentences;
-(e) SPEC-carotis `verlaufskontrolle` ("Empfohlene Verlaufskontrolle") — your own spec contains a recommendation field.
-*(Vorschlag: keep (c) as documentation of orders given; drop (a), (b) and the recommending wording of (d); confirm (e).)*
+(e) SPEC-carotis `verlaufskontrolle` ("Empfohlene Verlaufskontrolle") — your own spec contains a recommendation field;
+(f) Device: "Die nächste Kontrolle wird in 6-8 Wochen beim niedergelassenen Kardiologen empfohlen." and the badge texts "Optimierung empfohlen", "Vektorwechsel vorgeschlagen!" (device-programming advice).
+*(Vorschlag: keep (c) as documentation of orders given; drop (a), (b), the recommending wording of (d) and the badge advice in (f); confirm (e) and whether a follow-up interval may be documented as a plain fact, e.g. "Nächste Kontrolle: {Intervall}".)*
 
 **D-50 Extraction bounds — OPEN.** Every extractable field needs `expectedUnit` and `plausibleRange` (gateway §3.4). The prototype has none. Will you provide them for the ~27 TTE fields (and later Device), or should I draft a table for you to correct?
 
@@ -140,13 +141,36 @@ Status tags:
 
 **D-54 Seed documents — OPEN.** Gateway §2.5 needs ~20 synthetic echo printouts and device reports with known values. Will you provide anonymized/synthetic originals from your devices, or should synthetic PDFs be generated to mimic their layout (needs a sample layout from you)?
 
+
+## H. Device-Abfrage (from the audit of HSM_Abfrage)
+
+**D-55 Device identity fields — OPEN.** Gateway §2.6.4 forbids extracting model and serial numbers; the prototype extracts the model. Keep manufacturer + device type extractable and model manual-only? Is the manufacturer itself allowed as an extractable field?
+
+**D-56 Device type vs pacing mode — OPEN.** The prototype field "Schrittmachermodus" holds device types (1-Kammer HSM … CRT-D), and Medtronic "Betriebsart" (a mode such as DDDR) is mapped onto it. Two separate fields: **Gerätetyp** and **programmierter Modus** (NBG code)? The labels "VVI-D"/"DDD-D" are not NBD codes — which labels do you want?
+
+**D-57 Implant date — OPEN.** The field is labelled "Sterilisations-/Implantations-Datum" — which date do you want? Is an implantation date acceptable in TESTBETRIEB documents at all (your anonymization list in gateway §2.6.2 removes the Untersuchungsdatum; the implant date is a similar quasi-identifier)?
+
+**D-58 Battery status — OPEN.** Today one free-text field mixes years, volts, "OK" and ERI dates; a bare number is printed as "Jahre bis EOL". Structure it as value + unit (Jahre / Monate / V) + status (OK / RRT / ERI / EOS)? Which term — RRT, ERI or EOL?
+
+**D-59 Medtronic "Sensing Threshold" — OPEN.** Your AI Studio instruction maps "Atrial/Ventricular Sensing Threshold" to the measured P/R amplitude. On many reports this label is the programmed sensitivity instead. Please confirm on a real (anonymized) Medtronic printout which value is meant.
+
+**D-60 Model-written fields — OPEN.** The prototype lets the model write the AHRE summary, the ICD therapy summary and the indication, and prints them verbatim. Under extraction-only these must become structured fields. Which ones? *(Vorschlag: AT/AF episodes n, longest duration, AF burden %; VT/VF episodes n; ATP n; shocks n; indication as a select — all physician-confirmed.)*
+
+**D-61 Device measurement ranges — OPEN.** Out-of-range highlighting exists only for six ICD/CRT badges; RA/RV impedance, sensing and threshold have hint texts only, with a gap (1000–2000 Ω undefined). Which ranges and source for all lead values (shared with SM-Implantation, D-33)? Badge wording: neutral ("außerhalb des Referenzbereichs") only, no interpretation such as "Sondenfehler?" or "Kondensatoralterung"?
+
+**D-62 Device conclusion — OPEN.** The prototype always writes "Regelrechte Abfrage", "Regelrechte Messwerte" and "Zusammenfassend regelrechte Funktion des Aggregats ohne Anhalt für Sonden- oder Wahrnehmungsstörungen." — even with critical values. Under rule 5 this is a multi-finding judgement → physician-assigned select (e.g. "regelrechte Funktion" / "Auffälligkeit: …"), with export blocked or warned when a highlighted value conflicts?
+
+**D-63 Follow-up interval — OPEN.** The "Nächstes Kontrollintervall" field is ignored by the prototype text. Document it as a fact field (tied to D-49 f)?
+
+**D-64 Section order — OPEN.** Keep your mnemonic order (Elf · Bunte · Elefanten · Sitzen · Silvester · [ICD] · [CRT] · Beim · Prosecco · Dinner) as the section and tab order of the Device form, with the mnemonic labels shown or not?
+
 ---
 
 ## Recommendation (Step 5) — unchanged, now also required by CLAUDE.md
 
 **Build fresh; port the domain content, not the code.**
 
-- TTE/TEE: DOM scripts; state = display strings; thresholds duplicated with
+- TTE/TEE/Device: DOM scripts; state = display strings; thresholds duplicated with
   different cut-offs; ad-hoc string concatenation; key in the bundle.
 - SM: React with a typed model, but three hand-written, diverging report copies; CDN dependencies.
 - CV: best shape (typed model + pure `generateReport`) — the pattern matches

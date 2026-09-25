@@ -31,6 +31,10 @@ conversion to `reference/*.json` needs the physician's cut-offs, `source` and
 | SM-T* | selection → sentence | n/a | n/a | post-op orders (SM-T17…T22) | templates; D-49 |
 | CV-R01 | score → recommendation | yes (score) | no | **yes** | **excluded** (D-39, D-49) |
 | CV-T18…T24 | selection → recommendation | n/a | n/a | **yes** | **excluded** (D-49) |
+| DEV-B01…B06 badges | band → highlight + text | yes | no | B03, B06 give programming advice | highlight convertible; badge wording to be reviewed (D-49, D-61) |
+| DEV-T01, T05, T10 "Regelrecht…" | fixed normal conclusion | **no** (all values) | n/a | no | **not allowed** as automatic text (rule 5) |
+| DEV-T11 follow-up | fixed recommendation | n/a | n/a | yes | D-49 |
+| DEV `ahre`, `icdLastTherapy`, `indication` | model-written text | n/a | n/a | no | **excluded** — model prose (D-60) |
 
 ### G-2 Band semantics needed before conversion
 
@@ -58,7 +62,7 @@ label hints only** (`extractionHints`), not a reusable extraction design.
 
 ---
 
-## X. Extraction (model) — the only model use in all prototypes
+## X. Extraction (model) — TTE and Device-Abfrage
 
 ### X-1 TTE extraction prompt (verbatim, `TTE_V2026/index.tsx` @ df72c6d, lines 54–90)
 
@@ -137,7 +141,229 @@ Applied in this order:
 ### X-3 Other modules
 
 TEE, SM-Implantation, Kardioversion: **no extraction, no model call.**
-Device-Abfrage: unknown (not accessible).
+Device-Abfrage: see X-4, X-5.
+
+### X-4 Device-Abfrage extraction prompts (verbatim, `HSM_Abfrage/index.tsx` @ df19444)
+
+Sent by the browser to `POST /api/analyze` (`server.ts`), which forwards to
+model `gemini-3.5-flash` with `responseMimeType: 'application/json'` and a
+`responseSchema` of 28 **string** properties (deviceModel, deviceType,
+implantationDate, batteryStatus, sensingRa, sensingRv, impedanceRa,
+impedanceRv, thresholdRaV, thresholdRaMs, thresholdRvV, thresholdRvMs,
+apAnteil, vpAnteil, company, indication, rhythm, ahre, icdVtZone, icdVfZone,
+icdShockImpedance, icdChargeTime, icdLastTherapy, crtLvVector, crtLvPacingPct,
+crtLvImpedance, crtLvSensing, crtLvThreshold). Request parts, in order: the
+prompt text; if a PDF text layer could be read with pdf.js,
+`"\n\n--- EXTRAHIERTER DOKUMENTEN-TEXT ---\n\n" + text`; the whole file as
+base64 `inlineData` (images and PDFs).
+
+#### `commonInstructions` — shared instructions, embedded as `${commonInstructions}` at the top of every variant (lines 40–106)
+
+```text
+            Du bist ein spezialisierter medizinischer Assistent für Kardiologie. Deine Aufgabe ist die präzise Extraktion von Herzschrittmacher-, ICD- und CRT-Daten aus Abfrageberichten ("Abschlussbericht" / "Final Report").
+            
+            WICHTIGE HERSTELLER-SPEZIFISCHE REGELN (ABBOTT / ST. JUDE MEDICAL / MERLIN):
+            Wenn du erkennst, dass der Bericht von Abbott, St. Jude Medical (SJM) oder aus dem Merlin Patient Care System stammt:
+            1. Hersteller (company): Setze "Abbott" (auch wenn "St. Jude Medical", "SJM" oder "Merlin" angegeben ist).
+            2. Schrittmachermodus / Gerätetyp (deviceType):
+               - Suche im Kopf nach Modellbezeichnung (z.B. "Gallant HF", "Quadra Assura", "Quadra Allure", "Fortify Assura", "Unify", "Ellipse", "Entrant", "Assurity", "Endurity").
+               - Wenn CRT-D, Quadra Assura MP, Fortify CRT-D oder Biventrikulärer ICD: wähle "CRT-D (Dreikammer ICD)".
+               - Wenn CRT-P, Quadra Allure oder Biventrikulärer HSM: wähle "CRT-P (Dreikammer HSM)".
+               - Wenn Single Chamber ICD / VR: "1-Kammer ICD (VVI-D)". Dual Chamber ICD / DR: "2-Kammer ICD (DDD-D)".
+            3. Batteriestatus (batteryStatus): Suche nach "Battery Status", "Remaining Longevity", "ERI", "Elective Replacement Indicator", "Battery Voltage" (z. B. "> 5.0 years", "2.85 V", "OK").
+            4. Atriale Parameter (RA / Vorhof):
+               - Sensing: Suche "P-Wave", "P Wave amplitude", "Intrinsic Amplitude", "A Sense" (in mV, z.B. 2.5).
+               - Impedanz: Suche "A Impedance", "Atrial Lead Impedance", "Atrium Impedanz" (in Ohm, z.B. 450).
+               - Reizschwelle: Suche "A Threshold", "Atrial Threshold" (Spannung in V, Impulsdauer in ms).
+            5. Ventrikuläre Parameter (RV / Ventrikel):
+               - Sensing: Suche "R-Wave", "R Wave amplitude", "Intrinsic Amplitude", "RV Sense" (in mV, z.B. 12.0).
+               - Impedanz: Suche "RV Impedance", "V Impedance", "RV Lead Impedance" (in Ohm, z.B. 520).
+               - Reizschwelle: Suche "RV Threshold", "V Threshold" (Spannung in V, Impulsdauer in ms).
+            6. Linksventrikuläre Parameter / CRT (LV):
+               - LV Vektor (crtLvVector): Suche "LV Pace Vector", "LV Pacing Vector" (z.B. "D1-M2", "M2-P4", "D1-RV Shell", "LV tip to RV ring").
+               - BiV Stimulationsanteil (crtLvPacingPct): Suche "% BiV Paced", "% LV Paced", "BiV Pacing %" (z.B. 99.2%).
+               - LV Impedanz (crtLvImpedance): Suche "LV Impedance", "LV Lead Impedance" in Ohm (z.B. 680).
+               - LV Sensing (crtLvSensing): Suche "LV Sense", "LV Amplitude", "LV Intrinsic" in mV (z.B. 14.5).
+               - LV Reizschwelle (crtLvThreshold): Suche "LV Threshold" (z.B. "1.0 V bei 0.4 ms").
+            7. ICD-Therapiezonen & Schock (Abbott / SJM):
+               - VT-Zone (icdVtZone): Suche "VT-1", "VT-2", "VT Zone Rate" (z.B. "> 170 bpm").
+               - VF-Zone (icdVfZone): Suche "VF Zone Rate", "VF Zone" (z.B. "> 210 bpm").
+               - Schockimpedanz (icdShockImpedance): Suche "HV Lead Impedance", "Shock Impedance", "RV Coil Impedance" in Ohm (z.B. 58).
+               - Kondensator-Ladezeit (icdChargeTime): Suche "Capacitor Charge Time", "Last Charge Time", "Recharge Time" in Sek. (z.B. 7.8 s).
+               - Therapien (icdLastTherapy): Suche "Delivered Shocks", "ATP Delivered", "Tachy Episodes" (z.B. "0 Shocks / 0 ATP" oder "Keine").
+
+            WICHTIGE HERSTELLER-SPEZIFISCHE REGELN (BIOTRONIK):
+            Wenn du erkennst, dass der Hersteller BIOTRONIK ist, priorisiere folgende Labels:
+            1. Batteriestatus: Suche nach dem Feld "Errechneter ERI".
+            2. Sensing (Wahrnehmung): Suche nach "Mittl. Amplitude [mV]" für RA (Vorhof) und RV (Ventrikel).
+            3. Reizschwellen: 
+               - Spannung (V): Suche nach "Reizschwelle [V]".
+               - Pulsweite (ms): Suche nach "Impulsdauer [ms]".
+            4. Stimulationsanteil: Suche nach "Stimulation [%]". Ordne es "apAnteil" zu, wenn es im Atrium/Vorhof steht, und "vpAnteil", wenn es im Ventrikel steht.
+            5. CRT-Spezifisch: LV-Sondenwerte unter "LV" bzw. "Linksventrikulär" suchen (Sensing, Impedanz, Reizschwelle).
+
+            WICHTIGE HERSTELLER-SPEZIFISCHE REGELN (MEDTRONIC DEUTSCH / GERMAN):
+            Wenn du einen Bericht von Medtronic künstlich oder real erkennst (oft ein "Abschlussbericht"), priorisiere und wende unbedingt folgende deutsche Suchbegriffe an:
+            1. Restkapazität / Batteriestatus (batteryStatus): Findet man unter "Geschätzte verbleibende Laufzeit" im Abschlussbericht (z. B. "> 15,0 Jahre" oder "10,2 Jahre"). Extrahiere diesen Wert genau.
+            2. Sondenimpedanz RA (impedanceRa): Findet man unter "Gemessene Impedanz" im Abschnitt "A. Elektrode" (oder unter Atrium-Elektrode) im Abschlussbericht. Extrahiere nur den reinen Zahlenwert (Ohm).
+            3. Sondenimpedanz RV (impedanceRv): Findet man unter "Gemessene Impedanz" im Abschnitt "V. Elektrode" (oder unter Ventrikel-Elektrode) im Abschlussbericht. Extrahiere nur den reinen Zahlenwert (Ohm).
+            4. Schrittmachermodus / Gerätetyp (deviceType): Findet man unter "Betriebsart" im Abschlussbericht. Mappe dies unbedingt auf einen der folgenden Werte, wenn anwendbar: "1-Kammer HSM (VVI)", "2-Kammer HSM (DDD)", "1-Kammer ICD (VVI-D)", "2-Kammer ICD (DDD-D)", "CRT-D (Dreikammer ICD)", "CRT-P (Dreikammer HSM)". Wenn z.B. CRT-D oder biventrikulärer ICD steht, wähle "CRT-D".
+            5. Hersteller (company): Findet man unter "Schrittmachermodell" im Abschlussbericht. Wenn dort Medtronic erwähnt wird oder das Modell ein Medtronic-Modell ist, trage "Medtronic" ein.
+            6. Modellnummer / Gerätemodell (deviceModel): Findet man unter "Schrittmachermodell" im Abschlussbericht (z. B. "Astra XT DR" oder eine Modellbezeichnung/Nummer wie "ADDRS1").
+            7. Sterilisations-/Implantations-Datum (implantationDate): Findet man unter "Implantiert:" im Abschlussbericht. Konvertiere das ausgelesene Datum (z.B. "12-Okt-2023", "12. Okt. 2023" oder "12.10.2023") präzise in das Format YYYY-MM-DD. Konvertiere deutsche Abkürzungen (Okt -> 10, Dez -> 12, Mai -> 05 usw.) korrekt.
+            8. ICD-Therapiezonen (icdVtZone / icdVfZone): VT-Überwachungszone / VT-Zone suchen (z.B. "VT-Zone" oder "VT-Grenze", oft angegeben in bpm z.B. "> 185 bpm"). VF-Therapiezone / VF-Zone suchen (z.B. "VF-Zone" oder "VF-Grenze", angegeben in bpm z.B. "> 220 bpm").
+            9. Schockimpedanz (icdShockImpedance): Wert der Defi-Elektrode unter "Schock-Impedanz" oder "RV-Coil" bzw. "Second Coil" (in Ohm, z.B. 65 Ohm).
+            10. Kondensator-Ladezeit (icdChargeTime): Wert unter "Ladezeit" oder "Ladeversuch-Ladezeit" (in Sek., z.B. 8.4 s).
+            11. LV-Sondenparameter (CRT): Für "crtLvVector" suche nach "LV-Sondenvektor", "LV-Polung" oder "Vektor-Auswahl" (z.B. "LV1 bis LV2", "LV2 zu LV4", "Bipolar: LV an RV" etc.). Für "crtLvPacingPct" suche biventrikuläre Stimulation / "BiV-Stimulation" oder "BiV %" (z.B. 99.4%). "crtLvImpedance", "crtLvSensing" und "crtLvThreshold" aus dem LV-Sondenabschnitt extrahieren.
+
+            WICHTIGE HERSTELLER-SPEZIFISCHE REGELN (MEDTRONIC ENGLISCH / ENGLISH):
+            Wenn du erkennst, dass der Bericht von Medtronic auf Englisch ist, priorisiere folgende Labels:
+            1. Batteriestatus (batteryStatus): Suche nach "Estimated remaining longevity".
+            2. Stimulationsanteil: "A. Paced" -> apAnteil, "V. Paced" -> vpAnteil, "BiV" / "Biventricular Paced" -> crtLvPacingPct.
+            3. Sensing (sensingRa / sensingRv): "Atrial Sensing Threshold" -> sensingRa, "Ventricular Sensing Threshold" -> sensingRv. LV Sensing -> crtLvSensing.
+            4. Impedenzen (impedanceRa / impedanceRv): "Measured Impedance" -> Atrial/A. -> impedanceRa, Ventricular/V. -> impedanceRv. LV Impedance -> crtLvImpedance.
+            5. ICD zones: VT zone (VT interval/rate, e.g. "> 180 bpm"), VF zone (VF interval/rate, e.g. "> 220 bpm").
+            6. Shock impedance & charge time: "Shocking Impedance" or "RV Coil Impedance" -> icdShockImpedance. "Capacitor Charge Time" -> icdChargeTime.
+            
+            WICHTIGER HINWEIS FÜR NICHT GEFUNDENE FELDER:
+            Wenn ein Parameter im Dokument nicht vorhanden, unleserlich oder nicht anwendbar ist, gib für diesen Schlüssel den leeren String "" oder null zurück. Gib NIEMALS die Zahl 0 oder "0" als Standardwert für fehlende Werte an!
+```
+
+#### `prompt` — **the variant actually sent** (`body.prompt`) (lines 179–214)
+
+```text
+            ${commonInstructions}
+            Analyse das hochgeladene Herzschrittmacher/ICD/CRT-Abfrageprotokoll.
+            Extrahiere alle kardiologischen Werte präzise als JSON.
+            
+            Kardiologische Ziel-Felder:
+            - deviceModel: Gerätemodell / Modellbezeichnung (z.B. "Gallant HF", "Quadra Assura MP", "Astra XT DR", "Enduri", "Evia").
+            - deviceType: Exakt einer dieser Werte: "1-Kammer HSM (VVI)", "2-Kammer HSM (DDD)", "1-Kammer ICD (VVI-D)", "2-Kammer ICD (DDD-D)", "CRT-D (Dreikammer ICD)", "CRT-P (Dreikammer HSM)".
+            - company: Hersteller: "Medtronic", "Abbott" (auch für St. Jude Medical / SJM / Merlin), "Biotronik", "Boston Scientific", "Vitatron", "Microport".
+            - implantationDate: Datum der Implantation im Format YYYY-MM-DD.
+            - batteryStatus: Restlaufzeit / ERI / Voltage / Status (z.B. "> 5.0 Jahre", "2.85 V", "OK").
+            - sensingRa: Vorhof-Wahrnehmung (P-Welle) in mV.
+            - sensingRv: Ventrikel-Wahrnehmung (R-Zacke) in mV.
+            - impedanceRa: Sondenimpedanz Vorhof in Ohm.
+            - impedanceRv: Sondenimpedanz Ventrikel in Ohm.
+            - thresholdRaV: Reizschwelle Spannung Vorhof (V).
+            - thresholdRaMs: Impulsdauer Vorhof (ms).
+            - thresholdRvV: Reizschwelle Spannung Ventrikel (V).
+            - thresholdRvMs: Impulsdauer Ventrikel (ms).
+            - apAnteil: Atrialer Stimulationsanteil (%).
+            - vpAnteil: Ventrikulärer Stimulationsanteil (%).
+            - indication: Indikation (z.B. "AV-Block III°", "Sick-Sinus-Syndrom", "DCM / HF").
+            - rhythm: Grundrhythmus (z.B. "Sinusrhythmus", "Vorhofflimmern").
+            - ahre: Zusammenfassung AT/AF-Episoden.
+            
+            EXTRAS FÜR ICD & CRT:
+            - icdVtZone: VT-Grenzfrequenz / Zone (z.B. "> 170 bpm")
+            - icdVfZone: VF-Grenzfrequenz / Zone (z.B. "> 210 bpm")
+            - icdShockImpedance: RV-Coil / Schock-Impedanz in Ohm (z.B. "58")
+            - icdChargeTime: Kondensatorladezeit in Sek. (z.B. "7.8")
+            - icdLastTherapy: Letzte ICD-Therapien (z.B. "0 Shocks", "Keine", "1 ATP erfolgreich")
+            
+            - crtLvVector: LV Polung/Vektor (z.B. "D1-M2", "Quadripolar: LV1 zu LV2", "Bipolar: LV an RV")
+            - crtLvPacingPct: Biventrikuläre Stimulation % (% BiV / % LV) (z.B. "99.4")
+            - crtLvImpedance: LV Sondenimpedanz in Ohm (z.B. "680")
+            - crtLvSensing: LV Sensing in mV (z.B. "14.5")
+            - crtLvThreshold: LV Reizschwelle (z.B. "1.0V bei 0.4ms")
+```
+
+#### `imagePrompt` — built but **never sent** (lines 110–143)
+
+```text
+            ${commonInstructions}
+            Analyse das Bild des Herzschrittmacher/ICD/CRT-Abfrageprotokolls.
+            Extrahiere Informationen und gib sie als JSON zurück.
+            - deviceModel: Gerätemodell / Modellnummer (findet man unter "Schrittmachermodell" im Abschlussbericht).
+            - deviceType: "1-Kammer HSM (VVI)", "2-Kammer HSM (DDD)", "1-Kammer ICD (VVI-D)", "2-Kammer ICD (DDD-D)", "CRT-D (Dreikammer ICD)" oder "CRT-P (Dreikammer HSM)".
+            - implantationDate: Datum der Implantation im Format YYYY-MM-DD (findet man unter "Implantiert" im Abschlussbericht).
+            - batteryStatus: Wert aus "Errechneter ERI" (Biotronik) oder "Geschätzte verbleibende Laufzeit" (Medtronic).
+            - sensingRa: Vorhof-Wahrnehmung (P-Welle) in mV / "Atrial Sensing Threshold".
+            - sensingRv: Ventrikel-Wahrnehmung (R-Zacke) in mV / "Ventricular Sensing Threshold".
+            - impedanceRa: Sondenimpedanz Vorhof in Ohm (findet man unter "Gemessene Impedanz" unter "A. Elektrode" bzw. "Atrial" / "Measured Impedance").
+            - impedanceRv: Sondenimpedanz Ventrikel in Ohm (findet man unter "Gemessene Impedanz" unter "V. Elektrode" bzw. "Ventricular" / "Measured Impedance").
+            - thresholdRaV: Reizschwelle Spannung Vorhof (V).
+            - thresholdRaMs: Impulsdauer/Pulsweite Vorhof (ms).
+            - thresholdRvV: Reizschwelle Spannung Ventrikel (V).
+            - thresholdRvMs: Impulsdauer/Pulsweite Ventrikel (ms).
+            - apAnteil: "Stimulation [%]", "A. Paced" oder "A. Stim." (Vorhof).
+            - vpAnteil: "Stimulation [%]", "V. Paced" oder "V. Stim." (Ventrikel).
+            - company: Hersteller (z.B. Medtronic, Biotronik, Vitatron) (findet man unter "Schrittmachermodell" im Abschlussbericht).
+            - indication: Indikation (z.B. Sick-Sinus-Syndrom, AV-Block).
+            - rhythm: Grundrhythmus.
+            - ahre: Zusammenfassung AHRE/AT-Episoden.
+            
+            EXTRAS FÜR ICD & CRT:
+            - icdVtZone: z.B. "> 180 bpm" oder "Monitor 180"
+            - icdVfZone: z.B. "> 220 bpm" oder "Therapie 220"
+            - icdShockImpedance: Schock-Impedanz (Ohm) z.B. "65"
+            - icdChargeTime: Kondensatorladezeit in Sekunden z.B. "8.4"
+            - icdLastTherapy: Zusammenfassung letzter Therapien z.B. "Keine" oder "1 ATP erfolgreich"
+            
+            - crtLvVector: Vektor-Beschreibung wie z.B. "Quadripolar: LV1 zu LV2" oder "Bipolar: LV an RV"
+            - crtLvPacingPct: Biventrikuläre Stimulation % (BiV) z.B. "99.4"
+            - crtLvImpedance: LV Sondenimpedanz (Ohm) z.B. "620"
+            - crtLvSensing: LV Sensing (mV) z.B. "15.0"
+            - crtLvThreshold: LV Reizschwelle z.B. "1.2V bei 0.4ms"
+```
+
+#### `textAnalysisPrompt` — built but **never sent** (lines 147–175)
+
+```text
+            ${commonInstructions}
+            Analysiere den extrahierten Text eines Herzschrittmacher/ICD/CRT-Abfrageberichts ("Abschlussbericht" / "Final Report").
+            Extrahiere die Daten präzise als JSON.
+            
+            Besonderheiten für die Felder:
+            - deviceModel: Gerätemodell / Modellnummer.
+            - deviceType: "1-Kammer HSM (VVI)", "2-Kammer HSM (DDD)", "1-Kammer ICD (VVI-D)", "2-Kammer ICD (DDD-D)", "CRT-D (Dreikammer ICD)" (wenn ICD + CRT / biventrikulär) oder "CRT-P (Dreikammer HSM)".
+            - company: Hersteller (z.B. Medtronic, Biotronik, Vitatron).
+            - implantationDate: Datum der Implantation im Format YYYY-MM-DD.
+            - batteryStatus: Wert der Restlaufzeit / ERI.
+            - sensingRa: Vorhof-Wahrnehmung (P-Welle) in mV.
+            - sensingRv: Ventrikel-Wahrnehmung (R-Zacke) in mV.
+            - impedanceRa: Sondenimpedanz Vorhof (Ohm).
+            - impedanceRv: Sondenimpedanz Ventrikel (Ohm).
+            - thresholds: Reizschwellen für Vorhof / Ventrikel (Spannung in V, Dauer in ms).
+            - apAnteil/vpAnteil: atrialer/ventrikulärer Stimulationsanteil (%).
+            
+            EXTRAS FÜR ICD & CRT:
+            - icdVtZone: VT-Überwachungszone (z.B. "> 180 bpm")
+            - icdVfZone: VF-Therapiezone (z.B. "> 220 bpm")
+            - icdShockImpedance: RV-Coil Schockimpedanz in Ohm
+            - icdChargeTime: Kondensatorladezeit in Sek.
+            - icdLastTherapy: Letzte Therapien (ATP, Schock, Zähler)
+            
+            - crtLvVector: LV Polung/Vektor (z.B. "Quadripolar: LV1 zu LV2")
+            - crtLvPacingPct: BiV-Stimulationsanteil (%)
+            - crtLvImpedance: LV Sondenimpedanz in Ohm
+            - crtLvSensing: LV Sensing in mV
+            - crtLvThreshold: LV Reizschwelle (z.B. "1.2V bei 0.4ms")
+```
+
+Prompt flags:
+- ⚠ `ahre` ("Zusammenfassung AT/AF-Episoden"), `icdLastTherapy` ("Zusammenfassung letzter Therapien") and `indication` ask the model to **write clinical text**, which is printed verbatim in the report → deviation from extraction-only (D-60).
+- ⚠ `deviceModel` / "Modellnummer" extraction is forbidden by gateway §2.6.4 (D-55).
+- ⚠ Date conversion ("12-Okt-2023" → YYYY-MM-DD) is delegated to the model.
+- ⚠ "Atrial/Ventricular Sensing Threshold" → measured amplitude (D-59).
+- ⚠ "Betriebsart" (pacing mode) → device type (D-56).
+- The phrase "Wenn du einen Bericht von Medtronic künstlich oder real erkennst" suggests the hints were tuned on synthetic reports.
+- Vendor rules exist for Abbott/SJM/Merlin, Biotronik, Medtronic (DE and EN). Boston Scientific, Vitatron-specific and Microport have none.
+
+### X-5 Device post-processing (deterministic, `index.tsx`)
+
+| # | Rule |
+|---|---|
+| P1 | Any value that is empty, "null", "undefined" or (text fields) "n/a" is skipped. |
+| P2 | `implantationDate`: first `\d{4}-\d{2}-\d{2}` match kept. |
+| P3 | `company` normalised by substring (see SPEC-modules Device §12). |
+| P4 | `deviceType` normalised by substring, first match wins (see SPEC-modules Device §12). |
+| P5 | Selects: exact or substring match against the options; `indication` without match → "Andere" + value into the free-text field; other selects without match → value written into the button as is. |
+| P6 | Status: "`{n} Felder wurden erfolgreich ausgefüllt.`" / "`Fehler bei der Dateianalyse: {message}`". Server errors: "`Keine Daten zur Analyse übergeben.`", "`Model output was not valid JSON.`". |
+| P7 | After filling: show ICD/CRT sections, evaluate badges (DEV-B), update the mnemonic ribbon. |
+
 
 ---
 
@@ -517,6 +743,50 @@ Gender forms: Nom `die Patientin`/`der Patient`; Gen `der Patientin`/`des Patien
 
 ---
 
+## Device-Abfrage — Text blocks & badge bands
+
+### DEV-T Report templates (verbatim; one text, blank line between blocks)
+
+| ID | Condition | Text |
+|---|---|---|
+| DEV-T01 | always | `Regelrechte Abfrage eines {Gerätetyp \| "nicht spezifizierten Systems"} ({Hersteller \| "unbekannt"} {Modell}). ` ⚠ "Regelrechte" unconditional |
+| DEV-T02 | always | `Das Aggregat wurde am {DD.MM.YYYY \| "unbekanntem Datum"} bei {Indikation \| Andere-Text \| "anderer Indikation" \| "unbekannter Indikation"} implantiert.` ⚠ the "unbekannter Indikation" branch tests for "Indikation auswählen"/"Indikation", but the placeholder is "Indikation ausw." → untouched prints "bei Indikation ausw. implantiert." |
+| DEV-T03 | always | `Klinisch zeigt sich die Aggregattasche {pocket lower-case \| "reizlos, unauffällig"}. Der Patient {condition \| "ist in gutem Allgemeinzustand und beschwerdefrei"}.` ⚠ empty = normal; masculine fixed. Note: the empty check compares with "befund auswählen", but the placeholder is "Aggregattasche", so an **untouched** pocket prints "Klinisch zeigt sich die Aggregattasche aggregattasche." and an untouched condition prints "Der Patient Allgemeinzustand." ⚠ bug |
+| DEV-T04 | any of rhythm / EKG texts | `Grundrhythmus: {rhythm}. EKG-Befund ohne Stimulation: {text}. EKG-Befund mit Stimulation: {text}.` (parts joined with ". ") |
+| DEV-T05 | any measurement | `Regelrechte Messwerte: {parts joined ". "}.` with parts: `Batteriestatus: {x}` (bare number → `{x} Jahre bis EOL`); `AF Burden {x}`; `Stimulationsanteile AP {x} / VP {y}`; `Wahrnehmung RA {x} mV / RV {y} mV`; `Reizschwellen RA {v} V bei {ms} ms / RV {v} V bei {ms} ms` (only if both V and ms); `Impedanzen RA {x} Ω / RV {y} Ω` ⚠ "Regelrechte" unconditional |
+| DEV-T06 | ICD and any ICD value | `ICD-Spezifische Parameter: VT-Überwachung: {x}, VF-Therapie: {x}, Schockimpedanz RV-Coil: {x} Ω, Ladezeit Kondensator: {x} Sek., Therapien/Zähler: {x}.` |
+| DEV-T07 | CRT and any CRT value | `CRT-Spezifische Parameter: Vektor polung: {x}, Biventrikuläres Pacing: {x}%, LV Sondenimpedanz: {x} Ω, LV Sensing: {x} mV, LV Reizschwelle: {x}.` ⚠ typo; vector printed by default |
+| DEV-T08 | AHRE text present / empty | `AHRE/AT-Episoden: {ahre}.` / `Keine relevanten AHRE/AT-Episoden detektiert.` ⚠ empty = normal; `ahre` may be model-written |
+| DEV-T09 | reprogramming present | `Folgende Umprogrammierung wurde vorgenommen: {text}.` |
+| DEV-T10 | always | `Zusammenfassend regelrechte Funktion des Aggregats ohne Anhalt für Sonden- oder Wahrnehmungsstörungen. ` ⚠ unconditional conclusion |
+| DEV-T11 | always | `Die nächste Kontrolle wird in 6-8 Wochen beim niedergelassenen Kardiologen empfohlen.` ⚠ ignores `next_follow_up`; recommendation (D-49) |
+
+### DEV-B Warning badges (UI only; do not affect the text)
+
+Parsing: B01, B04, B05 `parseFloat(value)`; B02, B03 remove every character
+except digits and "." then `parseFloat` (⚠ "8,4" → 84); B06 first
+`[0-9.]+` match (⚠ may pick the ms value). NaN → no badge.
+
+| ID | Field | green | amber | red | Analysis |
+|---|---|---|---|---|---|
+| DEV-B01 | Schockimpedanz | [30, 100] Ω `✓ Optimal: Im normalen Bereich (30-100 Ω)` | [25, 30) ∪ (100, 115] `⚠️ Auffällig (Grenzbereich): Außerhalb 30-100 Ω` | < 25 or > 115 `⚠️ Kritisch (Sondenfehler?): <25 Ω oder >115 Ω` | complete; `INCONSISTENT` with sidebar "> 110 Ω" |
+| DEV-B02 | Ladezeit | ≤ 11 s `✓ Optimal: Schnelle Kondensatorladung (<11s)` | (11, 15] `⚠️ Grenzwertig: Leicht verlängerte Ladezeit` | > 15 `⚠️ Verzögert (>15s): Verdacht auf Kondensatoralterung` | complete; label "<11s" vs rule ≤ 11 |
+| DEV-B03 | BiV-Anteil | ≥ 98 % `✓ Exzellenter biventrikulärer Stimulationsanteil (≥98%)` | [95, 98) `⚠️ Grenzwertig (95-98%): Optimierung empfohlen` | < 95 `❌ Ungenügend (<95%): Hohes Risiko für CRT Non-Response!` | complete; ⚠ recommendation wording |
+| DEV-B04 | LV-Impedanz | [250, 1500] Ω `✓ Optimal LV-Impedanz (250-1500 Ω)` | [200, 250) ∪ (1500, 1800] `⚠️ Auffällig: Sondenimpedanz außerhalb 250-1500 Ω` | < 200 or > 1800 `⚠️ Kritisch: Reizleitungsfehler! Verdacht auf Bruch/Isolationsleck.` | complete; `INCONSISTENT` with comment/sidebar "200 - 1500 Ω" |
+| DEV-B05 | LV-Sensing | ≥ 5.0 mV `✓ Exzellenter Signal-Sensing-Pegel (≥5.0 mV)` | [2.0, 5.0) `⚠️ Grenzwertig (2.0-5.0 mV): Ausreichendes Sensing.` | < 2.0 `⚠️ Sehr niedrig (<2 mV): Risiko für Undersensing!` | complete; amber text self-contradictory |
+| DEV-B06 | LV-Reizschwelle | ≤ 1.5 V `✓ Ausgezeichnete LV Reizschwelle (<1.5 V)` | (1.5, 2.5] `⚠️ Grenzwertig (1.5-2.5 V): Erhöhter Stromverbrauch` | > 2.5 `❌ Kritisch hoch: Reizschwelle (>2.5 V). Vektorwechsel vorgeschlagen!` | complete; no pulse-width dimension; ⚠ programming advice |
+
+Static reference texts (hints, no rule): RA/RV impedance "Ziel: 250 - 1000 Ω";
+P wave "Empfohlen: >1.5 mV"; R wave "Empfohlen: >5.0 mV"; sidebar "Normalbereiche
+(Lehrbuch)": `Zielbereich: 250 - 1000 Ω. Bruch: >2000 Ω. Isolationsdefekt: <250 Ω.`
+(`GAP` 1000–2000 Ω); `RA (Vorhof): >1.5 mV (Empfindlichkeit 0.4-0.5 mV). RV (Kammer): >5.0 mV (Empfindlichkeit: Halbe R-Zacke).`;
+`Reizschwelle optimal <1.0 V bei 0.4 ms. Sicherheitsmarge Amplitudenreizschwelle: +100% (Verdoppelung!).`;
+`Schockimpedanz (RV-Coil): 30 - 100 Ω (Defekt: <25 Ω oder >110 Ω). Ladezeit: <15 Sek. (Alterung wenn verlängert).`;
+`BiV-Pacing: Ziel ≥98% (kritischer Verlust bei <95%). LV Reizschwelle optimal <1.5 V. LV Impedanz: 200 - 1500 Ω.`;
+battery: `>5 Jahre ist exzellent; <3 Monate erfordert rasche Terminierung.`, `Austauschkriterium (ERI/RRT) reduziert Frequenz um 11% (Biotronik) oder wechselt auf VVI-Energiesparmodus.`
+
+---
+
 ## Band-set analysis summary
 
 | Rule set | Gaps | Overlaps | Inconsistencies |
@@ -535,4 +805,7 @@ Gender forms: Nom `die Patientin`/`der Patient`; Gen `der Patientin`/`des Patien
 | TEE TR details | Grad II–IV details dropped (bug) | – | 5-grade TR vs 3-grade others |
 | CV-R01 | score not evaluated (0/1 → lifelong) | – | ESC 2020 vs 2024 |
 | SM | no measurement bands | – | fixed quality claims |
+| DEV-B01…B06 | none (each complete) | none | B01/B04 vs sidebar values; comma parsing |
+| DEV RA/RV impedance/sensing/threshold | no bands at all | – | hint texts only; 1000–2000 Ω undefined |
+| DEV-T conclusion | – | – | "regelrecht" regardless of values |
 | Gateway LVEF example (§5.1) | decimals between integer bands (e.g. 54.5) | none | differs from prototype cut-offs (D-52) |
