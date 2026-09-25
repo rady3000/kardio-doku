@@ -1,0 +1,9 @@
+# Read-only source material (prototype clones) — never commit
+_prototypes/
+
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.DS_Store
