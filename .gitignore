@@ -1,9 +1,17 @@
-# Read-only source material (prototype clones) — never commit
+# Prototype clones — read-only source material, never part of this repo
 _prototypes/
 
-node_modules/
-dist/
+# Local data — never commit
+*.db
+*.db-journal
+*.sqlite
+samples-real/
 .env
 .env.*
-!.env.example
-.DS_Store
+
+# Build output
+node_modules/
+dist/
+out/
+release/
+coverage/
