@@ -1,12 +1,60 @@
 # SPEC-textgen — Classification rules, threshold bands, text blocks, extraction
 
-Status: **Draft v0.1 (Session 1, audit only)**. Everything below is copied
+Status: **Draft v0.2 (milestone 0, audit only)**. Everything below is copied
 from the prototypes **as found** — wording, cut-offs and bugs included. Nothing
 is endorsed. ⚠ = flag; `GAP` / `OVERLAP` / `INCONSISTENT` = band-set analysis.
 German text in `code` or quote blocks is **verbatim** (placeholders in `{…}`).
 
 Notation: `[a, b)` = a ≤ x < b. "m" = männlich, "f" = weiblich (and any
 non-"männlich" value, since the code tests `gender === 'männlich'`).
+
+---
+
+## G. Conformance with CLAUDE.md and SPEC-extraction-gateway.md
+
+The prototypes predate the gateway design. This section records where each
+prototype rule would land under it. **No rule has been converted**: the
+conversion to `reference/*.json` needs the physician's cut-offs, `source` and
+`reviewedOn` (gateway §5.2).
+
+### G-1 Rule inventory against the design constraints
+
+| Rule | Type | Single value (CLAUDE.md rule 5)? | Names a guideline? | Therapy recommendation? | Status under the new design |
+|---|---|---|---|---|---|
+| TTE-R01 LVEF | band → sentence | yes (+ sex) | no | no | convertible once cut-offs/source are set (D-14, D-52) |
+| TTE-R02 IVSd | band → sentence | yes (+ sex) | no | no | convertible (D-13) |
+| TTE-H01…H17 | out-of-range highlight | yes | no | no | convertible as normal ranges |
+| TTE-R10…R13 HFA-PEFF | score → sentence | **no** | no ("ESC Leitlinien" in UI text only) | no | **not allowed as auto text** (D-48) |
+| TTE-T* qualitative sentences | selection → sentence | n/a (physician-chosen) | n/a | no | templates; allowed |
+| TTE-B Empfehlung blocks | selection → paragraph | n/a | no | **yes** | **excluded** (D-49) |
+| TEE-T*/TEE-S | selection → sentence | n/a | n/a | TEER suitability borderline | templates; D-49 for TEER sentences |
+| SM-T* | selection → sentence | n/a | n/a | post-op orders (SM-T17…T22) | templates; D-49 |
+| CV-R01 | score → recommendation | yes (score) | no | **yes** | **excluded** (D-39, D-49) |
+| CV-T18…T24 | selection → recommendation | n/a | n/a | **yes** | **excluded** (D-49) |
+
+### G-2 Band semantics needed before conversion
+
+The gateway `ClassificationRule` bands use `min`/`max` without stating
+inclusivity. The gateway's own LVEF example (`min 55` / `min 45, max 54` /
+`min 30, max 44` / `max 29`) is contiguous only for integers: 54.5 % or
+29.5 % match **no** band and would silently produce no sentence (the exact
+failure §5.2.3 forbids). Prototype values are decimals (step 0.1/0.01).
+The prototype rules use half-open intervals (`≥ cut-off`), which are gap-free.
+→ D-52.
+
+### G-3 Condition dimension needed
+
+Several prototype band sets vary by sex (R01, R02, H02, H03, H04, H06) or
+rhythm (R12, H16, H17). The gateway `ClassificationRule` interface has one
+`field` and one band list — no condition such as `when: { sex: 'männlich' }`.
+→ D-51.
+
+### G-4 Extraction contract gap
+
+The prototype extraction returns `{value, unit}` only. The gateway requires
+`confidence`, `page`, `boundingBox`, `rawText` per field and discards anything
+without them (§3.1). The prototype prompt is therefore **reference material for
+label hints only** (`extractionHints`), not a reusable extraction design.
 
 ---
 
@@ -487,3 +535,4 @@ Gender forms: Nom `die Patientin`/`der Patient`; Gen `der Patientin`/`des Patien
 | TEE TR details | Grad II–IV details dropped (bug) | – | 5-grade TR vs 3-grade others |
 | CV-R01 | score not evaluated (0/1 → lifelong) | – | ESC 2020 vs 2024 |
 | SM | no measurement bands | – | fixed quality claims |
+| Gateway LVEF example (§5.1) | decimals between integer bands (e.g. 54.5) | none | differs from prototype cut-offs (D-52) |

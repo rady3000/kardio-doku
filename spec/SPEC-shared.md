@@ -1,29 +1,32 @@
-# SPEC-shared — Common elements of all modules
+# SPEC-shared.md — Shared Study core (all modules)
 
-Status: **Draft v0.1 (Session 1, audit only)**. Source: prototype audit of
-`TTE_V2026`, `TEE_2026`, `HSM_Implantationsmaske`, `eCV_APP`.
-`HSM_Abfrage` (Device-Abfrage) could **not** be read in this session (see
-SPEC-decisions D-01). Decision references `D-xx` point to SPEC-decisions.md.
+**Status:** Draft v0.2 (milestone 0, audit only). Source: prototype audit of
+`TTE_V2026`, `TEE_2026`, `HSM_Implantationsmaske`, `eCV_APP`
+(`HSM_Abfrage` not accessible, D-01), reconciled with `CLAUDE.md` and
+`SPEC-extraction-gateway.md`.
 
-Conventions in this file:
-
-- **Observed** = what the prototypes do today (fact, with source file).
-- **Proposed** = the common target for kardio-doku. Every proposed item that
-  depends on an open question names the decision it waits on.
-- Nothing here has been fixed clinically. Flags are marked ⚠.
+Conventions:
+- **Observed** = what the prototypes do (fact).
+- **Target** = what CLAUDE.md / the gateway spec already require (quoted, not invented).
+- **Open** = needs a decision (`D-xx` → SPEC-decisions.md).
+⚠ = flag. Nothing clinical is fixed here.
 
 ---
 
 ## 1. Module list
 
-| Module | Short name | Prototype repo | Report type | Status |
+| # | Module key | Display name | Prototype | Extraction |
 |---|---|---|---|---|
-| Transthorakale Echokardiographie | `tte` | TTE_V2026 | Befund | audited |
-| Transösophageale Echokardiographie | `tee` | TEE_2026 | Befund | audited |
-| Device-Abfrage (HSM/ICD/CRT) | `device` | HSM_Abfrage | Befund | **not accessible** (D-01) |
-| Schrittmacher-/ICD-Implantation | `sm-impl` | HSM_Implantationsmaske | OP-Bericht | audited |
-| Elektrische Kardioversion | `cv` | eCV_APP | Protokoll | audited |
-| Carotis-Duplex | `carotis` | — | Befund | reference spec `spec/SPEC-carotis.md` announced but **not present in repo** (D-02) |
+| 1 | `tte` | Transthorakale Echokardiographie (TTE) | TTE_V2026 | v1 |
+| 2 | `device` | Device-Abfrage (SM / ICD / CRT-P / CRT-D) | HSM_Abfrage (not accessible) | v1 |
+| 3 | `tee` | Transösophageale Echokardiographie (TEE) | TEE_2026 | later |
+| 4 | `carotis` | Karotis-Duplexsonographie | none — `SPEC-carotis.md` | later |
+| 5 | `sm_impl` | Schrittmacher-Implantation | HSM_Implantationsmaske | later |
+| 6 | `cv` | Elektrische Kardioversion | eCV_APP | later |
+
+Target (CLAUDE.md): one shell, one shared Study core, six declarative module
+schema files, one generic form renderer, one report generator, one extraction
+gateway.
 
 ---
 
@@ -33,49 +36,50 @@ Conventions in this file:
 
 | Prototype | Fields | Where it appears in the output |
 |---|---|---|
-| TTE | `Patient` (one free-text field, placeholder "Name, Vorname, Geburtsdatum..."), `Datum der Untersuchung` (date, default today), `Geschlecht` (weiblich/männlich, **default weiblich**) | Only in the PDF header ("Patient: …", "Datum: …"). **Not** in the copied text report. Geschlecht only drives cut-offs. |
-| TEE | `Patient` (free text, placeholder "Name, Vorname, Geb.-Datum..."), `Datum der Untersuchung` | ⚠ **Neither field is used anywhere** — the patient input has no id; the report contains no patient or date. |
-| SM-Implantation | `Nachname`, `Vorname`, `Geburtsdatum` (date) | "Patient: {Nachname}, {Vorname}, {Geburtsdatum dd.mm.yyyy}" |
-| Kardioversion | `Name` (free text, "Nachname, Vorname"), `Geschlecht` (Männlich/Weiblich, **default Männlich**), `Geburtsdatum` | In the prose: "Bei dem Patienten {Name}, geb. am {dd.mm.yyyy}, …". Geschlecht drives grammatical gender. |
+| TTE | `Patient` (one free-text field "Name, Vorname, Geburtsdatum..."), `Datum der Untersuchung` (default today), `Geschlecht` (weiblich/männlich, **default weiblich**) | PDF header only; not in the copied text. Sex drives cut-offs. |
+| TEE | `Patient` (free text), `Datum der Untersuchung` | ⚠ **never used** (no id; not in report) |
+| SM | `Nachname`, `Vorname`, `Geburtsdatum` | "Patient: {Nachname}, {Vorname}, {dd.mm.yyyy}" |
+| CV | `Name` ("Nachname, Vorname"), `Geschlecht` (**default Männlich**), `Geburtsdatum` | in prose: "Bei dem Patienten {Name}, geb. am {dd.mm.yyyy}, …" |
 
-⚠ Inconsistencies: one-field vs split name; sex default differs (TTE
-weiblich, CV männlich); SM has no sex field but writes "Der Patient" (fixed
-masculine); TEE collects header data and then discards it.
+⚠ Split vs single name field; sex default differs (TTE weiblich, CV männlich);
+SM has no sex field but writes "Der Patient"; TEE discards its header.
 
-### 2.2 Proposed (pending D-03, D-04, D-40)
+### 2.2 Target / open
 
-| Field | German label | Type | Required | Default | Notes |
+| Field key | Label (DE) | Type | Required | Default | Notes |
 |---|---|---|---|---|---|
-| `patient.lastName` | Nachname | text | yes | — | |
-| `patient.firstName` | Vorname | text | yes | — | |
-| `patient.birthDate` | Geburtsdatum | date (dd.mm.yyyy) | yes | — | |
-| `patient.sex` | Geschlecht | enum `weiblich` \| `männlich` \| `divers` | yes | **none**; must be chosen | Drives sex-specific cut-offs (TTE) and grammar (CV, SM). No silent default (D-40). |
-| `patient.caseId` | Fall-/Patientennummer | text | no | — | Only if the KIS needs it (D-04). |
+| `patient_last_name` | Nachname | text | yes | — | |
+| `patient_first_name` | Vorname | text | yes | — | |
+| `patient_birth_date` | Geburtsdatum | date | yes | — | |
+| `patient_sex` | Geschlecht | select | yes | none (D-40) | drives sex-specific bands (D-51) and grammar |
+| `patient_case_id` | Fallnummer | text | no | — | only if the KIS needs it (D-04) |
 
-Header line (all modules):
-`{Nachname}, {Vorname}, geb. {Geburtsdatum}` — exact form depends on KIS (D-04).
+In `TESTBETRIEB` the header holds synthetic or anonymized data only
+(gateway §2.6). Header data are never extractable in any mode (they are
+identifiers; gateway §2.6.1 requires removal before import).
 
 ---
 
-## 3. Study / procedure metadata
+## 3. Study metadata
 
 ### 3.1 Observed
 
 | Prototype | Date | Indication | Other |
 |---|---|---|---|
-| TTE | `Datum der Untersuchung` | `Klinische Indikation` dropdown | `EKG Rhythmus`, `Schallbedingungen` |
-| TEE | `Datum der Untersuchung` (unused) | `Indikation` dropdown | `Sedierung` |
-| SM | `Operationsdatum` | `Diagnose` dropdown (+ free text) | `clinic` fixed "Klinik für Kardiologie" |
-| CV | ⚠ **no procedure date field**; the preview shows *today's* date | `Typ` (Erstdiagnose/Rezidiv/Vorhofflattern) | — |
+| TTE | Datum der Untersuchung | Klinische Indikation | EKG Rhythmus, Schallbedingungen |
+| TEE | Datum der Untersuchung (unused) | Indikation | Sedierung |
+| SM | Operationsdatum | Diagnose (+ free text) | clinic fixed "Klinik für Kardiologie" |
+| CV | ⚠ none — the print shows today's date | Typ | — |
 
-### 3.2 Proposed
+### 3.2 Target / open
 
-| Field | German label | Type | Default |
-|---|---|---|---|
-| `study.date` | Untersuchungsdatum / Operationsdatum | date | today, editable |
-| `study.time` | Uhrzeit | time | optional |
-| `study.indication` | Indikation | module-specific enum + free text | none |
-| `study.institution` | Klinik / Abteilung | fixed config value | from settings |
+| Field key | Label (DE) | Type | Default | Notes |
+|---|---|---|---|---|
+| `study_date` | Untersuchungsdatum / Operationsdatum | date | today | |
+| `study_indication` | Indikation | module select + free text | — | module-specific lists |
+| `study_mode` | Betriebsmodus | fixed per database | `TESTBETRIEB` | gateway §2; set by the database file, not per study |
+| `study_institution` | Klinik / Abteilung | config | from settings | |
+| `vorbefund_datum` | Voruntersuchung vom | date | — | as SPEC-carotis §2; comparison scope D-05 |
 
 ---
 
@@ -83,41 +87,41 @@ Header line (all modules):
 
 ### 4.1 Observed
 
-- TTE, TEE: **no examiner field**.
-- SM: `operator` hard-coded `"Dr. med. Mohamed Rady"` (not editable in UI),
-  printed as "Operateur:" and again as closing signature line.
-- CV: blank signature lines "Untersucher" and "Oberarzt/Chefarzt" in print
-  preview only; not in copied text.
+TTE, TEE: none. SM: `operator` hard-coded "Dr. med. Mohamed Rady" (printed
+as "Operateur:" and as the closing line). CV: blank signature lines
+"Untersucher" / "Oberarzt/Chefarzt" (print only).
 
-### 4.2 Proposed (pending D-03)
+### 4.2 Target / open
 
-| Field | German label | Type | Default |
+| Field key | Label (DE) | Type | Default |
 |---|---|---|---|
-| `examiner.name` | Untersucher / Operateur | selectable list from settings | last used |
-| `examiner.supervisor` | Oberarzt / Freigabe | selectable list, optional | — |
-| `examiner.assistant` | Assistenz | text, optional (SM only) | — |
+| `examiner_name` | Untersucher / Operateur | select from settings | last used |
+| `examiner_supervisor` | Oberarzt / Freigabe | select, optional | — |
+
+Report footer names the examiner (SPEC-carotis §8).
 
 ---
 
-## 5. Conclusion ("Zusammenfassung" / "Beurteilung")
+## 5. Conclusion (Beurteilung / Zusammenfassung)
 
 ### 5.1 Observed
 
 | Prototype | Heading | Form |
 |---|---|---|
-| TTE | `Zusammenfassung:` | Comma-joined fragment list, terminated with "." (see SPEC-textgen TTE-S*) |
-| TEE | `Zusammenfassung:` | Comma-joined list, or a fixed normal sentence |
-| SM | none (ends with "Weiteres Vorgehen" / "Wundversorgung") | bullets "o …" |
-| CV | none (section "6. EMPFEHLUNGEN UND WEITERES VORGEHEN") | prose |
+| TTE | `Zusammenfassung:` | comma-joined fragments (SPEC-textgen TTE-S) |
+| TEE | `Zusammenfassung:` | list, or a fixed normal sentence (TEE-S) |
+| SM | none | ends with "Weiteres Vorgehen" / "Wundversorgung" bullets |
+| CV | none | "6. EMPFEHLUNGEN UND WEITERES VORGEHEN" (therapy recommendations) |
 
-### 5.2 Proposed
+### 5.2 Target (CLAUDE.md, SPEC-carotis §5/§7.3)
 
-- Every Befund module (TTE, TEE, Device, Carotis) ends with **Zusammenfassung**
-  built only from deterministic rules (SPEC-textgen).
-- Procedure modules (SM, CV) end with **Procedere / Empfehlung**.
-- Optional free-text field **Ergänzung** appended verbatim. It is the only
-  place where uncontrolled text enters the report.
-- Heading word ("Zusammenfassung" vs "Beurteilung") is D-43.
+- The draft Beurteilung is composed from templates on structured fields and is
+  **fully editable**; the physician's edit is stored and wins.
+- It reports back what was recorded; it forms no opinion.
+- **No therapy or device-programming recommendations, anywhere.** This affects
+  the TTE Empfehlung blocks, CV section 6, and possibly the SM post-op orders,
+  the TEE TEER sentences and the Carotis "Verlaufskontrolle" (D-49).
+- Heading word: SPEC-carotis uses "Beurteilung"; the prototypes use "Zusammenfassung" (D-43).
 
 ---
 
@@ -127,53 +131,54 @@ Header line (all modules):
 
 | Prototype | Copy | PDF | DOCX | Print | File name |
 |---|---|---|---|---|---|
-| TTE | plain text (`document.execCommand('copy')`, deprecated) | jsPDF + autotable: title "Echokardiographie Befund", patient/date line, measurement table, "Befundtext:" + report text | — | — | ⚠ `TTE-Befund-{patient name}.pdf` |
-| TEE | plain text (execCommand) | — | — | — | — |
-| SM | rich text (HTML + plain) via Clipboard API | via browser print | `docx` 8.5.0, Arial 11 pt, tables | print window | ⚠ `OP-Bericht_{Nachname}_{date}.docx` |
-| CV | plain text (Clipboard API) | via `window.print()` | — | yes (A4 layout, signature lines) | — |
+| TTE | plain text (`execCommand`, deprecated) | jsPDF + table | — | — | ⚠ `TTE-Befund-{patient}.pdf` |
+| TEE | plain text | — | — | — | — |
+| SM | rich text + plain | via print | `docx`, Arial 11 pt | yes | ⚠ `OP-Bericht_{Nachname}_{date}.docx` |
+| CV | plain text | via print | — | yes (A4, signature lines) | — |
 
-⚠ The three SM renderers (text, preview, DOCX) are maintained by hand in
-parallel and **disagree** (see SPEC-modules §SM-8).
+⚠ The SM text, preview and DOCX renderers are separate hand-written copies and disagree.
 
-### 6.2 Proposed (pending D-04, D-45)
+### 6.2 Target (CLAUDE.md, gateway §2.4)
 
-1. **One** report model per module → **one** renderer producing a neutral
-   block structure → adapters for plain text, rich text/HTML clipboard, PDF,
-   and (if needed) DOCX. No hand-duplicated templates.
-2. Primary action: **copy for KIS** in the format the KIS accepts (D-04).
-3. File names contain no patient name by default (D-44).
-4. Plain-text line length, bullets ("o", "-", "•") and tab use are decided by the KIS (D-04).
+1. One click each: **clipboard (primary)**, DOCX, PDF — from one report
+   model through one generator.
+2. `TESTBETRIEB`: `TESTDATEN – NICHT FÜR DIE PATIENTENDOKUMENTATION` as the
+   **first line of clipboard output**, DOCX header, PDF watermark on every page,
+   and screen banner. Cannot be disabled.
+3. Footer names the rule sets and versions used (and, for Carotis, the grading criteria).
+4. Export is blocked while any unconfirmed extracted value feeds a rule or the text (gateway §4.2).
+5. Tables: real tables in DOCX/PDF, tab-aligned in the clipboard (SPEC-carotis §9).
+6. Open: the KIS paste format (D-04); patient name in file names (D-44).
 
 ---
 
 ## 7. Persistence
 
-Observed: **none** in any prototype. No localStorage, IndexedDB, or backend.
-Closing the tab loses everything. Proposed: depends on D-03 (single laptop vs
-several workstations) and D-05 (Vorbefund comparison).
+Observed: **none** in any prototype.
+
+Target (CLAUDE.md): SQLite via better-sqlite3, continuous autosave, separate
+`test.db` / `live.db` with no import path between them; source PDFs stored in
+the same mode-partitioned file (gateway §2.3). Single install on Windows.
+Multi-workstation use is still open (D-03).
 
 ---
 
-## 8. Model usage (shared policy)
+## 8. Model usage
 
-Observed: only TTE calls a model (Google Gemini, browser-side, key inlined
-into the bundle by `vite.config.ts` in **all four** prototypes). Details:
-SPEC-modules §TTE-3 and SPEC-textgen §X.
+Observed: only TTE calls a model (Google Gemini, from the browser, key inlined
+into the bundle; all four `vite.config.ts` files inline a key).
+Details: SPEC-modules TTE A.2, SPEC-textgen §X and §G-4.
 
-Policy (from the project brief, restated):
-
-1. The model may only **extract** values from a source document into fields.
-2. Every sentence in the report comes from a deterministic rule in SPEC-textgen.
-3. Extracted values are shown as *unconfirmed* until the user accepts them (proposed).
-4. The API key must never ship in client code (⚠ it does in all prototypes today).
-5. Sending documents that contain patient identifiers to an external model
-   needs a data-protection decision first (D-06).
+Target (CLAUDE.md, gateway): extraction only, through the single gateway module
+(the only network egress); providers Mock / Mistral OCR (`TESTBETRIEB`) /
+self-hosted Mistral OCR (`ECHTBETRIEB`); every value arrives unconfirmed with
+page + bounding box + raw text + confidence, or is discarded; key in Electron
+`safeStorage`. **Nothing from the prototype's Gemini integration carries over**
+except the label hints.
 
 ---
 
 ## 9. Shared vocabulary (observed variants)
-
-Severity words differ between modules and even within TTE:
 
 | Concept | TTE variants | TEE variants |
 |---|---|---|
@@ -182,6 +187,18 @@ Severity words differ between modules and even within TTE:
 | severe | `hochgradig`, `hochgradige`, `schwer`, `deutlich eingeschränkt` | `Hochgradig`, `Grad III (hoch)`, `Schwer reduziert` |
 | normal | `normal`, `normwertig`, `normal dimensioniert`, `zart` | `Normal`, `Zart`, `Keine` |
 
-Proposed: one controlled vocabulary with declined forms generated by the
-grammar layer (D-17). Grades in the summary: `I°`, `II°`, `III°` (TTE today
-emits `I` without ° for stenoses — see TTE flags).
+Open: one controlled vocabulary with declined forms (D-17). The gateway example
+uses "leichtgradig / mittelgradig / hochgradig reduziert".
+
+---
+
+## 10. Data-entry features the prototypes already hint at
+
+| Target feature (CLAUDE.md) | Prototype precedent |
+|---|---|
+| "Alles normal" per section | TTE "Normale TTE vorbefüllen", TEE "Normale TEE" (whole study; do not clear numbers) |
+| Conditional visibility | every prototype (details shown per grade/selection) |
+| Out-of-range highlight, never blocked | TTE amber/red input highlighting (TTE-H01…H17) |
+| Presets | SM "Vitatron Standard" / "Abbott Standard" |
+| Live derived values | TTE live HF-PEFF panel (but see D-48) |
+| Keyboard-first | ⚠ none — all prototypes use mouse dropdowns (TTE/TEE custom `<a>` menus are not keyboard-accessible) |
