@@ -121,9 +121,12 @@ Report footer names the examiner (SPEC-carotis §8).
 - The draft Beurteilung is composed from templates on structured fields and is
   **fully editable**; the physician's edit is stored and wins.
 - It reports back what was recorded; it forms no opinion.
-- **No therapy or device-programming recommendations, anywhere.** This affects
-  the TTE Empfehlung blocks, CV section 6, and possibly the SM post-op orders,
-  the TEE TEER sentences and the Carotis "Verlaufskontrolle" (D-49).
+- **Recommendations only as physician-selected text blocks** from a reviewed
+  library (each with source and review date); never inserted, preselected or
+  triggered automatically from values, scores or classifications (CLAUDE.md,
+  D-49). This covers the TTE Empfehlung blocks, CV section 6, SM post-op
+  orders, TEE TEER sentences, Carotis "Verlaufskontrolle" and the Device
+  follow-up sentence.
 - Heading word: SPEC-carotis uses "Beurteilung"; the prototypes use "Zusammenfassung" (D-43).
 
 ---

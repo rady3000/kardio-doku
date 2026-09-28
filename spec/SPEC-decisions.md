@@ -54,7 +54,7 @@ Status tags:
 
 **D-19 Prostheses — OPEN.** Add a prosthesis-function field instead of the fixed "in regelrechter Funktion"?
 
-**D-20 Empfehlung Textbausteine — PARTLY** (see D-49). Therapy recommendations are forbidden, so the "Herzinsuffizienz" block (one patient's letter) cannot be carried over. Remaining: drop the whole feature?
+**D-20 Empfehlung Textbausteine — PARTLY** (see D-49). Recommendations are allowed as physician-inserted library blocks. Remaining: the "Herzinsuffizienz" block describes one patient (activity, Klinikum Chemnitz) — rewrite it as a general block, keep it as is, or keep both? Supply the VHF and MI blocks (currently placeholders)?
 
 **D-21 RV measurement — OPEN.** Which RV value is `rv` (RVD1, RVD2, length, RVOT)?
 
@@ -74,7 +74,7 @@ Status tags:
 
 **D-28 Unreported TEE inputs — OPEN.** Include `ak_jet`, `mk_jet`, `mk_2d_pisa`, `mk_2d_eroa` in the text, or drop the fields?
 
-**D-29 TEER suitability — ANSWERED** (rule 5: physician-assigned, criteria may be displayed). Whether a suitability sentence may appear at all → D-49.
+**D-29 TEER suitability — ANSWERED** (rule 5: physician-assigned, criteria may be displayed). Suitability sentences follow your assigned grade (D-49 d).
 
 **D-30 Sedation — OPEN.** One shared sedation block for TEE and CV (drugs, doses, tolerance, complications)?
 
@@ -98,7 +98,7 @@ Status tags:
 
 **D-38 Shock protocol — OPEN.** Energy per shock and number of shocks as fields for every outcome?
 
-**D-39 Anticoagulation text — PARTLY** (see D-49). If recommendations are excluded, CV-R01 disappears. If a factual statement remains (e.g. "OAK mit {Wirkstoff} seit ≥ 3 Wochen"), which facts are documented?
+**D-39 Anticoagulation text — PARTLY** (see D-49). CV-R01 may no longer choose the anticoagulation sentence automatically from the score; the sentences become library blocks you insert. Remaining: update their content (CHA₂DS₂-VASc vs ESC 2024 CHA₂DS₂-VA; "4 Wochen" vs ≥ 3 weeks; score 0/1 wording), and which facts are documented (e.g. "OAK mit {Wirkstoff} seit …")?
 
 **D-40 Sex — OPEN.** Shared sex field with no default; include "divers" — then which cut-offs and grammar?
 
@@ -122,14 +122,14 @@ Status tags:
 
 **D-48 Multi-finding scores (rule 5) — OPEN.** Rule 5 affects the HFA-PEFF score (TTE-R10…R13), and possibly the RAP estimate (VCI + collapse) and CHA₂DS₂-VASc. May a multi-input *score* be shown as a display-only derived value (like `aci_acc_ratio` in Carotis), as long as it generates no text? *(Vorschlag: yes, display-only, never in the report.)*
 
-**D-49 "No therapy recommendations" vs prototype content — OPEN.** Which of these survive, if any?
-(a) TTE "Empfehlung" blocks (HI/VHF/MI);
-(b) CV section 6 entirely — OAK continuation, CHA₂DS₂-VASc statement, antiarrhythmics, β-blocker, weight loss, PVI, amiodarone loading, rate target < 110/min;
-(c) SM "Weiteres Vorgehen" (Sandsack/Bettruhe, Röntgen, Entlassung) and "Wundversorgung" (Fäden durch Hausarzt) — procedural orders rather than therapy?;
-(d) TEE M-TEER/T-TEER suitability sentences;
-(e) SPEC-carotis `verlaufskontrolle` ("Empfohlene Verlaufskontrolle") — your own spec contains a recommendation field;
-(f) Device: "Die nächste Kontrolle wird in 6-8 Wochen beim niedergelassenen Kardiologen empfohlen." and the badge texts "Optimierung empfohlen", "Vektorwechsel vorgeschlagen!" (device-programming advice).
-*(Vorschlag: keep (c) as documentation of orders given; drop (a), (b), the recommending wording of (d) and the badge advice in (f); confirm (e) and whether a follow-up interval may be documented as a plain fact, e.g. "Nächste Kontrolle: {Intervall}".)*
+**D-49 Recommendations — ANSWERED (2026-09-28).** The CLAUDE.md rule "No therapy or device-programming recommendations, anywhere, ever" is replaced by: *recommendations only as physician-selected text blocks from a reviewed library (each with source and review date); the app never inserts, preselects or triggers a recommendation automatically from values, scores or classifications; warning labels stay neutral ("außerhalb des Referenzbereichs") and give no advice.* Consequences:
+(a) TTE Empfehlung blocks → library blocks, inserted by you. Content still to review (D-20).
+(b) CV section 6 → library blocks, inserted by you. The automatic, score-dependent OAC sentence (CV-R01) and the always-on β-blocker sentence are not allowed as automatic text. Content still to review (D-39).
+(c) SM "Weiteres Vorgehen" / "Wundversorgung" → kept; each order is a block you select (as the checkboxes already work).
+(d) TEE TEER suitability sentences → allowed, only following your assigned suitability (D-29).
+(e) Carotis "Empfohlene Verlaufskontrolle" → compliant (physician-selected).
+(f) Device → the fixed "nächste Kontrolle in 6-8 Wochen" sentence is not inserted automatically (becomes a block or fact field, D-63); badge advice ("Optimierung empfohlen", "Vektorwechsel vorgeschlagen!") is removed, labels neutral (D-61).
+All prototype recommendation texts remain available verbatim in SPEC-textgen.
 
 **D-50 Extraction bounds — OPEN.** Every extractable field needs `expectedUnit` and `plausibleRange` (gateway §3.4). The prototype has none. Will you provide them for the ~27 TTE fields (and later Device), or should I draft a table for you to correct?
 
@@ -160,7 +160,7 @@ Status tags:
 
 **D-62 Device conclusion — OPEN.** The prototype always writes "Regelrechte Abfrage", "Regelrechte Messwerte" and "Zusammenfassend regelrechte Funktion des Aggregats ohne Anhalt für Sonden- oder Wahrnehmungsstörungen." — even with critical values. Under rule 5 this is a multi-finding judgement → physician-assigned select (e.g. "regelrechte Funktion" / "Auffälligkeit: …"), with export blocked or warned when a highlighted value conflicts?
 
-**D-63 Follow-up interval — OPEN.** The "Nächstes Kontrollintervall" field is ignored by the prototype text. Document it as a fact field (tied to D-49 f)?
+**D-63 Follow-up interval — OPEN.** The "Nächstes Kontrollintervall" field is ignored by the prototype text. Document it as a fact field ("Nächste Kontrolle: {Intervall}") or as a library block you insert (D-49 f)?
 
 **D-64 Section order — OPEN.** Keep your mnemonic order (Elf · Bunte · Elefanten · Sitzen · Silvester · [ICD] · [CRT] · Beim · Prosecco · Dinner) as the section and tab order of the Device form, with the mnemonic labels shown or not?
 

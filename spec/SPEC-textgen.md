@@ -26,14 +26,14 @@ conversion to `reference/*.json` needs the physician's cut-offs, `source` and
 | TTE-H01…H17 | out-of-range highlight | yes | no | no | convertible as normal ranges |
 | TTE-R10…R13 HFA-PEFF | score → sentence | **no** | no ("ESC Leitlinien" in UI text only) | no | **not allowed as auto text** (D-48) |
 | TTE-T* qualitative sentences | selection → sentence | n/a (physician-chosen) | n/a | no | templates; allowed |
-| TTE-B Empfehlung blocks | selection → paragraph | n/a | no | **yes** | **excluded** (D-49) |
-| TEE-T*/TEE-S | selection → sentence | n/a | n/a | TEER suitability borderline | templates; D-49 for TEER sentences |
-| SM-T* | selection → sentence | n/a | n/a | post-op orders (SM-T17…T22) | templates; D-49 |
-| CV-R01 | score → recommendation | yes (score) | no | **yes** | **excluded** (D-39, D-49) |
-| CV-T18…T24 | selection → recommendation | n/a | n/a | **yes** | **excluded** (D-49) |
-| DEV-B01…B06 badges | band → highlight + text | yes | no | B03, B06 give programming advice | highlight convertible; badge wording to be reviewed (D-49, D-61) |
+| TTE-B Empfehlung blocks | selection → paragraph | n/a | no | **yes** | text-block library, physician-inserted (D-49); content review D-20 |
+| TEE-T*/TEE-S | selection → sentence | n/a | n/a | TEER suitability sentences | templates; TEER sentences only after the physician-assigned grade (D-29, D-49) |
+| SM-T* | selection → sentence | n/a | n/a | post-op orders (SM-T17…T22) | templates; orders = physician-selected blocks (D-49) |
+| CV-R01 | score → recommendation | yes (score) | no | **yes** | **automatic triggering not allowed** — the wording may survive only as physician-selected blocks (D-39, D-49) |
+| CV-T18…T24 | selection → recommendation | n/a | n/a | **yes** | text-block library, physician-inserted (D-49); content review D-39 |
+| DEV-B01…B06 badges | band → highlight + text | yes | no | B03, B06 give programming advice | highlight convertible; labels must become neutral (D-49, D-61) |
 | DEV-T01, T05, T10 "Regelrecht…" | fixed normal conclusion | **no** (all values) | n/a | no | **not allowed** as automatic text (rule 5) |
-| DEV-T11 follow-up | fixed recommendation | n/a | n/a | yes | D-49 |
+| DEV-T11 follow-up | fixed recommendation | n/a | n/a | yes | automatic insertion not allowed; physician-selected block or fact field (D-49, D-63) |
 | DEV `ahre`, `icdLastTherapy`, `indication` | model-written text | n/a | n/a | no | **excluded** — model prose (D-60) |
 
 ### G-2 Band semantics needed before conversion

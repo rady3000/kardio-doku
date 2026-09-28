@@ -185,7 +185,7 @@ Not a form field, extraction only: `tr_max_pg` (hint "TR maxPG", mmHg) → feeds
 | Field key | Label (DE) | Type | Notes |
 |---|---|---|---|
 | (generated) | Zusammenfassung | text | comma-joined fragments TTE-S; not editable in the prototype |
-| `empfehlung_disease` | Nachsorgepfad generieren für Krankheitsbild | select | Herzinsuffizienz; Vorhofflimmern; Myokardinfarkt → TTE-B blocks. ⚠ therapy recommendations — excluded by CLAUDE.md (D-49) |
+| `empfehlung_disease` | Nachsorgepfad generieren für Krankheitsbild | select | Herzinsuffizienz; Vorhofflimmern; Myokardinfarkt → TTE-B blocks. Allowed as physician-inserted library blocks (CLAUDE.md, D-49); content review D-20 |
 
 ## 13. Reference thresholds and classification
 
@@ -482,7 +482,7 @@ No patient header, no date, no examiner in the output.
 | F-04 | ⚠ Empty/placeholder handling: an **untouched** pocket, condition or indication prints the placeholder ("Klinisch zeigt sich die Aggregattasche aggregattasche.", "Der Patient Allgemeinzustand.", "bei Indikation ausw. implantiert.") because the code compares with different placeholder strings; the intended fallbacks are normal wording ("reizlos, unauffällig", "ist in gutem Allgemeinzustand und beschwerdefrei"); AHRE empty → "Keine relevanten AHRE/AT-Episoden detektiert." (D-18) |
 | F-05 | ⚠ "Der Patient …" — masculine fixed. (D-40) |
 | F-06 | ⚠ "Die nächste Kontrolle wird in 6-8 Wochen beim niedergelassenen Kardiologen empfohlen." — always; the "Nächstes Kontrollintervall" field is ignored; a recommendation (D-49). |
-| F-07 | ⚠ Badge texts give programming advice ("Vektorwechsel vorgeschlagen!", "Optimierung empfohlen") — CLAUDE.md forbids device-programming recommendations. (D-49) |
+| F-07 | ⚠ Badge texts give programming advice ("Vektorwechsel vorgeschlagen!", "Optimierung empfohlen") — CLAUDE.md requires neutral warning labels. (D-49) |
 | F-08 | ⚠ **Decimal-comma bug:** charge time and BiV % strip every non-digit except ".", so "8,4 s" → 84 → red; "94,5 %" → 945 → green ("Exzellent"). LV threshold "1,2 V" → 1. German reports use commas. |
 | F-09 | ⚠ LV threshold badge takes the **first** number in the string — "0.4 ms / 1.2 V" is evaluated as 0.4 V. |
 | F-10 | ⚠ Inconsistent reference values: shock impedance badge red at > 115 Ω, sidebar text "Defekt > 110 Ω"; LV impedance badge green 250–1500 Ω, code comment and sidebar "200 - 1500 Ω"; RA/RV impedance hint 250–1000 Ω vs sidebar "Bruch > 2000 Ω, Isolationsdefekt < 250 Ω" (1000–2000 undefined). |
@@ -676,7 +676,7 @@ Vanilla TypeScript, DOM-based (same pattern as TTE; `react` listed but unused); 
 | F-12 | "holosystolischer Rückfluss in den Pulmonalvenen" (standard: systolische Flussumkehr). |
 | F-13 | Summary thrombus statement depends on other findings. |
 | F-14 | "Normale TEE" does not clear numbers/text. |
-| F-15 | ⚠ M-TEER / T-TEER suitability sentences are close to a treatment recommendation (CLAUDE.md). (D-49) |
+| F-15 | M-TEER / T-TEER suitability sentences: allowed only as a consequence of the physician-assigned suitability, never derived automatically. (D-29, D-49) |
 
 ---
 ---
@@ -887,7 +887,7 @@ Sex (prototype initial **Männlich**) drives grammar → shared core, D-40.
 | `shock_count` | Anzahl Schocks | number | — | visible on failure; ⚠ NaN if cleared | 3 |
 | `skin_reaction` | Hautrötungen sichtbar? | boolean | — | | nein |
 
-## 6. Section: Empfehlungen ⚠ (therapy recommendations — CLAUDE.md, D-49)
+## 6. Section: Empfehlungen (physician-selected text blocks only — CLAUDE.md, D-49)
 
 | Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
 |---|---|---|---|---|---|
@@ -956,4 +956,4 @@ None.
 | F-09 | ⚠ Always-on: β-blocker recommendation; "ohne Komplikationen". |
 | F-10 | `anticoagulant_name` unused. |
 | F-11 | Default sex Männlich (TTE: weiblich). (D-40) |
-| F-12 | ⚠ The whole of section 6 (OAC, antiarrhythmics, PVI, amiodarone, rate control) is therapy recommendation, which CLAUDE.md forbids. (D-49) |
+| F-12 | ⚠ Section 6 (OAC, antiarrhythmics, PVI, amiodarone, rate control) is therapy recommendation: allowed only as physician-inserted library blocks; the automatic score-dependent OAC sentence (CV-R01) and the always-on β-blocker sentence are not allowed. (D-39, D-49) |

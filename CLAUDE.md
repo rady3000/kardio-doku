@@ -87,7 +87,13 @@ source PDF → extraction (model) → UNCONFIRMED values
   the baseline; extraction only pre-fills.
 - **Secrets.** API keys in Electron `safeStorage` only. Never in files, never
   in the repo, never in a shipped `.env`. Never print a key in output.
-- **No therapy or device-programming recommendations**, anywhere, ever.
+- **Recommendations only as physician-selected text blocks.** Therapy,
+  follow-up and device-programming recommendations may appear in a report
+  only as text blocks that I explicitly insert from a reviewed library (each
+  with source and review date, like the rule sets). The app never inserts,
+  preselects or triggers a recommendation automatically from values, scores
+  or classifications. Warning labels on input fields stay neutral
+  ("außerhalb des Referenzbereichs") and give no advice.
 - **Language.** UI and report text: German. Code, comments, identifiers,
   docs, commit messages: English.
 - **Platform.** Windows, installable as a single package.
