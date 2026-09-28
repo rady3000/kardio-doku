@@ -50,7 +50,7 @@ Status tags:
 
 **D-17 Grading vocabulary — OPEN.** One vocabulary for all modules? TR with 3 or 5 grades?
 
-**D-18 Unassessed structures — PARTLY.** "Empty is safe" and the explicit "Alles normal" action suggest an empty field must not produce normal wording. Remaining: should an empty structure be left out of the text, or written as "nicht beurteilt"?
+**D-18 Unassessed structures — ANSWERED (2026-09-28).** (A) An empty field produces **no** sentence; nothing is described as normal unless it was entered. Two additions keep entry fast: (1) "Alles normal" per section or for the whole study fills the normal defaults **explicitly** with one keystroke; (2) every selection list offers **"nicht beurteilbar"**, which writes an explicit sentence (e.g. "Die Trikuspidalklappe ist nicht beurteilbar."). Consequences: fixed normal sentences of the prototypes (TTE VCI sentence, TEE IAS/thrombus default, Device AHRE/pocket/condition defaults) become conditional on an entered value; combined summary phrases (e.g. "normale biventrikuläre Pumpfunktion") appear only if all their inputs were entered; hidden (conditionally invisible) fields never contribute text.
 
 **D-19 Prostheses — OPEN.** Add a prosthesis-function field instead of the fixed "in regelrechter Funktion"?
 
