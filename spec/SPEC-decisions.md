@@ -166,10 +166,9 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 
 ---
 
-**D-65 HFpEF criteria — details — ANSWERED except (n) (2026-09-28).**
+**D-65 HFpEF criteria — details — ANSWERED (2026-09-28).**
 (a) CLAUDE.md rule 5 amended with the TTE-R20 exception. (b) Count line always "{n} von 4 Kriterien für eine HFpEF sind erfüllt." (n = fulfilled), however many were assessable. (c) Peptide cut-offs SR NT-proBNP > 220 / BNP > 80; AF NT-proBNP > 660 / BNP > 240 pg/ml. (d) LVEF ≥ 50 %. (e, h) ≥ 1 criterion: peptide elevated → "Hinweis auf eine HFpEF."; peptide not elevated or not entered → "Hinweis auf eine diastolische Dysfunktion." (i) 0 criteria → "Kein Hinweis auf eine HFpEF." (f) Source ESC 2026 HF guideline, PMID 42661420. (k) Peptide cut-offs from Pieske B et al., Eur Heart J 2019;40:3297–3317, doi:10.1093/eurheartj/ehz641 (cut-offs only, no score). (g) New extractable field TR-Geschwindigkeit. (l) E/E' = the average value. (m) Vorhofflattern → AF cut-offs; AV-Block III → no HFpEF text at all.
-Still open:
-(n) Your first message asked for "at least 4 of the 6 measurements" before the HFpEF text is written. Does that minimum still apply? Example: only LVEF 60 % and E/e' 7 are entered → would the report say "0 von 4 Kriterien … erfüllt. Kein Hinweis auf eine HFpEF." based on one measurement? *(Vorschlag: minimum 4 of the 6 measurements for both lines; below that, no HFpEF text.)*
+(n) Minimum of 4 of the 6 measurements (LVMI, RWT, LAVI, E/e', sPAP, TR velocity) for both the count line and the conclusion sentence; below that, no HFpEF text.
 
 ## Reminders
 

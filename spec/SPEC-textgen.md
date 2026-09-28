@@ -437,9 +437,9 @@ RWT, LAVI, E/e', sPAP, TR velocity.
 
 Either marker suffices ("or").
 
-### R20.3 Report output (decided 2026-09-28; one condition open, D-65 n)
+### R20.3 Report output (decided 2026-09-28)
 
-**Precondition:** rhythm ≠ "AV-Block III" (AV-Block III → no HFpEF text at all:
+**Preconditions:** at least 4 of the 6 measurements (LVMI, RWT, LAVI, E/e', sPAP, TR velocity) entered — otherwise no HFpEF text (neither line); rhythm ≠ "AV-Block III" (AV-Block III → no HFpEF text at all:
 emergency situation, complete echo follows after treatment).
 
 1. **Count line** — always out of 4, however many criteria were assessable:
