@@ -40,7 +40,7 @@ Status tags:
 
 **D-12 LVMI boundary — ANSWERED (2026-09-28).** ≥ 95 g/m² (female) / ≥ 115 g/m² (male) (ESC 2026 Table 10).
 
-**D-13 Wall thickness — OPEN.** Prototype IVSd bands vs ASE/EACVI 2015; wording "hypertrophiert" vs "Wanddicke erhöht"; add PWd?
+**D-13 Wall thickness — PARTLY.** Grades decided (Lang 2015 normal ranges, Lang 2005 grades; SPEC-textgen R30-4). Remaining: category wording — "leicht/mittelgradig/hochgradig hypertrophiert" (prototype) or "… verdickt" / "Wanddicke leicht erhöht" (formally, hypertrophy is defined by LV mass)? Add a PWd field?
 
 **D-14 LVEF boundary — ANSWERED (2026-09-28).** Lang 2015 partitions: mild 41–51 (m) / 41–53 (w), moderate 30–40, severe < 30 → boundary 41 (SPEC-textgen R30-1, pending verification).
 
@@ -170,11 +170,12 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 (a) CLAUDE.md rule 5 amended with the TTE-R20 exception. (b) Count line always "{n} von 4 Kriterien für eine HFpEF sind erfüllt." (n = fulfilled), however many were assessable. (c) Peptide cut-offs SR NT-proBNP > 220 / BNP > 80; AF NT-proBNP > 660 / BNP > 240 pg/ml. (d) LVEF ≥ 50 %. (e, h) ≥ 1 criterion: peptide elevated → "Hinweis auf eine HFpEF."; peptide not elevated or not entered → "Hinweis auf eine diastolische Dysfunktion." (i) 0 criteria → "Kein Hinweis auf eine HFpEF." (f) Source ESC 2026 HF guideline, PMID 42661420. (k) Peptide cut-offs from Pieske B et al., Eur Heart J 2019;40:3297–3317, doi:10.1093/eurheartj/ehz641 (cut-offs only, no score). (g) New extractable field TR-Geschwindigkeit. (l) E/E' = the average value. (m) Vorhofflattern → AF cut-offs; AV-Block III → no HFpEF text at all.
 (n) Minimum of 4 of the 6 measurements (LVMI, RWT, LAVI, E/e', sPAP, TR velocity) for both the count line and the conclusion sentence; below that, no HFpEF text.
 
-**D-66 Chamber quantification — details — OPEN.**
-(a) **RV function rule** (TAPSE ≥ 17 and TASV ≥ 9.5 → normal) combines two values, which CLAUDE.md rule 5 reserves for you. Add it to the named exceptions (like the HFpEF sentence)? And what should the app write if one or both values are below the cut-off ("RV-Funktion eingeschränkt"? graded?), and if only one of the two is entered?
-(b) **Severity grades for LVEDD and IVSd:** to my knowledge Lang 2015 gives only normal ranges for LV diameters and wall thickness; the mild/moderate/severe partitions are from the 2005 recommendations (Lang et al., J Am Soc Echocardiogr 2005;18:1440–1463). Use the 2005 partitions, or classify only normal vs. dilated / increased?
-(c) **Aorta ascendens:** please supply the ESC 2024 cut-offs you use (absolute mm or indexed; sex/BSA-dependent) — I cannot reliably reproduce them.
-(d) **Verification:** all TTE-R30 values were drafted from memory, because the full texts are not available through PubMed. Please check each row against the paper tables.
+**D-66 Chamber quantification — ANSWERED (2026-09-28).** (a) RV function is a named exception in CLAUDE.md rule 5. With TAPSE and TASV both entered, the result follows TASV: ≥ 9.5 cm/s → normal (also with reduced TAPSE, e.g. after cardiac surgery with cardiopulmonary bypass); < 9.5 cm/s → eingeschränkt. With only one value entered: no sentence, value in the measurement table only. (b) Severity grades for LVEDD and IVSd from Lang 2005 (easier for non-cardiologists). (c) Aorta ascendens dilated from 40 mm (m) / 36 mm (w) — ESC 2024 (Mazzolai et al., Eur Heart J 2024;45:3538–3700, doi:10.1093/eurheartj/ehae179). (d) All TTE-R30 values verified by you. Follow-ups → D-67.
+
+**D-67 Chamber quantification — follow-ups — OPEN.**
+(a) **LVEDD gap:** the 2015 normal range ends at 58 mm (m) / 52 mm (w); the 2005 mild grade starts at 60 / 54 mm. A value in between (e.g. 59 mm in a man) would get no category. Close it by (1) using the 2005 normal limits (normal m < 60, w < 54), or (2) starting "leicht dilatiert" right above the 2015 limit (m > 58, w > 52)?
+(b) **Aorta:** is exactly 40 mm (m) / 36 mm (w) already "dilatiert" (≥), or only above (>)?
+(c) **RV sentences:** confirm "Die rechtsventrikuläre systolische Funktion ist normal." / "… ist eingeschränkt." — and should "eingeschränkt" be graded?
 
 ## Reminders
 
