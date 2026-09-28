@@ -399,6 +399,42 @@ TTE F-07). `INCONSISTENT` with TTE-H01 (≥ 12) and TTE-R11 (≥ 12).
 
 Sentence: `Die Wanddicke ist {word}. `
 
+## TTE-R30 Chamber quantification and aorta — auto-classification DRAFT (D-15)
+
+**Decided 2026-09-28:** all single-value parameters are classified
+automatically; the app pre-selects the term, the physician can override (the
+override wins). Sources chosen by the physician:
+- Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber
+  quantification by echocardiography in adults: an update from the ASE and the
+  EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014
+  (PMID 25712077; also J Am Soc Echocardiogr 2015;28:1–39, PMID 25559473).
+- Mazzolai L, Teixido-Tura G, Lanzi S, et al. 2024 ESC Guidelines for the
+  management of peripheral arterial and aortic diseases. Eur Heart J
+  2024;45:3538–3700. doi:10.1093/eurheartj/ehae179 (PMID 39210722).
+
+⚠ **All values below were drafted from memory.** The full texts are not
+available through PubMed, so no value has been checked against the source
+tables. Every row must be verified by the physician before `reviewedOn` is set.
+Bands are written half-open, pending D-52.
+
+| ID | Field | Categories and cut-offs (draft) | Source (to verify) | Notes |
+|---|---|---|---|---|
+| R30-1 | LVEF (%) | normal m ≥ 52 / w ≥ 54 · leicht reduziert 41–< 52 / 41–< 54 · mittelgradig reduziert 30–< 41 · hochgradig reduziert < 30 | Lang 2015, table of LVEF normal ranges and severity partitions (m 52–72, w 54–74; 41–51 / 41–53; 30–40; < 30) | identical to the prototype TTE-R01 → answers D-14 (boundary 41) |
+| R30-2 | LAVI (ml/m²) | normal ≤ 34 · leicht dilatiert 35–41 · mittelgradig 42–48 · hochgradig > 48 | Lang 2015, LA volume severity partitions | consistent with HFpEF criterion > 34 (SR) |
+| R30-3 | LVEDD (mm) | normal m 42–58 / w 38–52 | Lang 2015, normal ranges (m 42.0–58.4, w 37.8–52.2) | ⚠ to my knowledge Lang 2015 gives **no** mild/moderate/severe partitions for LV diameters; the 2005 recommendations did (m 60–63 / 64–68 / ≥ 69; w 54–57 / 58–61 / ≥ 62) → D-66 b |
+| R30-4 | IVSd (mm) | normal m 6–10 / w 6–9 | Lang 2015, normal wall thickness | ⚠ same issue: severity partitions (m 11–13 / 14–16 / ≥ 17; w 10–12 / 13–15 / ≥ 16) are from 2005 → D-66 b; wording D-13 |
+| R30-5 | LVESD (mm) | normal m 25–40 / w 22–35 | Lang 2015, normal ranges (m 25.0–39.8, w 21.6–34.8) | highlight only (no category field) |
+| R30-6 | RV basal diameter (mm) | normal ≤ 41 · dilatiert > 41 | Lang 2015, RV dimensions (RVD1 25–41) | field meaning D-21 |
+| R30-7 | RV function | **normal if TAPSE ≥ 17 mm AND TASV (S') ≥ 9.5 cm/s** (physician's rule) | Lang 2015 abnormal thresholds TAPSE < 17 mm, S' < 9.5 cm/s | ⚠ two inputs → rule 5 question and undefined cases, D-66 a |
+| R30-8 | VCI (mm) | normal ≤ 21 · dilatiert > 21 | Lang 2015 / Rudski 2010 | the RAP scheme (with collapse) stays D-16 |
+| R30-9 | Aorta ascendens (mm) | ⚠ **no draft** — values must come from the ESC 2024 guideline (absolute or indexed diameter, sex/BSA-dependent) | ESC 2024 aortic guideline | D-66 c |
+
+Not classified (no single-value source): LA diameter (mm) → highlight only or
+drop; RA size (no RA volume field exists) → manual selection unless a RAVI
+field is added.
+
+---
+
 ## TTE-R20 HFpEF echocardiographic criteria (replaces HFA-PEFF, D-48, D-65)
 
 **Decided 2026-09-28.** The HFA-PEFF score (TTE-R10…R13) is removed completely.

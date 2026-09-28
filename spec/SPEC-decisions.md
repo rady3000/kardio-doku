@@ -42,9 +42,9 @@ Status tags:
 
 **D-13 Wall thickness — OPEN.** Prototype IVSd bands vs ASE/EACVI 2015; wording "hypertrophiert" vs "Wanddicke erhöht"; add PWd?
 
-**D-14 LVEF boundary — OPEN.** 40 or 41 % between "leicht" and "mittelgradig"? (See also D-52: the gateway example uses 55/45/30.)
+**D-14 LVEF boundary — ANSWERED (2026-09-28).** Lang 2015 partitions: mild 41–51 (m) / 41–53 (w), moderate 30–40, severe < 30 → boundary 41 (SPEC-textgen R30-1, pending verification).
 
-**D-15 Numbers → qualitative terms — PARTLY.** Rule 5 allows single-value mappings (LVEDD → size category, LAVI → LA size, TAPSE → …) and forbids multi-finding grades (valve severity, PH probability). Remaining: do you want the single-value size categories auto-classified, and from which reference tables?
+**D-15 Numbers → qualitative terms — ANSWERED (2026-09-28).** All single-value parameters are classified automatically (pre-selected, physician can override; the override wins). Sources: Lang et al. 2015 (chamber quantification), ESC 2024 aortic guideline. RV function: normal if TAPSE ≥ 17 mm and TASV ≥ 9.5 cm/s. Draft tables: SPEC-textgen TTE-R30, pending your verification. Open points → D-66.
 
 **D-16 RAP / VCI — OPEN.** 5/10 vs ASE 3/8/15 (the ASE scheme needs a collapse field, and combines two values → derived value or physician choice?); one VCI cut-off; make the fixed VCI sentence conditional.
 
@@ -169,6 +169,12 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 **D-65 HFpEF criteria — details — ANSWERED (2026-09-28).**
 (a) CLAUDE.md rule 5 amended with the TTE-R20 exception. (b) Count line always "{n} von 4 Kriterien für eine HFpEF sind erfüllt." (n = fulfilled), however many were assessable. (c) Peptide cut-offs SR NT-proBNP > 220 / BNP > 80; AF NT-proBNP > 660 / BNP > 240 pg/ml. (d) LVEF ≥ 50 %. (e, h) ≥ 1 criterion: peptide elevated → "Hinweis auf eine HFpEF."; peptide not elevated or not entered → "Hinweis auf eine diastolische Dysfunktion." (i) 0 criteria → "Kein Hinweis auf eine HFpEF." (f) Source ESC 2026 HF guideline, PMID 42661420. (k) Peptide cut-offs from Pieske B et al., Eur Heart J 2019;40:3297–3317, doi:10.1093/eurheartj/ehz641 (cut-offs only, no score). (g) New extractable field TR-Geschwindigkeit. (l) E/E' = the average value. (m) Vorhofflattern → AF cut-offs; AV-Block III → no HFpEF text at all.
 (n) Minimum of 4 of the 6 measurements (LVMI, RWT, LAVI, E/e', sPAP, TR velocity) for both the count line and the conclusion sentence; below that, no HFpEF text.
+
+**D-66 Chamber quantification — details — OPEN.**
+(a) **RV function rule** (TAPSE ≥ 17 and TASV ≥ 9.5 → normal) combines two values, which CLAUDE.md rule 5 reserves for you. Add it to the named exceptions (like the HFpEF sentence)? And what should the app write if one or both values are below the cut-off ("RV-Funktion eingeschränkt"? graded?), and if only one of the two is entered?
+(b) **Severity grades for LVEDD and IVSd:** to my knowledge Lang 2015 gives only normal ranges for LV diameters and wall thickness; the mild/moderate/severe partitions are from the 2005 recommendations (Lang et al., J Am Soc Echocardiogr 2005;18:1440–1463). Use the 2005 partitions, or classify only normal vs. dilated / increased?
+(c) **Aorta ascendens:** please supply the ESC 2024 cut-offs you use (absolute mm or indexed; sex/BSA-dependent) — I cannot reliably reproduce them.
+(d) **Verification:** all TTE-R30 values were drafted from memory, because the full texts are not available through PubMed. Please check each row against the paper tables.
 
 ## Reminders
 
