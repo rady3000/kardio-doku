@@ -174,7 +174,7 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 
 **D-67 Chamber quantification — follow-ups — ANSWERED (2026-09-28).** (a) LVEDD: "leicht dilatiert" starts right above the 2015 normal limit (m > 58, w > 52 mm). (b) Aorta ascendens: dilated only above 40 mm (m) / 36 mm (w). (c) RV sentences "Die rechtsventrikuläre systolische Funktion ist normal." / "… ist eingeschränkt." approved, ungraded on purpose (clearer for non-cardiologists).
 
-**D-68 Wall thickness: which wall — OPEN.** With IVSd and PWd both entered, which value determines "leicht/mittelgradig/hochgradig hypertrophiert": (1) IVSd only (as the prototype), (2) the thicker of the two walls, or (3) one sentence per wall ("Das Septum ist …, die Hinterwand ist …")? Option 2 combines two values (CLAUDE.md rule 5 would need a third named exception).
+**D-68 Wall thickness: which wall — ANSWERED (2026-09-28).** Option 3: one sentence part per wall, e.g. "Das Septum ist leicht hypertrophiert, die Hinterwand ist normwertig." (SPEC-textgen R30-4b). No additional rule-5 exception needed.
 
 ## Reminders
 
