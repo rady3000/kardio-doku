@@ -36,22 +36,31 @@ conversion to `reference/*.json` needs the physician's cut-offs, `source` and
 | DEV-T11 follow-up | fixed recommendation | n/a | n/a | yes | automatic insertion not allowed; physician-selected block or fact field (D-49, D-63) |
 | DEV `ahre`, `icdLastTherapy`, `indication` | model-written text | n/a | n/a | no | **excluded** — model prose (D-60) |
 
-### G-2 Band semantics needed before conversion
+### G-2 Band semantics — decided (D-52, 2026-09-28)
 
-The gateway `ClassificationRule` bands use `min`/`max` without stating
-inclusivity. The gateway's own LVEF example (`min 55` / `min 45, max 54` /
-`min 30, max 44` / `max 29`) is contiguous only for integers: 54.5 % or
-29.5 % match **no** band and would silently produce no sentence (the exact
-failure §5.2.3 forbids). Prototype values are decimals (step 0.1/0.01).
-The prototype rules use half-open intervals (`≥ cut-off`), which are gap-free.
-→ D-52.
+**Rule:** a value exactly on a cut-off counts as **normal** (it belongs to the
+band on the normal side), unless the source explicitly states otherwise.
+Examples: aorta ascendens 40 mm (m) → normal, 40.1 → dilatiert; LAVI 34 →
+normal, 34.1 → dilated.
+**Source-stated exceptions** (the cut-off itself is abnormal / fulfilled):
+LVMI ≥ 95 (w) / ≥ 115 (m) g/m² (ESC 2026 Table 10).
+Where the source states "≥" on the normal side (LVEF ≥ 52/54 %, TAPSE ≥ 17 mm,
+TASV ≥ 9.5 cm/s), that is already consistent with the rule.
 
-### G-3 Condition dimension needed
+Consequence for the rule files: each boundary is stored with its value and the
+side it belongs to, so bands are contiguous over decimal values (the gateway
+§5.1 example with integer `min`/`max` would leave gaps such as 54.5 %; it is
+superseded by this rule).
 
-Several prototype band sets vary by sex (R01, R02, H02, H03, H04, H06) or
-rhythm (R12, H16, H17). The gateway `ClassificationRule` interface has one
-`field` and one band list — no condition such as `when: { sex: 'männlich' }`.
-→ D-51.
+### G-3 Condition dimension — decided (D-51, 2026-09-28)
+
+Band sets may depend on **sex** (LVEF, LVEDD, LVESD, IVSd, PWd, LVMI, aorta
+ascendens) and on **rhythm** (natriuretic peptides, LAVI in TTE-R20:
+Sinusrhythmus vs Vorhofflimmern/-flattern; AV-Block III excludes the HFpEF
+text). The rule files carry a condition per band set (e.g. `when: { sex:
+"männlich" }`, `when: { rhythm: "VHF" }`); the gateway `ClassificationRule`
+interface is extended accordingly when it is implemented. If the condition
+field (sex or rhythm) is empty, the rule produces no category (empty is safe).
 
 ### G-4 Extraction contract gap
 
@@ -424,7 +433,8 @@ Bands are written half-open, pending D-52.
 | R30-1 | LVEF (%) | normal m ≥ 52 / w ≥ 54 · leicht reduziert 41–< 52 / 41–< 54 · mittelgradig reduziert 30–< 41 · hochgradig reduziert < 30 | Lang 2015, table of LVEF normal ranges and severity partitions (m 52–72, w 54–74; 41–51 / 41–53; 30–40; < 30) | identical to the prototype TTE-R01 → answers D-14 (boundary 41) |
 | R30-2 | LAVI (ml/m²) | normal ≤ 34 · leicht dilatiert 35–41 · mittelgradig 42–48 · hochgradig > 48 | Lang 2015, LA volume severity partitions | consistent with HFpEF criterion > 34 (SR) |
 | R30-3 | LVEDD (mm) | normal m ≤ 58 / w ≤ 52 (2015) · leicht dilatiert m > 58–63 / w > 52–57 · mittelgradig m 64–68 / w 58–61 · hochgradig m ≥ 69 / w ≥ 62 (2005) | Lang 2015 normal ranges; Lang 2005 grades | gap closed by starting "leicht dilatiert" right above the 2015 limit (D-67 a) |
-| R30-4 | IVSd (mm) | normal m 6–10 / w 6–9 · leicht m 11–13 / w 10–12 · mittelgradig m 14–16 / w 13–15 · hochgradig m ≥ 17 / w ≥ 16 | Lang 2015 normal; Lang 2005 grades (consistent) | category wording D-13 |
+| R30-4 | IVSd (mm) | normal m 6–10 / w 6–9 · leicht hypertrophiert m 11–13 / w 10–12 · mittelgradig hypertrophiert m 14–16 / w 13–15 · hochgradig hypertrophiert m ≥ 17 / w ≥ 16 | Lang 2015 normal; Lang 2005 grades (consistent) | wording as in the prototype (D-13) |
+| R30-4b | PWd (mm) | same ranges as IVSd (normal m 6–10 / w 6–9; grades as R30-4) | Lang 2015 / 2005 (same ranges for septal and posterior wall) | new field (D-13); which wall determines the category → D-68 |
 | R30-5 | LVESD (mm) | normal m 25–40 / w 22–35 | Lang 2015, normal ranges (m 25.0–39.8, w 21.6–34.8) | highlight only (no category field) |
 | R30-6 | RV basal diameter (mm) | normal ≤ 41 · dilatiert > 41 | Lang 2015, RV dimensions (RVD1 25–41) | field meaning D-21 |
 | R30-7 | RV function | **Both TAPSE and TASV entered:** TASV ≥ 9.5 cm/s → normal (also when TAPSE < 17, e.g. after cardiac surgery with cardiopulmonary bypass); TASV < 9.5 cm/s → eingeschränkt. **Only one entered:** no RV-function sentence (the value appears in the measurement table only) | Lang 2015 thresholds TAPSE < 17 mm, S' < 9.5 cm/s; decision rule by the physician | CLAUDE.md rule 5 named exception. Sentences (approved, ungraded on purpose for readability by non-cardiologists, D-67 c): `Die rechtsventrikuläre systolische Funktion ist normal.` / `Die rechtsventrikuläre systolische Funktion ist eingeschränkt.` |

@@ -40,7 +40,7 @@ Status tags:
 
 **D-12 LVMI boundary — ANSWERED (2026-09-28).** ≥ 95 g/m² (female) / ≥ 115 g/m² (male) (ESC 2026 Table 10).
 
-**D-13 Wall thickness — PARTLY.** Grades decided (Lang 2015 normal ranges, Lang 2005 grades; SPEC-textgen R30-4). Remaining: category wording — "leicht/mittelgradig/hochgradig hypertrophiert" (prototype) or "… verdickt" / "Wanddicke leicht erhöht" (formally, hypertrophy is defined by LV mass)? Add a PWd field?
+**D-13 Wall thickness — ANSWERED (2026-09-28).** Wording "leicht / mittelgradig / hochgradig hypertrophiert" as in the prototype; grades Lang 2015 normal / Lang 2005 grades; new field PWd (posterior wall). Follow-up → D-68.
 
 **D-14 LVEF boundary — ANSWERED (2026-09-28).** Lang 2015 partitions: mild 41–51 (m) / 41–53 (w), moderate 30–40, severe < 30 → boundary 41 (SPEC-textgen R30-1, pending verification).
 
@@ -133,9 +133,9 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 
 **D-50 Extraction bounds — OPEN.** Every extractable field needs `expectedUnit` and `plausibleRange` (gateway §3.4). The prototype has none. Will you provide them for the ~27 TTE fields (and later Device), or should I draft a table for you to correct?
 
-**D-51 Conditional bands — OPEN.** Sex-specific (LVEF, IVSd, LVEDD, LVESD, LVMI) and rhythm-specific (BNP, NT-proBNP, LAVI) bands do not fit the gateway `ClassificationRule` (one field, one band list). Extend the interface with a condition (e.g. `when: { sex: "männlich" }`), or one rule file per sex/rhythm?
+**D-51 Conditional bands — ANSWERED (2026-09-28).** Sex- and rhythm-dependent cut-offs as already decided (e.g. LVEF by sex, natriuretic peptides by rhythm); rule files carry a condition per band set (SPEC-textgen G-3). Empty sex/rhythm → no category.
 
-**D-52 Band boundaries — OPEN.** The gateway LVEF example (min 55 / 45–54 / 30–44 / max 29) leaves decimal values such as 54.5 % in no band — silently no sentence, which gateway §5.2.3 forbids. Use half-open intervals (`min` inclusive, `max` exclusive) throughout? And the example cut-offs (55/45/30) differ from the prototype (52 m/54 f / 41 / 30) — which apply?
+**D-52 Band boundaries — ANSWERED (2026-09-28).** A value exactly on a cut-off counts as normal unless the source states otherwise (e.g. LVMI ≥ 95/115 is abnormal per ESC 2026). Bands are contiguous over decimals (SPEC-textgen G-2); the gateway §5.1 integer example is superseded.
 
 **D-53 Repository layout — OPEN.** Your upload landed in `kardio-doku/kardio-doku-starter/kardio-doku/` plus the zip. On my branch I moved CLAUDE.md, the two specs and the zip's `.gitignore` to the repository root (CLAUDE.md only works there). OK to also delete the leftover `kardio-doku/kardio-doku-starter.zip`? CLAUDE.md also refers to `PLAN.md`, which does not exist yet — should the next session draft it for your approval?
 
@@ -173,6 +173,8 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 **D-66 Chamber quantification — ANSWERED (2026-09-28).** (a) RV function is a named exception in CLAUDE.md rule 5. With TAPSE and TASV both entered, the result follows TASV: ≥ 9.5 cm/s → normal (also with reduced TAPSE, e.g. after cardiac surgery with cardiopulmonary bypass); < 9.5 cm/s → eingeschränkt. With only one value entered: no sentence, value in the measurement table only. (b) Severity grades for LVEDD and IVSd from Lang 2005 (easier for non-cardiologists). (c) Aorta ascendens dilated from 40 mm (m) / 36 mm (w) — ESC 2024 (Mazzolai et al., Eur Heart J 2024;45:3538–3700, doi:10.1093/eurheartj/ehae179). (d) All TTE-R30 values verified by you. Follow-ups → D-67.
 
 **D-67 Chamber quantification — follow-ups — ANSWERED (2026-09-28).** (a) LVEDD: "leicht dilatiert" starts right above the 2015 normal limit (m > 58, w > 52 mm). (b) Aorta ascendens: dilated only above 40 mm (m) / 36 mm (w). (c) RV sentences "Die rechtsventrikuläre systolische Funktion ist normal." / "… ist eingeschränkt." approved, ungraded on purpose (clearer for non-cardiologists).
+
+**D-68 Wall thickness: which wall — OPEN.** With IVSd and PWd both entered, which value determines "leicht/mittelgradig/hochgradig hypertrophiert": (1) IVSd only (as the prototype), (2) the thicker of the two walls, or (3) one sentence per wall ("Das Septum ist …, die Hinterwand ist …")? Option 2 combines two values (CLAUDE.md rule 5 would need a third named exception).
 
 ## Reminders
 

@@ -60,7 +60,8 @@ Sex (`weiblich`/`männlich`, prototype initial **weiblich**) drives the LVEF, IV
 
 | Field key | Label (DE) | Type | Unit | Allowed values / notes | Default (normal) |
 |---|---|---|---|---|---|
-| `ivsd` | IVSd | number | mm | integer step. Extractable. → TTE-R02, H01 | — |
+| `ivsd` | IVSd | number | mm | integer step. Extractable. → TTE-R30-4 | — |
+| `pwd` | PWd | number | mm | **new** (D-13). Extractable (label hints from sample reports, e.g. "LVPWd"). → TTE-R30-4b | — |
 | `lvedd` | LVEDD | number | mm | Extractable. → H02 | — |
 | `lvesd` | LVESD | number | mm | Extractable; hint "LVIDs". → H03 | — |
 | `lvef` | LVEF | number | % | Extractable; hints "LVEF_BiP_Q", "EF Biplane"; ignore "EF (Teich)", "EF (Cube)". → TTE-R01, H04 | — |
