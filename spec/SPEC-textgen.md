@@ -408,6 +408,75 @@ TTE F-07). `INCONSISTENT` with TTE-H01 (≥ 12) and TTE-R11 (≥ 12).
 
 Sentence: `Die Wanddicke ist {word}. `
 
+## TTE-R40 Tricuspid regurgitation — 5-grade scheme (D-17)
+
+**Decided 2026-09-28.** Source: Hahn RT, Zamorano JL. The need for a new
+tricuspid regurgitation grading scheme. Eur Heart J Cardiovasc Imaging
+2017;18(12):1342–1343. doi:10.1093/ehjci/jex139 — Table 1 "Proposed expansion
+of the 'Severe' grade" (supplied by the physician).
+
+| Variable | I leicht (mild) | II mittelgradig (moderate) | III hochgradig (severe) | IV massiv (massive) | V torrential |
+|---|---|---|---|---|---|
+| VC (biplane) | < 3 mm | 3–6.9 mm | 7–13 mm | 14–20 mm | ≥ 21 mm |
+| EROA (PISA) | < 20 mm² | 20–39 mm² | 40–59 mm² | 60–79 mm² | ≥ 80 mm² |
+| 3D VCA or quantitative EROA | — | — | 75–94 mm² | 95–114 mm² | ≥ 115 mm² |
+
+Use:
+- The **grade is physician-assigned** (multi-finding, CLAUDE.md rule 5). The
+  table is displayed next to the TR fields; the entered VC and EROA are
+  highlighted in the column they fall into. Nothing is preselected.
+- In TTE, VC and EROA are the usual inputs; 3D VCA is mainly TEE. When the
+  parameters disagree (e.g. VC 11 mm = III, EROA 65 mm² = IV) the physician may
+  assign an **intermediate grade** such as "III–IV"; the final grading is then
+  done by TEE.
+- Notation (D-69 a): all valve grades use ° — `TI III°`, intermediate `TI III–IV°`;
+  intermediate grades are allowed for every valve (e.g. `MI II–III°`).
+- Units: EROA and VCA in **mm²** here; the prototype TEE fields use cm² → one
+  unit to be fixed per field (conversion only in code).
+- The gaps between the written ranges (e.g. 6.9 → 7, 13 → 14 mm) are closed by
+  G-2 (a value up to the next written range belongs to the lower grade).
+
+## TTE-P Valve prostheses (D-19, D-69 b)
+
+New select field per valve (`ak_prothese_funktion`, `mk_…`, `tk_…`), visible
+when "Prothese: Ja". Replaces the fixed "in regelrechter Funktion".
+Values (approved): `regelrecht` · `erhöhter transprothetischer Gradient` ·
+`paravalvuläres Leck` · `transvalvuläre Insuffizienz` · `nicht beurteilbar`.
+
+First sentence (approved): `Zustand nach {Aorten|Mitral|Trikuspidal}klappenersatz ({Typ}), in loco typico und festsitzend.`
+
+Then, per valve:
+- **Aortic prosthesis:** the same measurements as for the native valve
+  (Vmax, dp max/mean, AÖF), plus the function value.
+- **Mitral and tricuspid prosthesis:** the **mean antegrade gradient**
+  (dp mean) is the key value for grading a prosthetic stenosis; same
+  formulation as the aortic prosthesis, without the aortic-only measurements.
+- Optional free-text field per prosthesis, appended verbatim.
+
+Draft for the second sentence (pending review, D-70 a):
+`Prothesenfunktion: {Wert} ({Messwerte}).` — e.g. "Prothesenfunktion: regelrecht (Vmax 2,4 m/s, dp max/mean 23/12 mmHg)."
+Empty function field → no statement on function (D-18).
+
+## TTE-M Measurement block in the report (D-23) — DRAFT, pending review
+
+Principle (physician): all prototype values plus the values added in the
+decision session, each shown **where it belongs clinically**, not in one flat
+list. Only entered values appear (D-18).
+
+| Report place | Values |
+|---|---|
+| Messwerte — Linker Ventrikel | LVEDD, LVESD, IVSd, PWd, LVEF, LVMI, RWT, 2D-GLS |
+| Messwerte — Diastolische Funktion | Mitral E, Mitral A, E/A, e' septal, e' lateral, E/e' (average) |
+| Messwerte — Vorhöfe / rechter Ventrikel | LA, LAVI, RV (PLAX), RVD1, RVD2, TAPSE, TASV, TR-Geschwindigkeit, sPAP (RVSP) |
+| Messwerte — Aorta / VCI | Aortenwurzel, Aorta ascendens, VCI |
+| Messwerte — Biomarker | NT-proBNP, BNP |
+| Aortenklappe paragraph | stenosis: Vmax, dp max/mean, AÖF · regurgitation: PHT, VC, jet width/LVOT, holodiastolic flow reversal |
+| Mitralklappe paragraph | regurgitation: VC, PISA radius, EROA, mechanism, jet · stenosis: dp max/mean |
+| Trikuspidalklappe paragraph | regurgitation: VC, EROA (PISA), jet, mechanism · stenosis: dp max/mean |
+
+Valve parameters are printed only in the paragraph of the lesion they
+quantify, and only when that lesion is present (grade entered ≠ keine).
+
 ## TTE-R30 Chamber quantification and aorta — auto-classification DRAFT (D-15)
 
 **Decided 2026-09-28:** all single-value parameters are classified
@@ -436,7 +505,8 @@ Bands are written half-open, pending D-52.
 | R30-4 | IVSd (mm) | normal m 6–10 / w 6–9 · leicht hypertrophiert m 11–13 / w 10–12 · mittelgradig hypertrophiert m 14–16 / w 13–15 · hochgradig hypertrophiert m ≥ 17 / w ≥ 16 | Lang 2015 normal; Lang 2005 grades (consistent) | wording as in the prototype (D-13) |
 | R30-4b | PWd (mm) | same ranges as IVSd (normal m 6–10 / w 6–9; grades as R30-4) | Lang 2015 / 2005 (same ranges for septal and posterior wall) | new field (D-13). One sentence part per wall (D-68): both entered → `Das Septum ist {Kategorie IVSd}, die Hinterwand ist {Kategorie PWd}.`; only one entered → only that part (`Das Septum ist {…}.` / `Die Hinterwand ist {…}.`); neither → no sentence. Normal category word: `normwertig` (as prototype TTE-R02) |
 | R30-5 | LVESD (mm) | normal m 25–40 / w 22–35 | Lang 2015, normal ranges (m 25.0–39.8, w 21.6–34.8) | highlight only (no category field) |
-| R30-6 | RV basal diameter (mm) | normal ≤ 41 · dilatiert > 41 | Lang 2015, RV dimensions (RVD1 25–41) | field meaning D-21 |
+| R30-6 | **RV Länge** — RV dimension in the parasternal long axis (label as on the physician's echo reports), mm | default measurement (D-21). Cut-off ⚠ not yet confirmed: draft normal ≤ 30 · dilatiert > 30 (Lang 2015 proximal RVOT PLAX 20–30 mm, from memory) → D-70 b | Lang 2015 | if dilated, RVD1 and RVD2 are added (R30-6b) |
+| R30-6b | RVD1 basal / RVD2 mid-cavity, apical 4CV (mm) | shown when R30-6 is dilated (conditional visibility). RVD1 normal ≤ 41 · dilatiert > 41; RVD2 normal ≤ 35 · dilatiert > 35 (both confirmed by the physician) | Lang 2015 | RV-size sentence: **RVD1 decides** when entered, otherwise RV Länge (D-69 c) |
 | R30-7 | RV function | **Both TAPSE and TASV entered:** TASV ≥ 9.5 cm/s → normal (also when TAPSE < 17, e.g. after cardiac surgery with cardiopulmonary bypass); TASV < 9.5 cm/s → eingeschränkt. **Only one entered:** no RV-function sentence (the value appears in the measurement table only) | Lang 2015 thresholds TAPSE < 17 mm, S' < 9.5 cm/s; decision rule by the physician | CLAUDE.md rule 5 named exception. Sentences (approved, ungraded on purpose for readability by non-cardiologists, D-67 c): `Die rechtsventrikuläre systolische Funktion ist normal.` / `Die rechtsventrikuläre systolische Funktion ist eingeschränkt.` |
 | R30-8 | VCI (mm) | normal ≤ 21 · dilatiert > 21 | Lang 2015 / Rudski 2010 | the RAP scheme (with collapse) stays D-16 |
 | R30-9 | Aorta ascendens (mm) | normal m ≤ 40 / w ≤ 36 · dilatiert m **> 40** / w **> 36** | ESC 2024 aortic guideline (Mazzolai et al.) | exactly 40 / 36 is normal (D-67 b) |

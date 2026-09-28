@@ -32,7 +32,7 @@ Status tags:
 
 **D-08 HFA-PEFF — ANSWERED (2026-09-28).** Removed completely; replaced by the ESC 2026 Table 10 criteria (see D-48).
 
-**D-09 Diastolic function — OPEN.** A diastolic grading algorithm integrates several values → physician-assigned under rule 5. Do you want a manual grade field (which categories), with the algorithm criteria table displayed alongside (like Carotis §6)?
+**D-09 Diastolic function — ANSWERED (2026-09-28).** No grading system. The statements "Hinweis auf eine HFpEF" / "Hinweis auf eine diastolische Dysfunktion" (TTE-R20) are sufficient.
 
 **D-10 E/e' — ANSWERED (2026-09-28).** The app does not calculate E/e'; it uses (and extracts) the value calculated by the echo machine. Septal e' and lateral e' are separate measurement fields with reference values < 7 / < 10 cm/s (highlight only). Sub-question in D-65 l.
 
@@ -48,21 +48,21 @@ Status tags:
 
 **D-16 RAP / VCI — OPEN.** 5/10 vs ASE 3/8/15 (the ASE scheme needs a collapse field, and combines two values → derived value or physician choice?); one VCI cut-off; make the fixed VCI sentence conditional.
 
-**D-17 Grading vocabulary — OPEN.** One vocabulary for all modules? TR with 3 or 5 grades?
+**D-17 Grading vocabulary — PARTLY (2026-09-28).** TR: 5-grade scheme of Hahn & Zamorano 2017 (Eur Heart J Cardiovasc Imaging 2017;18:1342–1343, doi:10.1093/ehjci/jex139), physician-assigned with the criteria table displayed; intermediate grades allowed; final grading by TEE (SPEC-textgen TTE-R40). Notation for all valves with ° incl. intermediate grades ("MI II–III°") → D-69 a. Status: ANSWERED.
 
 **D-18 Unassessed structures — ANSWERED (2026-09-28).** (A) An empty field produces **no** sentence; nothing is described as normal unless it was entered. Two additions keep entry fast: (1) "Alles normal" per section or for the whole study fills the normal defaults **explicitly** with one keystroke; (2) every selection list offers **"nicht beurteilbar"**, which writes an explicit sentence (e.g. "Die Trikuspidalklappe ist nicht beurteilbar."). Consequences: fixed normal sentences of the prototypes (TTE VCI sentence, TEE IAS/thrombus default, Device AHRE/pocket/condition defaults) become conditional on an entered value; combined summary phrases (e.g. "normale biventrikuläre Pumpfunktion") appear only if all their inputs were entered; hidden (conditionally invisible) fields never contribute text.
 
-**D-19 Prostheses — OPEN.** Add a prosthesis-function field instead of the fixed "in regelrechter Funktion"?
+**D-19 Prostheses — ANSWERED (2026-09-28).** Add a prosthesis-function field per valve. Draft values in SPEC-textgen TTE-P, pending review (D-69 b).
 
 **D-20 Empfehlung Textbausteine — ANSWERED (2026-09-28).** Make the "Herzinsuffizienz" block general (the Klinikum Chemnitz version suits your site, not other users). Draft: SPEC-textgen LIB-HI-01, pending your review. **Reminder: you will supply the VHF and MI blocks after the remaining questions.**
 
-**D-21 RV measurement — OPEN.** Which RV value is `rv` (RVD1, RVD2, length, RVOT)?
+**D-21 RV measurement — ANSWERED (2026-09-28).** Default: RV diameter in the parasternal long axis. If dilated, RVD1 and RVD2 (apical) are added as conditional fields. The field keeps the label "RV Länge" used on your echo reports (D-69 c); the "RVAWd" hint is questioned in D-70 c.
 
 **D-22 Units at extraction — ANSWERED** (gateway §4.3). A wrong unit discards the value; conversions only in code.
 
-**D-23 Measurement list — OPEN.** Which values appear in the report's measurement block, in what order and units? Compute E/A from E and A?
+**D-23 Measurement list — ANSWERED (2026-09-28).** All prototype values plus those added in the decision session; each shown where it belongs clinically (valve parameters only in the paragraph of the lesion they quantify). Draft layout: SPEC-textgen TTE-M, pending review (D-69 d).
 
-**D-24 TTE indications — OPEN.** Confirm the list and "Status praesens"; add others?
+**D-24 TTE indications — ANSWERED (2026-09-28).** List confirmed (Status praesens, Myokardinfarkt, Dyspnoe, Synkope, Schwindel / Präsynkope, Angina pectoris, vor Chemotherapie). Suggested additions → D-69 e.
 
 ## C. TEE
 
@@ -175,6 +175,18 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 **D-67 Chamber quantification — follow-ups — ANSWERED (2026-09-28).** (a) LVEDD: "leicht dilatiert" starts right above the 2015 normal limit (m > 58, w > 52 mm). (b) Aorta ascendens: dilated only above 40 mm (m) / 36 mm (w). (c) RV sentences "Die rechtsventrikuläre systolische Funktion ist normal." / "… ist eingeschränkt." approved, ungraded on purpose (clearer for non-cardiologists).
 
 **D-68 Wall thickness: which wall — ANSWERED (2026-09-28).** Option 3: one sentence part per wall, e.g. "Das Septum ist leicht hypertrophiert, die Hinterwand ist normwertig." (SPEC-textgen R30-4b). No additional rule-5 exception needed.
+
+**D-69 TTE follow-ups — ANSWERED (2026-09-28).**
+(a) All valve grades (TR included) use ° (e.g. "TI III°", "AS II°"); intermediate grades such as "MI II–III°" are allowed for every valve.
+(b) Prosthesis function values approved. First sentence: "Zustand nach Aortenklappenersatz ({Typ}), in loco typico und festsitzend." Aortic prosthesis: same measurements as the native valve (Vmax, dp max/mean, AÖF). Mitral/tricuspid prosthesis: mean antegrade gradient is the key value for prosthetic stenosis; same formulation without the aortic-only values. Optional free text per prosthesis (SPEC-textgen TTE-P).
+(c) RV size: RVD1 decides when entered, otherwise the parasternal long-axis value, labelled "RV Länge" (the label on your echo reports; the prototype mapping of "RV Länge" was correct in practice). RVD1 normal up to 41 mm, RVD2 up to 35 mm.
+(d) Measurement layout (SPEC-textgen TTE-M) approved.
+(e) Added indications: Vitienkontrolle · Vorhofflimmern (Erstdiagnose) · Präoperativ · V.a. Lungenembolie / Rechtsherzbelastung · Perikarderguss (Verlaufskontrolle) · Verlaufskontrolle unter / nach Chemotherapie · Z.n. Herzklappen-OP / Klappenersatz · Palpitationen · Sonstige (Freitext).
+
+**D-70 TTE follow-ups (2) — OPEN.**
+(a) **Prosthesis function sentence:** draft "Prothesenfunktion: {Wert} ({Messwerte})." — e.g. "Prothesenfunktion: regelrecht (Vmax 2,4 m/s, dp max/mean 23/12 mmHg)." OK?
+(b) **RV Länge cut-off:** normal up to which value? My draft (> 30 mm dilated) was based on the proximal RVOT in the parasternal long axis (Lang 2015), from memory.
+(c) **"RVAWd":** the prototype prompt also mapped "RVAWd" onto the same field. RVAWd normally means RV anterior wall thickness in diastole (a wall thickness, ~5 mm). Drop that hint, or does your echo machine use RVAWd differently?
 
 ## Reminders
 
