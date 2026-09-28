@@ -787,6 +787,63 @@ battery: `>5 Jahre ist exzellent; <3 Monate erfordert rasche Terminierung.`, `Au
 
 ---
 
+## LIB — Text-block library drafts (pending physician review)
+
+Per CLAUDE.md, recommendations appear only as blocks the physician inserts
+from a reviewed library; never inserted, preselected or triggered from values.
+Each block will carry `source` and `reviewedOn`. **Status of every block below:
+DRAFT — not approved.** Edits relative to the prototype are listed per block.
+
+### LIB-HI-01 Herzinsuffizienz (Erstdiagnose) — general version (D-20)
+
+Source text: TTE-B "Herzinsuffizienz". Edits: removed the patient-specific
+activity sentence and the site-specific referral (Klinikum Chemnitz,
+Casemanagement, Klinik für Innere Medizin I); everything else unchanged.
+
+```text
+Es handelt sich um eine Erstdiagnose einer Herzinsuffizienz. Folgendes Vorgehen wird angestrebt:
+Rekompensation: Fortführung der Rekompensationstherapie (i.v. Diurese, Bilanzierung der täglichen Ein- und Ausfuhr, tägliche Gewichtskontrolle sowie umtägige Elektrolytkontrollen).
+Therapieoptimierung: Einleitung bzw. Optimierung der leitliniengerechten Herzinsuffizienz-Therapie (ARNI, Beta-Blocker, Spironolacton und SGLT-2-Inhibitor).
+Invasive Diagnostik: Nach erfolgreicher Rekompensation Planung einer ambulanten, frühelektiven Koronarangiographie. Bei Ausschluss einer KHK wird im Verlauf die Durchführung eines Kardio-MRT zur weiteren Ätiologieklärung diskutiert.
+Verlauf: Eine echokardiographische und klinische Verlaufskontrolle in 3 Monaten ist in unserer Funktionsdiagnostik geplant. Sollte sich die LV-Pumpfunktion nach Sanierung (oder Ausschluss) einer KHK und unter optimierter Medikation nicht verbessert haben, wird die Indikation für eine Device-Therapie (Defibrillator / CRT-D/P) geprüft.
+```
+
+Review points: the therapy line describes HFrEF therapy (the block has no
+LVEF condition); "unserer Funktionsdiagnostik" is kept as house style.
+
+### LIB-VHF-01, LIB-MI-01 — to be supplied by the physician (reminder in D-20)
+
+### LIB-CV — Kardioversion anticoagulation blocks, ESC 2024 (D-39)
+
+Basis: 2024 ESC Guidelines for the management of atrial fibrillation
+(Van Gelder IC et al., Eur Heart J 2024;45:3314–3414): CHA₂DS₂-VA score
+(sex category removed; 0–8 points); OAC recommended at ≥ 2, to be considered at
+1; therapeutic OAC ≥ 3 weeks before elective cardioversion or TEE to exclude
+thrombus; OAC for ≥ 4 weeks after cardioversion, long-term according to
+thromboembolic risk. ⚠ Class/level details must be checked against the
+guideline text before `reviewedOn` is set. The physician chooses the block;
+the app shows the score but does not preselect.
+
+| ID | Replaces | Draft text |
+|---|---|---|
+| LIB-CV-01 | CV-T07 (ohne TEE) | `Auf die Durchführung einer transösophagealen Echokardiografie (TEE) zum Thrombusausschluss wurde verzichtet, da {Nom} die orale Antikoagulation mit {Wirkstoff} über mindestens die letzten 3 Wochen lückenlos und glaubhaft eingenommen hat.` |
+| LIB-CV-02 | CV-R01 success, general | `Antikoagulation: Wir empfehlen die Fortführung der oralen Antikoagulation mit {Wirkstoff} für mindestens 4 Wochen nach der Kardioversion. Über die Fortführung darüber hinaus wird anhand des individuellen Thromboembolierisikos (CHA₂DS₂-VA-Score) entschieden.` |
+| LIB-CV-03 | CV-R01 success, score ≥ 2 | `Antikoagulation: Bei einem CHA₂DS₂-VA-Score von {x} ist eine dauerhafte orale Antikoagulation mit {Wirkstoff} indiziert.` |
+| LIB-CV-04 | CV-R01 success, score 1 | `Antikoagulation: Wir empfehlen die Fortführung der oralen Antikoagulation mit {Wirkstoff} für mindestens 4 Wochen nach der Kardioversion. Bei einem CHA₂DS₂-VA-Score von 1 sollte eine dauerhafte orale Antikoagulation erwogen werden.` |
+| LIB-CV-05 | CV-R01 success, score 0 | `Antikoagulation: Wir empfehlen die Fortführung der oralen Antikoagulation mit {Wirkstoff} für mindestens 4 Wochen nach der Kardioversion. Bei einem CHA₂DS₂-VA-Score von 0 besteht darüber hinaus keine Indikation zur dauerhaften oralen Antikoagulation.` |
+| LIB-CV-06 | CV-R01 failure | `Antikoagulation: Die orale Antikoagulation mit {Wirkstoff} wird bei persistierendem {Vorhofflimmern\|Vorhofflattern} fortgeführt (CHA₂DS₂-VA-Score: {x}).` |
+
+Field change implied: `chadsvasc_score` → `cha2ds2_va_score` (0–8), label
+"CHA₂DS₂-VA-Score". Still open (D-39): an early-cardioversion pathway (AF
+duration < 24 h, without 3 weeks of OAC) — needed as a TEE-status option?
+
+### LIB-DEV-01 Follow-up interval (D-63)
+
+Not a recommendation block but a fact line, printed only if the field
+`next_follow_up` is filled: `Nächste Kontrolle: {Intervall}.` Replaces DEV-T11.
+
+---
+
 ## Band-set analysis summary
 
 | Rule set | Gaps | Overlaps | Inconsistencies |

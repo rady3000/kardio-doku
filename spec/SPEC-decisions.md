@@ -54,7 +54,7 @@ Status tags:
 
 **D-19 Prostheses — OPEN.** Add a prosthesis-function field instead of the fixed "in regelrechter Funktion"?
 
-**D-20 Empfehlung Textbausteine — PARTLY** (see D-49). Recommendations are allowed as physician-inserted library blocks. Remaining: the "Herzinsuffizienz" block describes one patient (activity, Klinikum Chemnitz) — rewrite it as a general block, keep it as is, or keep both? Supply the VHF and MI blocks (currently placeholders)?
+**D-20 Empfehlung Textbausteine — ANSWERED (2026-09-28).** Make the "Herzinsuffizienz" block general (the Klinikum Chemnitz version suits your site, not other users). Draft: SPEC-textgen LIB-HI-01, pending your review. **Reminder: you will supply the VHF and MI blocks after the remaining questions.**
 
 **D-21 RV measurement — OPEN.** Which RV value is `rv` (RVD1, RVD2, length, RVOT)?
 
@@ -98,7 +98,7 @@ Status tags:
 
 **D-38 Shock protocol — OPEN.** Energy per shock and number of shocks as fields for every outcome?
 
-**D-39 Anticoagulation text — PARTLY** (see D-49). CV-R01 may no longer choose the anticoagulation sentence automatically from the score; the sentences become library blocks you insert. Remaining: update their content (CHA₂DS₂-VASc vs ESC 2024 CHA₂DS₂-VA; "4 Wochen" vs ≥ 3 weeks; score 0/1 wording), and which facts are documented (e.g. "OAK mit {Wirkstoff} seit …")?
+**D-39 Anticoagulation text — ANSWERED (2026-09-28).** Use the ESC 2024 AF guideline (CHA₂DS₂-VA, ≥ 3 weeks OAC before CV or TEE, ≥ 4 weeks after). Drafts: SPEC-textgen LIB-CV-01…06, pending your review; you choose the block, the app never preselects from the score. Sub-question still open: add an early-cardioversion option (AF < 24 h) to the TEE status?
 
 **D-40 Sex — OPEN.** Shared sex field with no default; include "divers" — then which cut-offs and grammar?
 
@@ -160,9 +160,15 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 
 **D-62 Device conclusion — OPEN.** The prototype always writes "Regelrechte Abfrage", "Regelrechte Messwerte" and "Zusammenfassend regelrechte Funktion des Aggregats ohne Anhalt für Sonden- oder Wahrnehmungsstörungen." — even with critical values. Under rule 5 this is a multi-finding judgement → physician-assigned select (e.g. "regelrechte Funktion" / "Auffälligkeit: …"), with export blocked or warned when a highlighted value conflicts?
 
-**D-63 Follow-up interval — OPEN.** The "Nächstes Kontrollintervall" field is ignored by the prototype text. Document it as a fact field ("Nächste Kontrolle: {Intervall}") or as a library block you insert (D-49 f)?
+**D-63 Follow-up interval — ANSWERED (2026-09-28).** Plain fact: `Nächste Kontrolle: {Intervall}.`, printed only if filled (SPEC-textgen LIB-DEV-01).
 
 **D-64 Section order — OPEN.** Keep your mnemonic order (Elf · Bunte · Elefanten · Sitzen · Silvester · [ICD] · [CRT] · Beim · Prosecco · Dinner) as the section and tab order of the Device form, with the mnemonic labels shown or not?
+
+---
+
+## Reminders
+
+- After the remaining questions: you supply the text blocks **LIB-VHF-01 (Vorhofflimmern)** and **LIB-MI-01 (Myokardinfarkt)** (D-20).
 
 ---
 
