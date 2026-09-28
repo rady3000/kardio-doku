@@ -166,15 +166,10 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 
 ---
 
-**D-65 HFpEF criteria — details — PARTLY (2026-09-28).**
-Answered: (a) CLAUDE.md rule 5 amended with the named exception for the TTE-R20 HFpEF sentence. (c) Natriuretic-peptide cut-offs: SR NT-proBNP > 220 or BNP > 80 pg/ml; AF NT-proBNP > 660 or BNP > 240 pg/ml. (d) LVEF ≥ 50 %. (e) "Hinweis auf eine HFpEF." when the peptide is entered and elevated; "Hinweis auf eine diastolische Dysfunktion." when no peptide is entered. (f) Source: 2026 ESC HF Guidelines, Eur Heart J 2026, doi:10.1093/eurheartj/ehag100, PMID 42661420 (verified). (g) New extractable field TR-Geschwindigkeit (m/s).
+**D-65 HFpEF criteria — details — ANSWERED except (n) (2026-09-28).**
+(a) CLAUDE.md rule 5 amended with the TTE-R20 exception. (b) Count line always "{n} von 4 Kriterien für eine HFpEF sind erfüllt." (n = fulfilled), however many were assessable. (c) Peptide cut-offs SR NT-proBNP > 220 / BNP > 80; AF NT-proBNP > 660 / BNP > 240 pg/ml. (d) LVEF ≥ 50 %. (e, h) ≥ 1 criterion: peptide elevated → "Hinweis auf eine HFpEF."; peptide not elevated or not entered → "Hinweis auf eine diastolische Dysfunktion." (i) 0 criteria → "Kein Hinweis auf eine HFpEF." (f) Source ESC 2026 HF guideline, PMID 42661420. (k) Peptide cut-offs from Pieske B et al., Eur Heart J 2019;40:3297–3317, doi:10.1093/eurheartj/ehz641 (cut-offs only, no score). (g) New extractable field TR-Geschwindigkeit. (l) E/E' = the average value. (m) Vorhofflattern → AF cut-offs; AV-Block III → no HFpEF text at all.
 Still open:
-(b) Count line when fewer criteria are assessable. Your example "2 assessed → *2 von 4 Kriterien für HFpEF sind erfüllt*" mixes assessed and fulfilled. Which is it: (1) "{fulfilled} von 4" always, (2) "{fulfilled} von {assessed}", or (3) "{fulfilled} von 4 Kriterien erfüllt ({assessed} von 4 beurteilbar)"? And does the "at least 4 of the 6 measurements" requirement block the conclusion sentence only, or also the count line?
-(h) Peptide entered but **not** elevated, ≥ 1 criterion fulfilled, LVEF ≥ 50 %: which sentence — "Hinweis auf eine diastolische Dysfunktion", none, or another wording?
-(i) 0 criteria fulfilled (with ≥ 4 measurements available): no sentence, or e.g. "Kein Hinweis auf eine HFpEF."?
-(k) Source of the peptide cut-off figure (same ESC 2026 guideline? which table/figure?).
-(l) When a report lists several E/e' values (septal, lateral, average), which one is extracted into E/E'?
-(m) Rhythm "AV-Block III" and "Vorhofflattern": use the SR or the AF cut-offs?
+(n) Your first message asked for "at least 4 of the 6 measurements" before the HFpEF text is written. Does that minimum still apply? Example: only LVEF 60 % and E/e' 7 are entered → would the report say "0 von 4 Kriterien … erfüllt. Kein Hinweis auf eine HFpEF." based on one measurement? *(Vorschlag: minimum 4 of the 6 measurements for both lines; below that, no HFpEF text.)*
 
 ## Reminders
 

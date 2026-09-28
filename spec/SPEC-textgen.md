@@ -406,8 +406,11 @@ Sentence: `Die Wanddicke ist {word}. `
 **Source:** Køber L, Adamo M, Ruwald AC, et al.; ESC Guidelines Advisory Group.
 2026 ESC Guidelines for the management of heart failure. Eur Heart J. 2026 Aug
 28:ehag100. doi:10.1093/eurheartj/ehag100. PMID 42661420 (verified in PubMed
-2026-09-28). Echo criteria: **Table 10**. Natriuretic-peptide cut-offs: from the
-physician's screenshot (source of that figure to be confirmed, D-65 k).
+2026-09-28). Echo criteria: **Table 10**. Natriuretic-peptide cut-offs: Pieske B,
+Tschöpe C, de Boer RA, et al. How to diagnose heart failure with preserved
+ejection fraction: the HFA–PEFF diagnostic algorithm. Eur Heart J.
+2019;40(40):3297–3317. doi:10.1093/eurheartj/ehz641 — only the biomarker
+cut-offs are used, not the score.
 
 ### R20.1 Criteria (each a single threshold; thresholds exactly as Table 10)
 
@@ -415,7 +418,7 @@ physician's screenshot (source of that figure to be confirmed, D-65 k).
 |---|---|---|---|
 | R20-1 | LV-Hypertrophie | LVMI **≥ 95** g/m² (weiblich) / **≥ 115** g/m² (männlich) **OR** RWT **> 0.42** | `lvmi`, `rwt`, sex |
 | R20-2 | LA-Dilatation | LAVI **> 34** ml/m² (Sinusrhythmus) / **> 40** ml/m² (Vorhofflimmern) | `laesvi`, rhythm |
-| R20-3 | Erhöhte Wahrscheinlichkeit eines erhöhten LV-Füllungsdrucks | E/e' **> 9** in Ruhe | `e_e_prime` (value as reported by the echo machine, not calculated) |
+| R20-3 | Erhöhte Wahrscheinlichkeit eines erhöhten LV-Füllungsdrucks | E/e' **> 9** in Ruhe | `e_e_prime` = **average** E/e' as reported by the echo machine (not calculated) |
 | R20-4 | Erhöhter geschätzter systolischer PA-Druck | sPAP **> 35** mmHg **OR** TR-Geschwindigkeit in Ruhe **> 2.8** m/s | `rvsp`, `tr_vmax` |
 
 Footnote (information only, no rule): E/e' ≥ 15 is more specific, but less
@@ -430,22 +433,31 @@ RWT, LAVI, E/e', sPAP, TR velocity.
 | Rhythm | Elevated if |
 |---|---|
 | Sinusrhythmus | NT-proBNP **> 220** pg/ml **or** BNP **> 80** pg/ml |
-| Vorhofflimmern | NT-proBNP **> 660** pg/ml **or** BNP **> 240** pg/ml |
+| Vorhofflimmern / Vorhofflattern | NT-proBNP **> 660** pg/ml **or** BNP **> 240** pg/ml |
 
 Either marker suffices ("or").
 
-### R20.3 Report output (conditions still being finalised, D-65 b/h/i/j)
+### R20.3 Report output (decided 2026-09-28; one condition open, D-65 n)
 
-1. **Count line** — draft wording, pending review:
-   `{n} von 4 Kriterien für eine HFpEF sind erfüllt.` (n = fulfilled). Exact
-   meaning when fewer than 4 criteria are assessable: D-65 b.
+**Precondition:** rhythm ≠ "AV-Block III" (AV-Block III → no HFpEF text at all:
+emergency situation, complete echo follows after treatment).
+
+1. **Count line** — always out of 4, however many criteria were assessable:
+   `{n} von 4 Kriterien für eine HFpEF sind erfüllt.` (n = fulfilled criteria)
 2. **Conclusion sentence** (automatic; CLAUDE.md rule 5 exception; always
-   editable/removable), only if LVEF **≥ 50 %** and at least 1 criterion fulfilled:
-   - natriuretic peptide entered **and elevated** → `Hinweis auf eine HFpEF.`
-   - **no** natriuretic peptide entered → `Hinweis auf eine diastolische Dysfunktion.`
-   - natriuretic peptide entered but **not** elevated → ⚠ not yet defined (D-65 h)
-   - 0 criteria fulfilled → ⚠ not yet defined (D-65 i)
-   - LVEF < 50 % or not entered → no sentence.
+   editable/removable), LVEF **≥ 50 %**:
+
+| Criteria fulfilled | Natriuretic peptide | Sentence |
+|---|---|---|
+| ≥ 1 | entered, elevated (R20.2) | `Hinweis auf eine HFpEF.` |
+| ≥ 1 | entered, not elevated | `Hinweis auf eine diastolische Dysfunktion.` |
+| ≥ 1 | not entered | `Hinweis auf eine diastolische Dysfunktion.` |
+| 0 | any | `Kein Hinweis auf eine HFpEF.` |
+
+   LVEF < 50 % or not entered → no sentence.
+
+Band check: the table covers every combination of (criteria ≥ 1 / 0) ×
+(peptide elevated / not elevated / not entered) — no gap, no overlap.
 
 ### R20.4 Measurement reference values (highlight only, not HFpEF criteria)
 
