@@ -194,7 +194,8 @@ Not a form field, extraction only: `tr_max_pg` (hint "TR maxPG", mmHg) → feeds
 | TTE-R01 LVEF category | `lvef` (+ sex) | yes | yes |
 | TTE-R02 wall thickness | `ivsd` (+ sex) | yes | yes (wording D-13) |
 | TTE-H01…H17 out-of-range highlight | one field each | yes | yes (highlight only) |
-| TTE-R10…R13 HFA-PEFF | up to 8 fields | **no** | **no** as report text (D-48) |
+| TTE-R10…R13 HFA-PEFF | up to 8 fields | **no** | **removed** (D-48) |
+| TTE-R20 HFpEF criteria (ESC 2026 Table 10) | one threshold each | yes, per criterion | yes per criterion + count; conclusion sentence pending D-65 a |
 | LV/LA/RA/RV size from a dimension | one field | yes | yes, if you want it (D-15) |
 | Valve grades, PH probability | several | no | no — physician-assigned |
 

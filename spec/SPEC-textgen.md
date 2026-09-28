@@ -399,7 +399,48 @@ TTE F-07). `INCONSISTENT` with TTE-H01 (≥ 12) and TTE-R11 (≥ 12).
 
 Sentence: `Die Wanddicke ist {word}. `
 
-### TTE-R10 HFA-PEFF — functional domain (max 2)
+## TTE-R20 HFpEF echocardiographic criteria (replaces HFA-PEFF, D-48)
+
+**Decided 2026-09-28.** The HFA-PEFF score (TTE-R10…R13) is removed completely.
+Source: ESC 2026 Heart Failure Guidelines, **Table 10** "Simplified
+echocardiographic criteria for supporting objective evidence of heart failure
+with preserved ejection fraction" (excerpt supplied by the physician; full
+citation still needed for `source`, D-65 f).
+
+Each criterion is a single-value (or single-alternative) threshold → fulfilled /
+not fulfilled / not evaluable. Thresholds exactly as in Table 10:
+
+| ID | Criterion (DE label draft) | Fulfilled if | Inputs |
+|---|---|---|---|
+| R20-1 | LV-Hypertrophie | LVMI **≥ 95** g/m² (weiblich) / **≥ 115** g/m² (männlich) **OR** RWT **> 0.42** | `lvmi`, `rwt`, sex |
+| R20-2 | LA-Dilatation | LAVI **> 34** ml/m² (Sinusrhythmus) / **> 40** ml/m² (Vorhofflimmern) | `laesvi`, rhythm |
+| R20-3 | Erhöhte Wahrscheinlichkeit eines erhöhten LV-Füllungsdrucks | E/e' **> 9** in Ruhe | `e_e_prime` (average, D-10) |
+| R20-4 | Erhöhter geschätzter systolischer PA-Druck | sPAP **> 35** mmHg **OR** TR-Geschwindigkeit in Ruhe **> 2.8** m/s | `rvsp`, new field `tr_vmax` (m/s) |
+
+Table footnote (information only, no rule): E/e' ≥ 15 is more specific, but
+less sensitive, for the diagnosis of HFpEF.
+
+A criterion with an OR is fulfilled if either part is; it is *not evaluable*
+only if all its inputs are empty.
+
+**Report line (count, a fact):** draft wording, pending review:
+`{n} von {m} echokardiographischen Kriterien für eine HFpEF erfüllt.`
+(n = fulfilled, m = evaluable). Printed only if at least 4 criteria are
+evaluable and LVEF and a natriuretic peptide are present (physician's rule;
+exact condition D-65 b).
+
+**Conclusion sentence (physician's rule, NOT yet built — conflicts with CLAUDE.md
+rule 5, D-65 a):** if ≥ 1 criterion fulfilled **and** natriuretic peptide
+elevated **and** LVEF > 50 % → `Hinweis auf eine diastolische Dysfunktion.`
+(editable/removable before export).
+
+**Reference values for measurement (highlight only, not HFpEF criteria):**
+septal e' < 7 cm/s, lateral e' < 10 cm/s → out-of-range highlight (new fields
+`e_prime_septal`, `e_prime_lateral`, cm/s).
+
+---
+
+### TTE-R10 HFA-PEFF — functional domain (max 2) — ⚠ REMOVED (D-48), kept for reference only
 
 | Criterion | Major (2) | Minor (1) |
 |---|---|---|

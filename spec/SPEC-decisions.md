@@ -30,15 +30,15 @@ Status tags:
 
 ## B. TTE — clinical rules
 
-**D-08 HFA-PEFF — PARTLY** (see D-48). CLAUDE.md rule 5 forbids auto-classifying multi-finding judgements, so the prototype sentence "Hinweis auf diastolische Dysfunktion" from the score cannot stay. Remaining: keep the score as a display-only helper beside the fields, or drop it?
+**D-08 HFA-PEFF — ANSWERED (2026-09-28).** Removed completely; replaced by the ESC 2026 Table 10 criteria (see D-48).
 
 **D-09 Diastolic function — OPEN.** A diastolic grading algorithm integrates several values → physician-assigned under rule 5. Do you want a manual grade field (which categories), with the algorithm criteria table displayed alongside (like Carotis §6)?
 
-**D-10 E/e' — OPEN.** Average or septal? Separate septal e' / lateral e' fields?
+**D-10 E/e' — PARTLY.** Septal e' and lateral e' become separate measurement fields with reference values < 7 / < 10 cm/s (highlight only, not HFpEF criteria). Remaining: is E/e' for the HFpEF criterion (> 9) the **average** E/e'? Should the app calculate it from E and the mean of septal and lateral e' (E in m/s, e' in cm/s → unit conversion), or do you enter it?
 
-**D-11 LAVI in AF — OPEN.** Rhythm-specific LAVI bands (> 40 / 34–40 ml/m²) wanted?
+**D-11 LAVI in AF — ANSWERED (2026-09-28).** > 34 ml/m² in sinus rhythm, > 40 ml/m² in AF (ESC 2026 Table 10).
 
-**D-12 LVMI boundary — OPEN.** `>` or `≥` 115/95 g/m²?
+**D-12 LVMI boundary — ANSWERED (2026-09-28).** ≥ 95 g/m² (female) / ≥ 115 g/m² (male) (ESC 2026 Table 10).
 
 **D-13 Wall thickness — OPEN.** Prototype IVSd bands vs ASE/EACVI 2015; wording "hypertrophiert" vs "Wanddicke erhöht"; add PWd?
 
@@ -120,7 +120,7 @@ Status tags:
 
 ## G. New questions raised by CLAUDE.md and the gateway spec
 
-**D-48 Multi-finding scores (rule 5) — OPEN.** Rule 5 affects the HFA-PEFF score (TTE-R10…R13), and possibly the RAP estimate (VCI + collapse) and CHA₂DS₂-VASc. May a multi-input *score* be shown as a display-only derived value (like `aci_acc_ratio` in Carotis), as long as it generates no text? *(Vorschlag: yes, display-only, never in the report.)*
+**D-48 Multi-finding scores — ANSWERED (2026-09-28).** HFA-PEFF removed. Replaced by the four ESC 2026 Table 10 criteria, each a single threshold, with a count line in the report (SPEC-textgen TTE-R20). Open points → D-65.
 
 **D-49 Recommendations — ANSWERED (2026-09-28).** The CLAUDE.md rule "No therapy or device-programming recommendations, anywhere, ever" is replaced by: *recommendations only as physician-selected text blocks from a reviewed library (each with source and review date); the app never inserts, preselects or triggers a recommendation automatically from values, scores or classifications; warning labels stay neutral ("außerhalb des Referenzbereichs") and give no advice.* Consequences:
 (a) TTE Empfehlung blocks → library blocks, inserted by you. Content still to review (D-20).
@@ -165,6 +165,15 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 **D-64 Section order — OPEN.** Keep your mnemonic order (Elf · Bunte · Elefanten · Sitzen · Silvester · [ICD] · [CRT] · Beim · Prosecco · Dinner) as the section and tab order of the Device form, with the mnemonic labels shown or not?
 
 ---
+
+**D-65 HFpEF criteria — details — OPEN.**
+(a) **Rule conflict:** your rule "≥ 1 criterion + elevated natriuretic peptide + LVEF > 50 % → *Hinweis auf eine diastolische Dysfunktion*" makes the app write a judgement from several findings automatically. CLAUDE.md rule 5 forbids exactly that. Either amend rule 5 with an explicit exception for this sentence, or keep the sentence as a physician-inserted block with the criteria count shown next to it.
+(b) "At least 4 of them calculated": Table 10 has exactly 4 criteria, so this means **all four evaluable**? Or 4 of the 6 underlying measurements (LVMI, RWT, LAVI, E/e', sPAP, TR velocity)? What is printed when fewer are evaluable?
+(c) **Elevated natriuretic peptide:** which cut-offs — NT-proBNP and/or BNP, and are they rhythm-dependent (SR vs AF)? Table 10 gives none.
+(d) **LVEF:** > 50 % or ≥ 50 %?
+(e) **Wording:** Table 10 supports a diagnosis of *HFpEF*. The planned sentence says *diastolische Dysfunktion*, a narrower echocardiographic finding. Intended?
+(f) **Source:** full citation of the ESC 2026 HF guideline (authors, journal, year) for the `source` field — I cannot verify this guideline myself.
+(g) A new field **TR-Geschwindigkeit (m/s)** is needed for criterion R20-4; today only TR maxPG exists. Extractable from echo reports?
 
 ## Reminders
 
