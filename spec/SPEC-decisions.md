@@ -34,7 +34,7 @@ Status tags:
 
 **D-09 Diastolic function — OPEN.** A diastolic grading algorithm integrates several values → physician-assigned under rule 5. Do you want a manual grade field (which categories), with the algorithm criteria table displayed alongside (like Carotis §6)?
 
-**D-10 E/e' — PARTLY.** Septal e' and lateral e' become separate measurement fields with reference values < 7 / < 10 cm/s (highlight only, not HFpEF criteria). Remaining: is E/e' for the HFpEF criterion (> 9) the **average** E/e'? Should the app calculate it from E and the mean of septal and lateral e' (E in m/s, e' in cm/s → unit conversion), or do you enter it?
+**D-10 E/e' — ANSWERED (2026-09-28).** The app does not calculate E/e'; it uses (and extracts) the value calculated by the echo machine. Septal e' and lateral e' are separate measurement fields with reference values < 7 / < 10 cm/s (highlight only). Sub-question in D-65 l.
 
 **D-11 LAVI in AF — ANSWERED (2026-09-28).** > 34 ml/m² in sinus rhythm, > 40 ml/m² in AF (ESC 2026 Table 10).
 
@@ -166,14 +166,15 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 
 ---
 
-**D-65 HFpEF criteria — details — OPEN.**
-(a) **Rule conflict:** your rule "≥ 1 criterion + elevated natriuretic peptide + LVEF > 50 % → *Hinweis auf eine diastolische Dysfunktion*" makes the app write a judgement from several findings automatically. CLAUDE.md rule 5 forbids exactly that. Either amend rule 5 with an explicit exception for this sentence, or keep the sentence as a physician-inserted block with the criteria count shown next to it.
-(b) "At least 4 of them calculated": Table 10 has exactly 4 criteria, so this means **all four evaluable**? Or 4 of the 6 underlying measurements (LVMI, RWT, LAVI, E/e', sPAP, TR velocity)? What is printed when fewer are evaluable?
-(c) **Elevated natriuretic peptide:** which cut-offs — NT-proBNP and/or BNP, and are they rhythm-dependent (SR vs AF)? Table 10 gives none.
-(d) **LVEF:** > 50 % or ≥ 50 %?
-(e) **Wording:** Table 10 supports a diagnosis of *HFpEF*. The planned sentence says *diastolische Dysfunktion*, a narrower echocardiographic finding. Intended?
-(f) **Source:** full citation of the ESC 2026 HF guideline (authors, journal, year) for the `source` field — I cannot verify this guideline myself.
-(g) A new field **TR-Geschwindigkeit (m/s)** is needed for criterion R20-4; today only TR maxPG exists. Extractable from echo reports?
+**D-65 HFpEF criteria — details — PARTLY (2026-09-28).**
+Answered: (a) CLAUDE.md rule 5 amended with the named exception for the TTE-R20 HFpEF sentence. (c) Natriuretic-peptide cut-offs: SR NT-proBNP > 220 or BNP > 80 pg/ml; AF NT-proBNP > 660 or BNP > 240 pg/ml. (d) LVEF ≥ 50 %. (e) "Hinweis auf eine HFpEF." when the peptide is entered and elevated; "Hinweis auf eine diastolische Dysfunktion." when no peptide is entered. (f) Source: 2026 ESC HF Guidelines, Eur Heart J 2026, doi:10.1093/eurheartj/ehag100, PMID 42661420 (verified). (g) New extractable field TR-Geschwindigkeit (m/s).
+Still open:
+(b) Count line when fewer criteria are assessable. Your example "2 assessed → *2 von 4 Kriterien für HFpEF sind erfüllt*" mixes assessed and fulfilled. Which is it: (1) "{fulfilled} von 4" always, (2) "{fulfilled} von {assessed}", or (3) "{fulfilled} von 4 Kriterien erfüllt ({assessed} von 4 beurteilbar)"? And does the "at least 4 of the 6 measurements" requirement block the conclusion sentence only, or also the count line?
+(h) Peptide entered but **not** elevated, ≥ 1 criterion fulfilled, LVEF ≥ 50 %: which sentence — "Hinweis auf eine diastolische Dysfunktion", none, or another wording?
+(i) 0 criteria fulfilled (with ≥ 4 measurements available): no sentence, or e.g. "Kein Hinweis auf eine HFpEF."?
+(k) Source of the peptide cut-off figure (same ESC 2026 guideline? which table/figure?).
+(l) When a report lists several E/e' values (septal, lateral, average), which one is extracted into E/E'?
+(m) Rhythm "AV-Block III" and "Vorhofflattern": use the SR or the AF cut-offs?
 
 ## Reminders
 

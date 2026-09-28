@@ -79,7 +79,9 @@ Sex (`weiblich`/`männlich`, prototype initial **weiblich**) drives the LVEF, IV
 | `mitral_e` | Mitral E | number | m/s | 0.01 step. Extractable; hint "MV E". ⚠ no cm/s conversion (D-22) | — |
 | `mitral_a` | Mitral A | number | m/s | 0.01 step. Extractable; hint "MV A" | — |
 | `e_a_ratio` | E/A Verhältn. | number | — | 0.1 step. Extractable; hint "E/A". ⚠ entered, not derived (D-23) | — |
-| `e_e_prime` | E/E' | number | — | 0.1 step. Extractable; hints "E/E' Sept", "E/e' (Sep)" ⚠ septal vs average (D-10). → H08, R10 | — |
+| `e_e_prime` | E/E' | number | — | 0.1 step. Extractable; value as calculated by the echo machine, **not** calculated by the app (D-10). → TTE-R20-3 | — |
+| `e_prime_septal` | e' septal | number | cm/s | **new**. Reference: < 7 cm/s highlighted (TTE-R20.4) | — |
+| `e_prime_lateral` | e' lateral | number | cm/s | **new**. Reference: < 10 cm/s highlighted (TTE-R20.4) | — |
 | `diastole` | Diastolische Dysfunktion | select | — | kein Hinweis auf diastolische Dysfunktion; Hinweis auf diastolische Dysfunktion. ⚠ overwritten by the HFA-PEFF band on report generation (D-08, D-09) | kein Hinweis auf diastolische Dysfunktion |
 
 ## 5. Section: Vorhöfe, rechter Ventrikel, Pulmonaldruck
@@ -91,7 +93,8 @@ Sex (`weiblich`/`männlich`, prototype initial **weiblich**) drives the LVEF, IV
 | `rv` | RV | number | mm | Extractable; hints "RV Länge" (prioritised), "RVAWd" ⚠ D-21. → H12 | — |
 | `tapse` | TAPSE | number | mm | Extractable. → H13 | — |
 | `tasv` | TASV | number | cm/s | tricuspid annular S'. Extractable; hints "TV S'", "TDI S'". → H14 | — |
-| `rvsp` | RVSP | number | mmHg | Extractable (`rvsp`) or derived from `tr_max_pg` (§11). → H09, R10 | — |
+| `rvsp` | RVSP | number | mmHg | Extractable (`rvsp`) or derived from `tr_max_pg` (§11). → TTE-R20-4 | — |
+| `tr_vmax` | TR-Geschwindigkeit | number | m/s | **new, extractable** (D-65 g); label hints to be taken from sample reports. → TTE-R20-4 | — |
 | `la_diameter_qualitativ` | LA Diameter (qualitativ) | select | — | normal dimensioniert; leichtgradig dilatiert; mittelgradig dilatiert; hochgradig dilatiert. Text fallback if empty: "nicht beurteilt" | normal dimensioniert |
 | `ra_diameter` | RA Diameter (qualitativ) | select | — | normwertig; leicht dilatiert; mittelgradig dilatiert; hochgradig dilatiert. ⚠ text fallback "normwertig" (D-18) | normwertig |
 | `rv_diameter` | RV Diameter (qualitativ) | select | — | as `ra_diameter` ⚠ fallback "normwertig" | normwertig |
@@ -176,7 +179,7 @@ Not a form field, extraction only: `tr_max_pg` (hint "TR maxPG", mmHg) → feeds
 | Key | Label (DE) | Formula | Unit | Notes |
 |---|---|---|---|---|
 | `rvsp` (derived) | RVSP | `ceil(tr_max_pg) + RAP`; `RAP = 10` if `vci > 20` else `5` (empty VCI → 5) | mmHg | extraction-time only; ⚠ RAP scheme D-16 |
-| `hfpeff_score` | HF-PEFF Score | functional (0–2) + morphological (0–2) + biomarker (0–2), TTE-R10…R12 | points 0–6 | ⚠ multi-finding → display-only at most under CLAUDE.md rule 5 (D-48) |
+| `hfpef_criteria_count` | HFpEF-Kriterien erfüllt | number of fulfilled TTE-R20 criteria (0–4) | — | replaces the removed HFA-PEFF score (D-48) |
 | unit normalisation | — | cm → mm (`×10`) except tasv/mitral_e/mitral_a; TASV m/s → cm/s (`×100` if unit m/s or 0 < v < 3) | — | ⚠ in the new design a unit mismatch discards the value (gateway §4.3); conversion only in code (D-22) |
 | not derived | E/A; RWT, LVMI (need PWd + BSA); LAESVI (needs BSA) | — | — | ⚠ D-23 |
 

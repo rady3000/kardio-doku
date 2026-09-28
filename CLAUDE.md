@@ -68,6 +68,8 @@ source PDF → extraction (model) → UNCONFIRMED values
 5. **Auto-classify only single-value guideline mappings** (e.g. LVEF →
    category). Never multi-finding judgements (e.g. carotid stenosis grade):
    those stay physician-assigned, with the criteria table displayed alongside.
+   Exception: the HFpEF sentence per SPEC-textgen TTE-R20, inserted
+   automatically but always editable and removable.
 6. **Every generated sentence stays editable.** My edit is stored and wins.
 
 ## Hard constraints
