@@ -172,10 +172,7 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 
 **D-66 Chamber quantification — ANSWERED (2026-09-28).** (a) RV function is a named exception in CLAUDE.md rule 5. With TAPSE and TASV both entered, the result follows TASV: ≥ 9.5 cm/s → normal (also with reduced TAPSE, e.g. after cardiac surgery with cardiopulmonary bypass); < 9.5 cm/s → eingeschränkt. With only one value entered: no sentence, value in the measurement table only. (b) Severity grades for LVEDD and IVSd from Lang 2005 (easier for non-cardiologists). (c) Aorta ascendens dilated from 40 mm (m) / 36 mm (w) — ESC 2024 (Mazzolai et al., Eur Heart J 2024;45:3538–3700, doi:10.1093/eurheartj/ehae179). (d) All TTE-R30 values verified by you. Follow-ups → D-67.
 
-**D-67 Chamber quantification — follow-ups — OPEN.**
-(a) **LVEDD gap:** the 2015 normal range ends at 58 mm (m) / 52 mm (w); the 2005 mild grade starts at 60 / 54 mm. A value in between (e.g. 59 mm in a man) would get no category. Close it by (1) using the 2005 normal limits (normal m < 60, w < 54), or (2) starting "leicht dilatiert" right above the 2015 limit (m > 58, w > 52)?
-(b) **Aorta:** is exactly 40 mm (m) / 36 mm (w) already "dilatiert" (≥), or only above (>)?
-(c) **RV sentences:** confirm "Die rechtsventrikuläre systolische Funktion ist normal." / "… ist eingeschränkt." — and should "eingeschränkt" be graded?
+**D-67 Chamber quantification — follow-ups — ANSWERED (2026-09-28).** (a) LVEDD: "leicht dilatiert" starts right above the 2015 normal limit (m > 58, w > 52 mm). (b) Aorta ascendens: dilated only above 40 mm (m) / 36 mm (w). (c) RV sentences "Die rechtsventrikuläre systolische Funktion ist normal." / "… ist eingeschränkt." approved, ungraded on purpose (clearer for non-cardiologists).
 
 ## Reminders
 
