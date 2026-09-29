@@ -314,10 +314,12 @@ PDF (prototype): title "Echokardiographie Befund", "Patient: …" / "Datum: …"
 |---|---|---|---|---|---|
 | `patient_name` | Patienten-Identifikation | text | — | "z.B. Mustermann, Max". ⚠ never used in the report → shared core | — |
 | `query_date` | Datum der Nachsorge | date | — | ⚠ never used in the report | today |
-| `device_type` | Schrittmachermodus | select | — | 1-Kammer HSM (VVI); 2-Kammer HSM (DDD); 1-Kammer ICD (VVI-D); 2-Kammer ICD (DDD-D); CRT-D (Dreikammer ICD); CRT-P (Dreikammer HSM). Extractable. ⚠ label says "Modus", values are device types (D-56). Controls the ICD/CRT sections. | — |
+| `device_type` | Gerätetyp | select | — | VVI-SM; DDD-SM; VVI-ICD; DDD-ICD; CRT-P; CRT-D; S-ICD (D-56; the non-standard labels "VVI-D"/"DDD-D" are dropped). Extractable. Controls the ICD/CRT sections. | — |
+| `pacing_mode` | Programmierter Modus | select + free text | — | **new** (D-56): e.g. DDD; DDDR; VVI; VVIR; AAI; AAIR; DDI … (NBG code). Extractable (e.g. Medtronic "Betriebsart") | — |
 | `device_company` | Hersteller | select | — | Medtronic; Abbott; Vitatron; Boston Scientific; Microport; Biotronik. Extractable (normalised, §11) | — |
-| `device_model` | Modellnummer | text | — | "z.B. Sensia SEDR01". ⚠ **extracted** in the prototype — gateway §2.6.4 forbids extracting model numbers (D-55) | — |
-| `implantation_date` | Sterilisations-/Implantations-Datum | date | — | Extractable (hint "Implantiert:"). ⚠ sterilisation date ≠ implantation date (D-57) | — |
+| `device_model` | Modell | text | — | Extractable (D-55 — requires amending gateway §2.6.4, D-71) | — |
+| `device_serial` | Seriennummer | text | — | **new**; manual entry only, never extractable (gateway §2.6.4) | — |
+| `implantation_date` | Implantationsdatum | date | — | implantation date only (D-57). Extractable (hint "Implantiert:") | — |
 | `device_indication` | Indikation | select | — | AV-Block III°; AV-Block II° Mobitz; Sick-Sinus-Syndrom; Tachy-Brady-Syndrom; Andere. Extractable; an unmatched extracted value goes to "Andere" + free text | — |
 | `other_indication_text` | Spezifikation Indikation | text | — | visible if "Andere" | — |
 | `pocket_finding` | Aggregattasche | select | — | reizlos, unauffällig; Infektzeichen; Hämatom; Druckstelle. ⚠ placeholder bug (F-04, D-18) | — |
@@ -335,7 +337,8 @@ PDF (prototype): title "Echokardiographie Befund", "Patient: …" / "Datum: …"
 
 | Field key | Label (DE) | Type | Unit | Allowed values / notes | Default |
 |---|---|---|---|---|---|
-| `battery_status` | Restkapazität / Batteriestatus | text | ⚠ mixed (years / V / "OK" / ERI) | Extractable. Help text: "Biotronik: „Errechneter ERI". Medtronic: „Estimated longevity". Richtwerte: >5 Jahre ist exzellent; <3 Monate erfordert rasche Terminierung." ⚠ a bare number is printed as "{x} Jahre bis EOL" (D-58) | — |
+| `battery_remaining` | Restlaufzeit | number + unit | Jahre / Monate | Extractable (D-58) | — |
+| `battery_status` | Batteriestatus | select | — | OK; RRT/ERI erreicht; EOS (D-58). Extractable | — |
 
 ## 5. Section: „Elefanten" — Elektrodenstatus (Impedanz)
 

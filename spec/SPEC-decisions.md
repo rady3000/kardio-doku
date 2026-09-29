@@ -144,13 +144,13 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 
 ## H. Device-Abfrage (from the audit of HSM_Abfrage)
 
-**D-55 Device identity fields — OPEN.** Gateway §2.6.4 forbids extracting model and serial numbers; the prototype extracts the model. Keep manufacturer + device type extractable and model manual-only? Is the manufacturer itself allowed as an extractable field?
+**D-55 Device identity fields — ANSWERED (2026-09-29).** Manufacturer, device type and model are extracted (few models in the department). The serial number is entered by hand only. Extracting the model requires amending the gateway spec → D-71.
 
-**D-56 Device type vs pacing mode — OPEN.** The prototype field "Schrittmachermodus" holds device types (1-Kammer HSM … CRT-D), and Medtronic "Betriebsart" (a mode such as DDDR) is mapped onto it. Two separate fields: **Gerätetyp** and **programmierter Modus** (NBG code)? The labels "VVI-D"/"DDD-D" are not NBD codes — which labels do you want?
+**D-56 Device type vs pacing mode — ANSWERED (2026-09-29).** Two fields: Gerätetyp (VVI-SM, DDD-SM, VVI-ICD, DDD-ICD, CRT-P, CRT-D, S-ICD) and programmierter Modus (e.g. DDD, DDDR, VVIR, AAI). "VVI-D"/"DDD-D" dropped.
 
-**D-57 Implant date — OPEN.** The field is labelled "Sterilisations-/Implantations-Datum" — which date do you want? Is an implantation date acceptable in TESTBETRIEB documents at all (your anonymization list in gateway §2.6.2 removes the Untersuchungsdatum; the implant date is a similar quasi-identifier)?
+**D-57 Implant date — ANSWERED (2026-09-29).** Implantation date only (no sterilisation date); extracted.
 
-**D-58 Battery status — OPEN.** Today one free-text field mixes years, volts, "OK" and ERI dates; a bare number is printed as "Jahre bis EOL". Structure it as value + unit (Jahre / Monate / V) + status (OK / RRT / ERI / EOS)? Which term — RRT, ERI or EOL?
+**D-58 Battery status — ANSWERED (2026-09-29).** Restlaufzeit (number + unit Jahre / Monate) and Status as a choice: OK · RRT/ERI erreicht · EOS.
 
 **D-59 Medtronic "Sensing Threshold" — OPEN.** Your AI Studio instruction maps "Atrial/Ventricular Sensing Threshold" to the measured P/R amplitude. On many reports this label is the programmed sensitivity instead. Please confirm on a real (anonymized) Medtronic printout which value is meant.
 
@@ -188,6 +188,8 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 (b) RV Länge (parasternal long axis) normal up to and including 30 mm; dilated > 30 mm.
 (c) "RVAWd" removed completely.
 Correction to D-69 c: **RV Länge is the first value evaluated** and drives the RV-size sentence. If it is > 30 mm and RVD1/RVD2 were measured, they are added to the evaluation.
+
+**D-71 Gateway rule on model numbers — OPEN.** SPEC-extraction-gateway §2.6.4 says "Device serial numbers and model numbers are **never** extractable fields." D-55 wants the model extracted. Amend §2.6.4 to: "Device serial numbers are never extractable fields. The device model (name/number) may be extracted." — yes?
 
 ## Reminders
 
