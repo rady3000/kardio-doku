@@ -46,7 +46,7 @@ Status tags:
 
 **D-15 Numbers → qualitative terms — ANSWERED (2026-09-28).** All single-value parameters are classified automatically (pre-selected, physician can override; the override wins). Sources: Lang et al. 2015 (chamber quantification), ESC 2024 aortic guideline. RV function: normal if TAPSE ≥ 17 mm and TASV ≥ 9.5 cm/s. Draft tables: SPEC-textgen TTE-R30, pending your verification. Open points → D-66.
 
-**D-16 RAP / VCI — OPEN.** 5/10 vs ASE 3/8/15 (the ASE scheme needs a collapse field, and combines two values → derived value or physician choice?); one VCI cut-off; make the fixed VCI sentence conditional.
+**D-16 RAP / VCI — ANSWERED (2026-09-29).** sPAP is taken from the echo report; the app does not calculate sPAP or estimate RAP (the prototype's 5/10 mmHg rule is removed). New field "Atemabhängige Kaliberschwankung" (> 50 % / < 50 %). The VCI sentence is generated from diameter (normal ≤ 21 mm / dilatiert > 21 mm) and collapse, e.g. "Die V. cava inferior ist normalkalibrig (18 mm) mit atemabhängiger Kaliberschwankung > 50 %." (SPEC-textgen R30-8).
 
 **D-17 Grading vocabulary — PARTLY (2026-09-28).** TR: 5-grade scheme of Hahn & Zamorano 2017 (Eur Heart J Cardiovasc Imaging 2017;18:1342–1343, doi:10.1093/ehjci/jex139), physician-assigned with the criteria table displayed; intermediate grades allowed; final grading by TEE (SPEC-textgen TTE-R40). Notation for all valves with ° incl. intermediate grades ("MI II–III°") → D-69 a. Status: ANSWERED.
 

@@ -103,7 +103,7 @@ Sex (`weiblich`/`männlich`, prototype initial **weiblich**) drives the LVEF, IV
 | `rv_funktion` | RV-Systolische Funktion | select | — | normal; leicht reduziert; mittelgradig reduziert; hochgradig reduziert ⚠ fallback "normal" | normal |
 | `pulm_hypertonie` | Pulmonale Hypertonie | select | — | kein Hinweis; Hinweis. ⚠ not linked to `rvsp` (D-15) | kein Hinweis |
 
-Not a form field, extraction only: `tr_max_pg` (hint "TR maxPG", mmHg) → feeds the RVSP derivation.
+sPAP (`rvsp`) is taken as reported by the echo machine and extracted; the app does **not** calculate it (D-16). The prototype's `tr_max_pg` hint and RAP estimate are dropped.
 
 ## 6. Section: Aortenklappe
 
@@ -163,7 +163,8 @@ Not a form field, extraction only: `tr_max_pg` (hint "TR maxPG", mmHg) → feeds
 | `aortenwurzel` | Aortenwurzel | number | mm ⚠ unit not shown in UI | Extractable | — |
 | `aorta_ascendens_val` | Aorta asc. | number | mm ⚠ unit not shown | Extractable | — |
 | `aorta_ascendens` | Aorta ascendens | select | — | normwertig; dilatiert. Fallback "normwertig dimensioniert" | normwertig |
-| `vci` | VCI | number | mm | Extractable. → H15; feeds the RVSP derivation | — |
+| `vci` | VCI | number | mm | Extractable. → TTE-R30-8 | — |
+| `vci_kollaps` | Atemabhängige Kaliberschwankung | select | — | **new** (D-16): > 50 %; < 50 % | — |
 | `perikarderguss` | Perikarderguss (PE) | select | — | kein Perikarderguss; geringer Perikarderguss; mittelgroßer Perikarderguss; großer Perikarderguss | kein Perikarderguss |
 | `perikard_text` | Zusätzliche Ergussbeschreibung | free text | — | visible if PE ≠ kein | "" |
 | `herzhoehlen` | Kompression | select | — | Herzhöhlen entfaltet; RA komprimiert; RV komprimiert; LV komprimiert | — |
@@ -180,7 +181,7 @@ Not a form field, extraction only: `tr_max_pg` (hint "TR maxPG", mmHg) → feeds
 
 | Key | Label (DE) | Formula | Unit | Notes |
 |---|---|---|---|---|
-| `rvsp` (derived) | RVSP | `ceil(tr_max_pg) + RAP`; `RAP = 10` if `vci > 20` else `5` (empty VCI → 5) | mmHg | extraction-time only; ⚠ RAP scheme D-16 |
+| `rvsp` | sPAP (RVSP) | not derived — value from the echo report (D-16) | mmHg | the prototype's formula `ceil(tr_max_pg) + RAP (5/10)` is removed |
 | `hfpef_criteria_count` | HFpEF-Kriterien erfüllt | number of fulfilled TTE-R20 criteria (0–4) | — | replaces the removed HFA-PEFF score (D-48) |
 | unit normalisation | — | cm → mm (`×10`) except tasv/mitral_e/mitral_a; TASV m/s → cm/s (`×100` if unit m/s or 0 < v < 3) | — | ⚠ in the new design a unit mismatch discards the value (gateway §4.3); conversion only in code (D-22) |
 | not derived | E/A; RWT, LVMI (need PWd + BSA); LAESVI (needs BSA) | — | — | ⚠ D-23 |
