@@ -443,7 +443,9 @@ when "Prothese: Ja". Replaces the fixed "in regelrechter Funktion".
 Values (approved): `regelrecht` · `erhöhter transprothetischer Gradient` ·
 `paravalvuläres Leck` · `transvalvuläre Insuffizienz` · `nicht beurteilbar`.
 
-First sentence (approved): `Zustand nach {Aorten|Mitral|Trikuspidal}klappenersatz ({Typ}), in loco typico und festsitzend.`
+Sentence (approved 2026-09-29, D-70 a), in the paragraph of the respective valve:
+`Prothese Typ {Typ}, in loco typico und fest sitzend, {Funktion} ({Messwerte}).`
+e.g. "Aortenklappe: Prothese Typ Edwards Magna 23 mm, in loco typico und fest sitzend, regelrecht (Vmax 2,4 m/s, dp max/mean 23/12 mmHg)." 
 
 Then, per valve:
 - **Aortic prosthesis:** the same measurements as for the native valve
@@ -453,9 +455,8 @@ Then, per valve:
   formulation as the aortic prosthesis, without the aortic-only measurements.
 - Optional free-text field per prosthesis, appended verbatim.
 
-Draft for the second sentence (pending review, D-70 a):
-`Prothesenfunktion: {Wert} ({Messwerte}).` — e.g. "Prothesenfunktion: regelrecht (Vmax 2,4 m/s, dp max/mean 23/12 mmHg)."
-Empty function field → no statement on function (D-18).
+Empty function field → the sentence ends after "fest sitzend" (D-18); no
+measurements → no parentheses.
 
 ## TTE-M Measurement block in the report (D-23) — DRAFT, pending review
 
@@ -505,8 +506,8 @@ Bands are written half-open, pending D-52.
 | R30-4 | IVSd (mm) | normal m 6–10 / w 6–9 · leicht hypertrophiert m 11–13 / w 10–12 · mittelgradig hypertrophiert m 14–16 / w 13–15 · hochgradig hypertrophiert m ≥ 17 / w ≥ 16 | Lang 2015 normal; Lang 2005 grades (consistent) | wording as in the prototype (D-13) |
 | R30-4b | PWd (mm) | same ranges as IVSd (normal m 6–10 / w 6–9; grades as R30-4) | Lang 2015 / 2005 (same ranges for septal and posterior wall) | new field (D-13). One sentence part per wall (D-68): both entered → `Das Septum ist {Kategorie IVSd}, die Hinterwand ist {Kategorie PWd}.`; only one entered → only that part (`Das Septum ist {…}.` / `Die Hinterwand ist {…}.`); neither → no sentence. Normal category word: `normwertig` (as prototype TTE-R02) |
 | R30-5 | LVESD (mm) | normal m 25–40 / w 22–35 | Lang 2015, normal ranges (m 25.0–39.8, w 21.6–34.8) | highlight only (no category field) |
-| R30-6 | **RV Länge** — RV dimension in the parasternal long axis (label as on the physician's echo reports), mm | default measurement (D-21). Cut-off ⚠ not yet confirmed: draft normal ≤ 30 · dilatiert > 30 (Lang 2015 proximal RVOT PLAX 20–30 mm, from memory) → D-70 b | Lang 2015 | if dilated, RVD1 and RVD2 are added (R30-6b) |
-| R30-6b | RVD1 basal / RVD2 mid-cavity, apical 4CV (mm) | shown when R30-6 is dilated (conditional visibility). RVD1 normal ≤ 41 · dilatiert > 41; RVD2 normal ≤ 35 · dilatiert > 35 (both confirmed by the physician) | Lang 2015 | RV-size sentence: **RVD1 decides** when entered, otherwise RV Länge (D-69 c) |
+| R30-6 | **RV Länge** — RV dimension in the parasternal long axis (label as on the physician's echo reports), mm | **first value to evaluate** (D-21, D-70). normal ≤ 30 (30 included) · dilatiert > 30 (confirmed by the physician 2026-09-29) | Lang 2015 | drives the RV-size sentence |
+| R30-6b | RVD1 basal / RVD2 mid-cavity, apical 4CV (mm) | shown when R30-6 is dilated (conditional visibility). RVD1 normal ≤ 41 · dilatiert > 41; RVD2 normal ≤ 35 · dilatiert > 35 (both confirmed by the physician) | Lang 2015 | only when RV Länge > 30 **and** RVD1/RVD2 were measured: added to the RV evaluation (values and their categories) after the RV Länge statement (D-70) |
 | R30-7 | RV function | **Both TAPSE and TASV entered:** TASV ≥ 9.5 cm/s → normal (also when TAPSE < 17, e.g. after cardiac surgery with cardiopulmonary bypass); TASV < 9.5 cm/s → eingeschränkt. **Only one entered:** no RV-function sentence (the value appears in the measurement table only) | Lang 2015 thresholds TAPSE < 17 mm, S' < 9.5 cm/s; decision rule by the physician | CLAUDE.md rule 5 named exception. Sentences (approved, ungraded on purpose for readability by non-cardiologists, D-67 c): `Die rechtsventrikuläre systolische Funktion ist normal.` / `Die rechtsventrikuläre systolische Funktion ist eingeschränkt.` |
 | R30-8 | VCI (mm) | normal ≤ 21 · dilatiert > 21 | Lang 2015 / Rudski 2010 | the RAP scheme (with collapse) stays D-16 |
 | R30-9 | Aorta ascendens (mm) | normal m ≤ 40 / w ≤ 36 · dilatiert m **> 40** / w **> 36** | ESC 2024 aortic guideline (Mazzolai et al.) | exactly 40 / 36 is normal (D-67 b) |

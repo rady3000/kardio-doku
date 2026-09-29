@@ -91,7 +91,7 @@ Sex (`weiblich`/`männlich`, prototype initial **weiblich**) drives the LVEF, IV
 |---|---|---|---|---|---|
 | `la` | LA | number | mm | Extractable. → H11 | — |
 | `laesvi` | LAESVI | number | ml/m² | Extractable. Used as LAVI in R11. → H10 | — |
-| `rv` | RV Länge | number | mm | RV dimension in the parasternal long axis; on the physician's echo reports labelled "RV Länge" (D-21, D-69 c). Extractable; hint "RV Länge". → TTE-R30-6 | — |
+| `rv` | RV Länge | number | mm | RV dimension in the parasternal long axis; on the physician's echo reports labelled "RV Länge" (D-21, D-69 c). Extractable; hint "RV Länge" only ("RVAWd" removed, D-70 c). Normal ≤ 30 mm. → TTE-R30-6 | — |
 | `rvd1`, `rvd2` | RVD1 (basal), RVD2 (mittventrikulär) | number | mm | **new**; visible when RV Länge is dilated. → TTE-R30-6b | — |
 | `tapse` | TAPSE | number | mm | Extractable. → H13 | — |
 | `tasv` | TASV | number | cm/s | tricuspid annular S'. Extractable; hints "TV S'", "TDI S'". → H14 | — |
@@ -261,7 +261,7 @@ PDF (prototype): title "Echokardiographie Befund", "Patient: …" / "Datum: …"
 |---|---|
 | F-01 | ⚠ HFA-PEFF score ≥ 2 → "Hinweis auf diastolische Dysfunktion"; 2–4 is intermediate. Panel text "Diagnose von HFpEF ist kardiologisch gesichert" overstates. Multi-finding → conflicts with CLAUDE.md rule 5. (D-08, D-48) |
 | F-02 | ⚠ Score applied regardless of LVEF (HFA-PEFF presupposes LVEF ≥ 50 %). |
-| F-03 | Corrected 2026-09-28: on the physician's echo reports "RV Länge" is the RV dimension in the parasternal long axis, so the mapping of "RV Länge" to `rv` is correct in practice. The second hint "RVAWd" (standard meaning: RV anterior wall thickness in diastole) is still questionable → D-70 c. |
+| F-03 | Corrected 2026-09-28: on the physician's echo reports "RV Länge" is the RV dimension in the parasternal long axis, so the mapping of "RV Länge" to `rv` is correct in practice. The second hint "RVAWd" (RV anterior wall thickness) is removed completely (D-70 c). |
 | F-04 | ⚠ Septal E/e' used against average-E/e' cut-offs; e' criteria missing. (D-10) |
 | F-05 | ⚠ LAVI bands ignore AF. (D-11) |
 | F-06 | ⚠ LVMI minor uses `>` not ≥. (D-12) |

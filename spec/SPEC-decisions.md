@@ -179,14 +179,15 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 **D-69 TTE follow-ups — ANSWERED (2026-09-28).**
 (a) All valve grades (TR included) use ° (e.g. "TI III°", "AS II°"); intermediate grades such as "MI II–III°" are allowed for every valve.
 (b) Prosthesis function values approved. First sentence: "Zustand nach Aortenklappenersatz ({Typ}), in loco typico und festsitzend." Aortic prosthesis: same measurements as the native valve (Vmax, dp max/mean, AÖF). Mitral/tricuspid prosthesis: mean antegrade gradient is the key value for prosthetic stenosis; same formulation without the aortic-only values. Optional free text per prosthesis (SPEC-textgen TTE-P).
-(c) RV size: RVD1 decides when entered, otherwise the parasternal long-axis value, labelled "RV Länge" (the label on your echo reports; the prototype mapping of "RV Länge" was correct in practice). RVD1 normal up to 41 mm, RVD2 up to 35 mm.
+(c) RV size: superseded by D-70 — RV Länge is evaluated first; RVD1/RVD2 are added when RV Länge > 30 mm. Label "RV Länge" (the label on your echo reports; the prototype mapping of "RV Länge" was correct in practice). RVD1 normal up to 41 mm, RVD2 up to 35 mm.
 (d) Measurement layout (SPEC-textgen TTE-M) approved.
 (e) Added indications: Vitienkontrolle · Vorhofflimmern (Erstdiagnose) · Präoperativ · V.a. Lungenembolie / Rechtsherzbelastung · Perikarderguss (Verlaufskontrolle) · Verlaufskontrolle unter / nach Chemotherapie · Z.n. Herzklappen-OP / Klappenersatz · Palpitationen · Sonstige (Freitext).
 
-**D-70 TTE follow-ups (2) — OPEN.**
-(a) **Prosthesis function sentence:** draft "Prothesenfunktion: {Wert} ({Messwerte})." — e.g. "Prothesenfunktion: regelrecht (Vmax 2,4 m/s, dp max/mean 23/12 mmHg)." OK?
-(b) **RV Länge cut-off:** normal up to which value? My draft (> 30 mm dilated) was based on the proximal RVOT in the parasternal long axis (Lang 2015), from memory.
-(c) **"RVAWd":** the prototype prompt also mapped "RVAWd" onto the same field. RVAWd normally means RV anterior wall thickness in diastole (a wall thickness, ~5 mm). Drop that hint, or does your echo machine use RVAWd differently?
+**D-70 TTE follow-ups (2) — ANSWERED (2026-09-29).**
+(a) Prosthesis sentence: "Prothese Typ {Typ}, in loco typico und fest sitzend, {Funktion} ({Messwerte})."
+(b) RV Länge (parasternal long axis) normal up to and including 30 mm; dilated > 30 mm.
+(c) "RVAWd" removed completely.
+Correction to D-69 c: **RV Länge is the first value evaluated** and drives the RV-size sentence. If it is > 30 mm and RVD1/RVD2 were measured, they are added to the evaluation.
 
 ## Reminders
 
