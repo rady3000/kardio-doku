@@ -26,7 +26,7 @@ Status tags:
 
 **D-06 Data protection for extraction — ANSWERED** (gateway §1–2). TESTBETRIEB: synthetic/anonymized documents, Mistral OCR cloud allowed. ECHTBETRIEB: self-hosted OCR only.
 
-**D-07 Extraction scope — PARTLY.** v1 = TTE + Device, source PDFs, one- vs two-stage decided by the evaluation harness. Remaining: which echo system produces your printouts (the TTE hints such as "G peak SL(Avg)", "LVEF_BiP_Q" look like GE EchoPAC)? For Device, the prototype has vendor rules for Abbott/SJM, Biotronik and Medtronic (DE + EN) — which manufacturers do you see most, and are Boston Scientific, Vitatron and MicroPort needed in v1?
+**D-07 Extraction scope — ANSWERED (2026-10-01).** v1 = TTE + Device, source PDFs, one- vs two-stage decided by the evaluation harness. Echo machines: GE and Philips (label hints needed for both). Device manufacturers in v1: Medtronic, Vitatron, Abbott, Boston Scientific, Biotronik. MicroPort not in v1 (stays selectable for manual entry, no extraction hints).
 
 ## B. TTE — clinical rules
 
@@ -98,9 +98,9 @@ Status tags:
 
 **D-38 Shock protocol — ANSWERED (2026-10-01).** Energy per shock and number of shocks as fields for every outcome.
 
-**D-39 Anticoagulation text — ANSWERED (2026-09-28).** Use the ESC 2024 AF guideline (CHA₂DS₂-VA, ≥ 3 weeks OAC before CV or TEE, ≥ 4 weeks after). Drafts: SPEC-textgen LIB-CV-01…06, pending your review; you choose the block, the app never preselects from the score. Sub-question still open: add an early-cardioversion option (AF < 24 h) to the TEE status?
+**D-39 Anticoagulation text — ANSWERED (2026-09-28).** Use the ESC 2024 AF guideline (CHA₂DS₂-VA, ≥ 3 weeks OAC before CV or TEE, ≥ 4 weeks after). Drafts: SPEC-textgen LIB-CV-01…06, pending your review; you choose the block, the app never preselects from the score. Sub-question answered (2026-10-01): no early-cardioversion option (AF < 24 h) in the TEE status.
 
-**D-40 Sex — OPEN.** Shared sex field with no default; include "divers" — then which cut-offs and grammar?
+**D-40 Sex — ANSWERED (2026-10-01).** The sex field stays with two options, weiblich / männlich, no default. Empty sex → no sex-dependent category (D-51).
 
 **D-41 CV indication model — ANSWERED (2026-10-01).** Keep it as it is.
 
@@ -131,15 +131,15 @@ Status tags:
 (f) Device → the fixed "nächste Kontrolle in 6-8 Wochen" sentence is not inserted automatically (becomes a block or fact field, D-63); badge advice ("Optimierung empfohlen", "Vektorwechsel vorgeschlagen!") is removed, labels neutral (D-61).
 All prototype recommendation texts remain available verbatim in SPEC-textgen.
 
-**D-50 Extraction bounds — OPEN.** Every extractable field needs `expectedUnit` and `plausibleRange` (gateway §3.4). The prototype has none. Will you provide them for the ~27 TTE fields (and later Device), or should I draft a table for you to correct?
+**D-50 Extraction bounds — ANSWERED (2026-10-01).** Claude drafts `expectedUnit`, accepted alternative units (converted in code, D-22) and `plausibleRange` for every extractable TTE and Device field: SPEC-textgen §X-6, DRAFT pending your correction. These are hard sanity bounds to catch misreads, not normal ranges.
 
 **D-51 Conditional bands — ANSWERED (2026-09-28).** Sex- and rhythm-dependent cut-offs as already decided (e.g. LVEF by sex, natriuretic peptides by rhythm); rule files carry a condition per band set (SPEC-textgen G-3). Empty sex/rhythm → no category.
 
 **D-52 Band boundaries — ANSWERED (2026-09-28).** A value exactly on a cut-off counts as normal unless the source states otherwise (e.g. LVMI ≥ 95/115 is abnormal per ESC 2026). Bands are contiguous over decimals (SPEC-textgen G-2); the gateway §5.1 integer example is superseded.
 
-**D-53 Repository layout — OPEN.** Your upload landed in `kardio-doku/kardio-doku-starter/kardio-doku/` plus the zip. On my branch I moved CLAUDE.md, the two specs and the zip's `.gitignore` to the repository root (CLAUDE.md only works there). OK to also delete the leftover `kardio-doku/kardio-doku-starter.zip`? CLAUDE.md also refers to `PLAN.md`, which does not exist yet — should the next session draft it for your approval?
+**D-53 Repository layout — ANSWERED (2026-10-01).** Leftover `kardio-doku/kardio-doku-starter.zip` deleted. `PLAN.md` drafted at the repository root, pending your approval.
 
-**D-54 Seed documents — OPEN.** Gateway §2.5 needs ~20 synthetic echo printouts and device reports with known values. Will you provide anonymized/synthetic originals from your devices, or should synthetic PDFs be generated to mimic their layout (needs a sample layout from you)?
+**D-54 Seed documents — ANSWERED (2026-10-01).** Echo: you provide anonymized/synthetic printouts (GE and Philips). Device: you provide anonymized reports for Vitatron, Abbott and Medtronic; Boston Scientific and Biotronik may follow later — until then synthetic only, and extraction for them is marked unevaluated. Real documents never enter the repository (`samples-real/` is git-ignored).
 
 
 ## H. Device-Abfrage (from the audit of HSM_Abfrage)
@@ -203,6 +203,8 @@ Correction to D-69 c: **RV Länge is the first value evaluated** and drives the 
 
 ## Reminders
 
+- Before milestone M4 (extraction): you supply the anonymized echo (GE, Philips) and device (Vitatron, Abbott, Medtronic) documents (D-54).
+- You review the plausibility ranges in SPEC-textgen §X-6 (D-50).
 - After the remaining questions: you supply the text blocks **LIB-VHF-01 (Vorhofflimmern)** and **LIB-MI-01 (Myokardinfarkt)** (D-20).
 
 ---

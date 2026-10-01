@@ -374,6 +374,91 @@ Prompt flags:
 | P7 | After filling: show ICD/CRT sections, evaluate badges (DEV-B), update the mnemonic ribbon. |
 
 
+### X-6 Extraction bounds — `expectedUnit` and `plausibleRange` (D-50) — DRAFT, pending physician review
+
+Purpose (gateway §3.4, §4.3): a **hard sanity bound** that discards an
+extracted value which cannot be a real measurement (misread digit, wrong
+field, wrong unit). These are **not** normal ranges and never produce text or
+highlighting; normal ranges stay in `reference/*.json`. Bounds are deliberately
+wide: a rare but real extreme value must pass, so the physician can confirm it.
+
+Unit handling (D-22): the value is accepted only with the expected unit or one
+of the listed alternatives. Alternatives are converted **in code** (never by
+the model), and the plausibility check runs **after** conversion. A missing
+unit is accepted only where the column says "unit may be absent" (ratios,
+percent values printed without a sign); otherwise a missing unit discards the
+value. Bounds are inclusive.
+
+#### TTE (vendors: GE, Philips — D-07)
+
+| Field | Expected unit | Accepted alternatives → conversion | Plausible range | Note |
+|---|---|---|---|---|
+| `ivsd` | mm | cm → ×10 | 3–40 | |
+| `pwd` | mm | cm → ×10 | 3–40 | |
+| `lvedd` | mm | cm → ×10 | 20–100 | |
+| `lvesd` | mm | cm → ×10 | 10–90 | |
+| `lvef` | % | unit may be absent | 5–90 | |
+| `rwt` | — | unit may be absent | 0.10–1.50 | |
+| `lvmi` | g/m² | — | 20–400 | |
+| `gls` | % | unit may be absent; sign dropped | 0–35 (absolute) | |
+| `mitral_e` | m/s | cm/s → ÷100 | 0.20–2.50 | |
+| `mitral_a` | m/s | cm/s → ÷100 | 0.10–2.50 | |
+| `e_a_ratio` | — | unit may be absent | 0.2–6.0 | |
+| `e_e_prime` | — | unit may be absent | 2–50 | E/e' average as calculated by the machine (D-10) |
+| `la` | mm | cm → ×10 | 15–90 | |
+| `laesvi` | ml/m² | mL/m² (same) | 5–200 | |
+| `rv` (RV Länge) | mm | cm → ×10 | 10–80 | |
+| `tapse` | mm | cm → ×10 | 3–40 | |
+| `tasv` | cm/s | m/s → ×100 | 2–30 | |
+| `rvsp` | mmHg | — | 10–150 | sPAP as reported (D-16) |
+| `tr_vmax` | m/s | cm/s → ÷100 | 0.5–6.0 | |
+| `av_vmax` | m/s | cm/s → ÷100 | 0.5–7.0 | |
+| `av_max_pg` | mmHg | — | 2–200 | |
+| `av_mean_pg` | mmHg | — | 1–150 | |
+| `av_area` | cm² | — | 0.2–6.0 | |
+| `aortenwurzel` | mm | cm → ×10 | 15–80 | |
+| `aorta_ascendens_val` | mm | cm → ×10 | 15–80 | |
+| `vci` | mm | cm → ×10 | 3–40 | |
+| `bnp` | pg/ml | ng/l → ×1 | 1–10 000 | |
+| `nt_probnp` | pg/ml | ng/l → ×1 | 5–70 000 | |
+
+Proposed as **additionally extractable** (not extractable in the prototype;
+your decision): `e_prime_septal` cm/s (m/s → ×100) 1–25 · `e_prime_lateral`
+cm/s (m/s → ×100) 1–30 · `rvd1` mm (cm → ×10) 15–80 · `rvd2` mm (cm → ×10)
+10–70.
+
+#### Device-Abfrage (vendors in v1: Medtronic, Vitatron, Abbott, Boston Scientific, Biotronik — D-07)
+
+All prototype fields typed as text become numbers (+ qualifier per D-72 b).
+The check uses the number after ">" or the lower end of a range (D-72 b).
+
+| Field | Expected unit | Accepted alternatives → conversion | Plausible range | Note |
+|---|---|---|---|---|
+| `implantation_date` | date | DD.MM.YYYY, YYYY-MM-DD, MM/DD/YYYY only if unambiguous | 1980-01-01 – date of the interrogation | ambiguous day/month → discarded |
+| `battery_remaining` | Jahre | Monate (stored with its unit, not converted) | 0–20 Jahre / 0–240 Monate | |
+| `impedance_ra`, `impedance_rv`, `crt_lv_impedance` | Ω | ohm, Ohm | 100–3 000 | values like "> 3000" or "< 200" keep the qualifier |
+| `sensing_ra` | mV | — | 0.1–20.0 | Medtronic: "Measured P / R Wave" only (D-59) |
+| `sensing_rv`, `crt_lv_sensing` | mV | — | 0.3–40.0 | |
+| `threshold_ra_v`, `threshold_rv_v`, `crt_lv_threshold_v` | V | — | 0.1–10.0 | `crt_lv_threshold` split into V and ms |
+| `threshold_ra_ms`, `threshold_rv_ms`, `crt_lv_threshold_ms` | ms | — | 0.03–2.0 | |
+| `ap_anteil`, `vp_anteil`, `crt_lv_pacing_pct` | % | unit may be absent | 0–100 | "< 1 %" keeps the qualifier |
+| `af_burden` | % | unit may be absent | 0–100 | new structured field (D-60) |
+| AT/AF-Episoden, VT/VF-Episoden, ATP, Schocks | count | — | 0–100 000 (shocks 0–1 000) | new structured fields (D-60); integers only |
+| längste AT/AF-Episode | duration | s, min, h, d → stored as given | > 0 s – 365 d | |
+| `icd_vt_zone`, `icd_vf_zone` | bpm | ms (cycle length) → 60 000 / ms, rounded | 100–300 bpm | programmed settings |
+| `icd_shock_impedance` | Ω | ohm, Ohm | 10–200 | covers S-ICD (D-61) |
+| `icd_charge_time` | s | — | 1–40 | |
+
+Not numeric, extracted as a constrained choice (no range): `device_type`,
+`pacing_mode`, `device_company`, `device_model`, `device_indication`,
+`base_rhythm`, `battery_status`, `crt_lv_vector`. An unmatched value is
+discarded, never written as is (supersedes prototype P5 for extraction).
+Never extractable: `device_serial` (gateway §2.6.4), all free-text fields.
+
+Questions for review: (1) any range too narrow for a real patient of yours?
+(2) VT/VF zones printed as cycle length in ms — convert (as above) or discard?
+(3) the four proposed additional extractable TTE fields — yes or no?
+
 ---
 
 ## TTE — Rules
