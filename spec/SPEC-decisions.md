@@ -20,9 +20,9 @@ Status tags:
 
 **D-03 Deployment — PARTLY.** CLAUDE.md sets Windows, one installable package, local SQLite. Remaining: one PC only, or the same install on several workstations (each with its own local database, or shared)?
 
-**D-04 KIS target — OPEN.** Which hospital system receives the clipboard output? Plain text or rich text; line length; tabs; bullet character; Fallnummer needed? (Clipboard is the primary export; its first line in TESTBETRIEB is the TESTDATEN marker.)
+**D-04 KIS target / product scope — PARTLY (2026-10-01).** You work with Nexus (alongside SAP and ORBIS the most common hospital systems in Germany). New direction: the app should keep a **patient record** with all investigation results and be usable as the documentation system of a small cardiology practice. → D-72 a (scope decision, discussed in chat).
 
-**D-05 Vorbefund — OPEN.** SPEC-carotis has a `Voruntersuchung vom` date field. Is side-by-side comparison with a previous study needed in v1, beyond that date?
+**D-05 Vorbefund — ANSWERED (2026-10-01).** Not needed in this stage; comparison by opening the old report in the app (implies stored reports per patient, see D-72 a).
 
 **D-06 Data protection for extraction — ANSWERED** (gateway §1–2). TESTBETRIEB: synthetic/anonymized documents, Mistral OCR cloud allowed. ECHTBETRIEB: self-hosted OCR only.
 
@@ -48,7 +48,7 @@ Status tags:
 
 **D-16 RAP / VCI — ANSWERED (2026-09-29).** sPAP is taken from the echo report; the app does not calculate sPAP or estimate RAP (the prototype's 5/10 mmHg rule is removed). New field "Atemabhängige Kaliberschwankung" (> 50 % / < 50 %). The VCI sentence is generated from diameter (normal ≤ 21 mm / dilatiert > 21 mm) and collapse, e.g. "Die V. cava inferior ist normalkalibrig (18 mm) mit atemabhängiger Kaliberschwankung > 50 %." (SPEC-textgen R30-8).
 
-**D-17 Grading vocabulary — PARTLY (2026-09-28).** TR: 5-grade scheme of Hahn & Zamorano 2017 (Eur Heart J Cardiovasc Imaging 2017;18:1342–1343, doi:10.1093/ehjci/jex139), physician-assigned with the criteria table displayed; intermediate grades allowed; final grading by TEE (SPEC-textgen TTE-R40). Notation for all valves with ° incl. intermediate grades ("MI II–III°") → D-69 a. Status: ANSWERED.
+**D-17 Grading vocabulary — ANSWERED (2026-09-28).** TR: 5-grade scheme of Hahn & Zamorano 2017 (Eur Heart J Cardiovasc Imaging 2017;18:1342–1343, doi:10.1093/ehjci/jex139), physician-assigned with the criteria table displayed; intermediate grades allowed; final grading by TEE (SPEC-textgen TTE-R40). All valves use ° incl. intermediate grades ("MI II–III°", D-69 a).
 
 **D-18 Unassessed structures — ANSWERED (2026-09-28).** (A) An empty field produces **no** sentence; nothing is described as normal unless it was entered. Two additions keep entry fast: (1) "Alles normal" per section or for the whole study fills the normal defaults **explicitly** with one keystroke; (2) every selection list offers **"nicht beurteilbar"**, which writes an explicit sentence (e.g. "Die Trikuspidalklappe ist nicht beurteilbar."). Consequences: fixed normal sentences of the prototypes (TTE VCI sentence, TEE IAS/thrombus default, Device AHRE/pocket/condition defaults) become conditional on an entered value; combined summary phrases (e.g. "normale biventrikuläre Pumpfunktion") appear only if all their inputs were entered; hidden (conditionally invisible) fields never contribute text.
 
@@ -66,51 +66,51 @@ Status tags:
 
 ## C. TEE
 
-**D-25 Thrombus / SEC terms — OPEN.** Replace "Präthrombotische Formationen im LAA" with graded spontaneous echo contrast / sludge? Resolve the contradiction with "Kein Nachweis von intrakardialen Thromben".
+**D-25 Thrombus terms — ANSWERED (2026-10-01).** Dropdown with three options: "Präthrombotische Formationen im LAA" · "Kein Nachweis von intrakardialen Thromben" · "Nachweis von Thrombus im LAA" (the last one opens a free-text field to describe the thrombus).
 
-**D-26 LAA flow bands — OPEN.** Single-value mapping, so auto-classification is allowed. Want it? Which cut-offs and source?
+**D-26 LAA flow — ANSWERED (2026-10-01).** Single-value mapping, normal cut-off 40 cm/s. Source: Sade LE, Faletra FF, Pontone G, et al. The role of multi-modality imaging for the assessment of left atrium and left atrial appendage: a clinical consensus statement of the EACVI and EHRA of the ESC. Eur Heart J Cardiovasc Imaging 2025;26(3):385–413. doi:10.1093/ehjci/jeaf014. Categories → D-72 d.
 
-**D-27 TEE scope — OPEN.** Add aortic atheroma, bubble test/shunt size, LA/LAA morphology, pulmonic valve, pericardium?
+**D-27 TEE scope — ANSWERED (2026-10-01).** Add aortic atheroma, bubble test / shunt size, LA/LAA morphology, pulmonic valve (assessed like the tricuspid valve). Proposals for the new blocks → D-72 e.
 
-**D-28 Unreported TEE inputs — OPEN.** Include `ak_jet`, `mk_jet`, `mk_2d_pisa`, `mk_2d_eroa` in the text, or drop the fields?
+**D-28 Unreported TEE inputs — ANSWERED (2026-10-01).** Drop the unreported jet fields (`ak_jet`, `mk_jet`). 2D-PISA and 2D-EROA are not in the prototype MR text → keep both fields and include them in the MR evaluation from "mittelgradig" upward.
 
 **D-29 TEER suitability — ANSWERED** (rule 5: physician-assigned, criteria may be displayed). Suitability sentences follow your assigned grade (D-49 d).
 
-**D-30 Sedation — OPEN.** One shared sedation block for TEE and CV (drugs, doses, tolerance, complications)?
+**D-30 Sedation — ANSWERED (2026-10-01).** One shared sedation block for TEE and Kardioversion.
 
 ## D. Schrittmacher-Implantation
 
-**D-31 Device types — OPEN.** Pacemaker only in the first version, or CRT/ICD/S-ICD with their own narratives?
+**D-31 Device types — ANSWERED (2026-10-01).** Add CRT-P/CRT-D, ICD and S-ICD with their own narratives (texts still to be written, D-72 h).
 
-**D-32 Fixed claims → fields — OPEN.** Lead positions, fixation, pocket position as fields; remove "exzellente/gute Messwerte"?
+**D-32 Fixed claims — ANSWERED (2026-10-01).** Keep the fixed narrative as it is (no new fields for lead position, fixation, pocket).
 
-**D-33 Lead measurement ranges — OPEN.** Out-of-range highlighting for sensing/threshold/impedance? Which ranges and source?
+**D-33 Lead measurement ranges — ANSWERED (2026-10-01).** Reference table from Ellenbogen & Kaszala (eds.), Cardiac Pacing and ICDs, 7th ed., Wiley 2020, doi:10.1002/9781119578376 (SPEC-textgen DEV-REF); shared with Device-Abfrage.
 
-**D-34 Vena cephalica — OPEN.** "präpariert" or "punktiert"?
+**D-34 Vena cephalica — ANSWERED (2026-10-01).** The vein is prepared and then punctured; wording proposal → D-72 i.
 
-**D-35 Device catalogue — OPEN.** Maintain manufacturer + model lists? (Model/serial numbers are never extractable — gateway §2.6.4 — but can be entered by hand.)
+**D-35 Device catalogue — ANSWERED (2026-10-01).** Yes, maintain manufacturer + model lists.
 
-**D-36 Aggregatwechsel — OPEN.** Procedure type rather than diagnosis, with explanted-device fields?
+**D-36 Aggregatwechsel — ANSWERED (2026-10-01).** Yes: a procedure type with explanted-device fields.
 
-**D-37 Fluoroscopy time — OPEN.** min:s or decimal minutes?
+**D-37 Fluoroscopy time — ANSWERED (2026-10-01).** min:s.
 
 ## E. Elektrische Kardioversion
 
-**D-38 Shock protocol — OPEN.** Energy per shock and number of shocks as fields for every outcome?
+**D-38 Shock protocol — ANSWERED (2026-10-01).** Energy per shock and number of shocks as fields for every outcome.
 
 **D-39 Anticoagulation text — ANSWERED (2026-09-28).** Use the ESC 2024 AF guideline (CHA₂DS₂-VA, ≥ 3 weeks OAC before CV or TEE, ≥ 4 weeks after). Drafts: SPEC-textgen LIB-CV-01…06, pending your review; you choose the block, the app never preselects from the score. Sub-question still open: add an early-cardioversion option (AF < 24 h) to the TEE status?
 
 **D-40 Sex — OPEN.** Shared sex field with no default; include "divers" — then which cut-offs and grammar?
 
-**D-41 CV indication model — OPEN.** Split arrhythmia / episode / form; flutter-specific wording.
+**D-41 CV indication model — ANSWERED (2026-10-01).** Keep it as it is.
 
-**D-42 CV ↔ TEE — OPEN.** Reference a same-day TEE study; thrombus-positive path (CV not performed)?
+**D-42 CV ↔ TEE — ANSWERED (2026-10-01).** Not needed: with a thrombus no cardioversion is performed, so no report is written.
 
 ## F. Shared
 
-**D-43 Report style — OPEN.** "Beurteilung" (SPEC-carotis) or "Zusammenfassung" (prototypes); heading style.
+**D-43 Report style — ANSWERED (2026-10-01).** Heading "Zusammenfassung".
 
-**D-44 Patient data in file names — OPEN.** Keep names out of exported file names?
+**D-44 Patient data in file names — ANSWERED (2026-10-01).** No patient names in exported file names.
 
 **D-45 Export formats — ANSWERED** (CLAUDE.md): clipboard (primary), DOCX, PDF.
 
@@ -152,17 +152,17 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 
 **D-58 Battery status — ANSWERED (2026-09-29).** Restlaufzeit (number + unit Jahre / Monate) and Status as a choice: OK · RRT/ERI erreicht · EOS.
 
-**D-59 Medtronic "Sensing Threshold" — OPEN.** Your AI Studio instruction maps "Atrial/Ventricular Sensing Threshold" to the measured P/R amplitude. On many reports this label is the programmed sensitivity instead. Please confirm on a real (anonymized) Medtronic printout which value is meant.
+**D-59 Medtronic sensing — ANSWERED (2026-10-01).** The value to extract is "Measured P / R Wave" (not "Programmed Sensitivity", not "Programmed Output"). Format question → D-72 b.
 
-**D-60 Model-written fields — OPEN.** The prototype lets the model write the AHRE summary, the ICD therapy summary and the indication, and prints them verbatim. Under extraction-only these must become structured fields. Which ones? *(Vorschlag: AT/AF episodes n, longest duration, AF burden %; VT/VF episodes n; ATP n; shocks n; indication as a select — all physician-confirmed.)*
+**D-60 Model-written fields — ANSWERED (2026-10-01).** Structured fields (AT/AF episodes n, longest duration, AF burden %; VT/VF episodes n, ATP n, shocks n; indication as select) plus the sentence "Nach Sichtung des EGMs handelt es sich am ehesten um ___." with your own free text (e.g. SVT with bundle branch block vs slow VT). Detail → D-72 c.
 
-**D-61 Device measurement ranges — OPEN.** Out-of-range highlighting exists only for six ICD/CRT badges; RA/RV impedance, sensing and threshold have hint texts only, with a gap (1000–2000 Ω undefined). Which ranges and source for all lead values (shared with SM-Implantation, D-33)? Badge wording: neutral ("außerhalb des Referenzbereichs") only, no interpretation such as "Sondenfehler?" or "Kondensatoralterung"?
+**D-61 Device measurement ranges — ANSWERED (2026-10-01).** Reference table from Ellenbogen & Kaszala, Cardiac Pacing and ICDs, 7th ed. (SPEC-textgen DEV-REF); neutral highlight only. Details → D-72 f.
 
-**D-62 Device conclusion — OPEN.** The prototype always writes "Regelrechte Abfrage", "Regelrechte Messwerte" and "Zusammenfassend regelrechte Funktion des Aggregats ohne Anhalt für Sonden- oder Wahrnehmungsstörungen." — even with critical values. Under rule 5 this is a multi-finding judgement → physician-assigned select (e.g. "regelrechte Funktion" / "Auffälligkeit: …"), with export blocked or warned when a highlighted value conflicts?
+**D-62 Device conclusion — ANSWERED (2026-10-01).** Physician-selected conclusion ("Regelrechte Aggregat- und Sondenfunktion" / "Auffälligkeit: …"); a warning (no block) if a highlighted value contradicts "regelrecht".
 
 **D-63 Follow-up interval — ANSWERED (2026-09-28).** Plain fact: `Nächste Kontrolle: {Intervall}.`, printed only if filled (SPEC-textgen LIB-DEV-01).
 
-**D-64 Section order — OPEN.** Keep your mnemonic order (Elf · Bunte · Elefanten · Sitzen · Silvester · [ICD] · [CRT] · Beim · Prosecco · Dinner) as the section and tab order of the Device form, with the mnemonic labels shown or not?
+**D-64 Section order — ANSWERED (2026-10-01).** Keep the mnemonic order (EKG · Batterie · Elektroden · Sensing · Stimulation · ICD · CRT · Beobachtungen · Programmierung · Dokumentation) without showing the mnemonic labels.
 
 ---
 
@@ -189,7 +189,17 @@ All prototype recommendation texts remain available verbatim in SPEC-textgen.
 (c) "RVAWd" removed completely.
 Correction to D-69 c: **RV Länge is the first value evaluated** and drives the RV-size sentence. If it is > 30 mm and RVD1/RVD2 were measured, they are added to the evaluation.
 
-**D-71 Gateway rule on model numbers — OPEN.** SPEC-extraction-gateway §2.6.4 says "Device serial numbers and model numbers are **never** extractable fields." D-55 wants the model extracted. Amend §2.6.4 to: "Device serial numbers are never extractable fields. The device model (name/number) may be extracted." — yes?
+**D-71 Gateway rule on model numbers — ANSWERED (2026-10-01).** SPEC-extraction-gateway §2.6.4 amended: serial numbers never extractable; the device model may be extracted.
+
+**D-72 Follow-ups from the 2026-10-01 answers — OPEN.**
+(a) **Product scope (patient record / small practice):** see the discussion in chat; decide the v1 scope.
+(b) **Device values given as "> 2.8 mV" or "5.6 to 22.4 mV"** (Medtronic printout): store as text, or as number + qualifier (">", range min–max)? Which number is used for the highlight?
+(c) **EGM sentence:** one free-text sentence per episode type (AT/AF and VT/VF separately), or one sentence for all episodes?
+(d) **LAA flow categories:** two (normal ≥ 40 / reduziert < 40 cm/s), or three (then a second cut-off is needed)?
+(e) **New TEE blocks:** proposals in chat (LA/LAA morphology, aortic atheroma, bubble test, pulmonic valve).
+(f) **Device ranges:** for amplitudes only a lower limit matters — highlight below the lower limit (P 1.5, R 5.0 mV) or below the target (P 2.0 mV)? Threshold: chronic values (0.5–1.5 V) for Abfrage, acute (< 1.0 V) for Implantation? Keep or drop the prototype's charge-time (> 15 s) and BiV-pacing (< 98 %) bands, which are not in the table?
+(h) **CRT/ICD/S-ICD implantation narratives:** you write them, or I draft them for your review?
+(i) **Vena cephalica wording:** proposal in chat.
 
 ## Reminders
 

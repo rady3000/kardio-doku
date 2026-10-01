@@ -1030,6 +1030,42 @@ Not a recommendation block but a fact line, printed only if the field
 
 ---
 
+## DEV-REF Device lead measurements — reference values (D-33, D-61)
+
+Source: Ellenbogen KA, Kaszala K (eds.). Cardiac Pacing and ICDs. 7th ed.
+Wiley, 2020. doi:10.1002/9781119578376 — table compiled by the physician from
+the textbook (2026-10-01). Used for neutral out-of-range highlighting only
+("außerhalb des Referenzbereichs"); no text, no advice. Open details D-72 f.
+
+| Parameter | Channel | Pacemaker | ICD (transvenous) | CRT (CRT-P / CRT-D) |
+|---|---|---|---|---|
+| Sensing amplitude | Atrial (P-wave) | 1.5–5.0 mV (target ≥ 2.0) | 1.5–5.0 mV (target ≥ 2.0) | 1.5–5.0 mV (target ≥ 2.0) |
+| | RV (R-wave) | 5.0–25.0 mV (target ≥ 5.0) | 5.0–25.0 mV (target > 5.0, VF sensing) | 5.0–25.0 mV (target > 5.0) |
+| | LV (R-wave) | — | — | 3.0–15.0+ mV (vector-dependent) |
+| | Subcutaneous (S-ICD) | — | 0.5–4.0 mV (subcutaneous EGM) | — |
+| Pacing impedance | Atrial & RV leads | 300–1500 Ω (nominal 400–1200; chronic 300–1800) | 300–1500 Ω | 300–1500 Ω |
+| | LV lead | — | — | 300–1500 Ω (vector-dependent) |
+| High-voltage impedance | Transvenous coil | — | 25–100 Ω (typically 30–75) | 25–100 Ω (CRT-D) |
+| | Subcutaneous array (S-ICD) | — | 25–110 Ω | — |
+| Pacing threshold | Atrial & RV, acute | < 1.0 V at 0.4–0.5 ms | < 1.0 V at 0.4–0.5 ms | < 1.0 V at 0.4–0.5 ms |
+| | Atrial & RV, chronic | 0.5–1.5 V at 0.4–0.5 ms | 0.5–1.5 V at 0.4–0.5 ms | 0.5–1.5 V at 0.4–0.5 ms |
+| | LV lead (CRT) | — | — | 0.5–2.5 V at 0.4–0.5 ms (acceptable < 2.0–2.5) |
+| | His bundle pacing | < 2.0 V at 1.0 ms (or < 2.5 V at 0.4 ms) | — | < 2.0 V at 1.0 ms |
+
+Medtronic extraction hint (D-59): sensing = "Measured P / R Wave" — never
+"Programmed Sensitivity" or "Programmed Output".
+
+## DEV-EP Episodes and conclusion (D-60, D-62) — DRAFT wording
+
+Fields: AT/AF-Episoden (n), längste Episode (Dauer), AF-Burden (%),
+VT/VF-Episoden (n), ATP (n), Schocks (n). Sentence after the episode data:
+`Nach Sichtung des EGMs handelt es sich am ehesten um ___.` (free text by the
+physician; D-72 c). Conclusion, physician-selected:
+`Regelrechte Aggregat- und Sondenfunktion.` / `Auffälligkeit: ___.` — warning
+(no block) if a highlighted value conflicts with "regelrecht".
+
+---
+
 ## Band-set analysis summary
 
 | Rule set | Gaps | Overlaps | Inconsistencies |
