@@ -107,7 +107,7 @@ Permitted, under these rules:
    page regions (e.g. the top 12 % of page 1, the serial-number box) that are
    blanked to white in the image sent to the provider. Defence in depth — it
    does not replace step 1.
-4. Device serial numbers and model numbers are **never** extractable fields.
+4. Device serial numbers are **never** extractable fields. The device model (name/number) may be extracted (amended 2026-10-01, SPEC-decisions D-71).
    Serial numbers link to the patient through manufacturer registries and are
    identifiers, not device metadata.
 5. A study created from an anonymized real document in `TESTBETRIEB` still
