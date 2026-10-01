@@ -15,6 +15,14 @@ Status: **prototype for in-house evaluation.** Not CE-marked. Used during the
 trial only with synthetic or anonymized documents, never as the report of
 record.
 
+Product scope, in two stages (SPEC-decisions D-04):
+- **Stage 1 (trial):** one workstation, a local patient record holding all
+  studies and their reports, `TESTBETRIEB`.
+- **Stage 2 (practice use, later):** the documentation system of a small
+  cardiology practice — login and roles, audit trail, backup, GDT link to the
+  practice-management system, several workstations. Billing and scheduling
+  stay in the practice-management system and are out of scope.
+
 Six modules:
 
 | # | Module | Document extraction |

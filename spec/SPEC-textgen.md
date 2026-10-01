@@ -1052,6 +1052,13 @@ the textbook (2026-10-01). Used for neutral out-of-range highlighting only
 | | LV lead (CRT) | — | — | 0.5–2.5 V at 0.4–0.5 ms (acceptable < 2.0–2.5) |
 | | His bundle pacing | < 2.0 V at 1.0 ms (or < 2.5 V at 0.4 ms) | — | < 2.0 V at 1.0 ms |
 
+Range checks (D-72 f): highlight below the lower limit (P < 1.5 mV, R < 5.0 mV);
+thresholds use the chronic values for interrogations and the acute values for
+implantations. Additional warnings kept from the prototype, neutral wording:
+charge time > 15 s, BiV pacing < 98 % (source to be named before `reviewedOn`).
+Values entered as "> x" or "a to b" are stored as number + qualifier; the check
+uses x or a (D-72 b).
+
 Medtronic extraction hint (D-59): sensing = "Measured P / R Wave" — never
 "Programmed Sensitivity" or "Programmed Output".
 
@@ -1059,8 +1066,9 @@ Medtronic extraction hint (D-59): sensing = "Measured P / R Wave" — never
 
 Fields: AT/AF-Episoden (n), längste Episode (Dauer), AF-Burden (%),
 VT/VF-Episoden (n), ATP (n), Schocks (n). Sentence after the episode data:
-`Nach Sichtung des EGMs handelt es sich am ehesten um ___.` (free text by the
-physician; D-72 c). Conclusion, physician-selected:
+per episode, up to 5 episodes: `Nach Sichtung des EGMs handelt es sich am
+ehesten um ___.`; more than 5 episodes: `Nach Sichtung der EGMs handelt es sich
+am ehesten um ___.` plus optional free text for a deviating episode (D-72 c). Conclusion, physician-selected:
 `Regelrechte Aggregat- und Sondenfunktion.` / `Auffälligkeit: ___.` — warning
 (no block) if a highlighted value conflicts with "regelrecht".
 

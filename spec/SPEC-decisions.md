@@ -18,9 +18,9 @@ Status tags:
 
 **D-02 Reference files — ANSWERED.** CLAUDE.md, SPEC-carotis.md and SPEC-extraction-gateway.md arrived. SPEC-modules now follows the Carotis format. (File placement: D-53.)
 
-**D-03 Deployment — PARTLY.** CLAUDE.md sets Windows, one installable package, local SQLite. Remaining: one PC only, or the same install on several workstations (each with its own local database, or shared)?
+**D-03 Deployment — ANSWERED (2026-10-01).** Part of the two-stage plan (D-04): stage 1 one workstation with local SQLite; stage 2 several workstations with a shared database.
 
-**D-04 KIS target / product scope — PARTLY (2026-10-01).** You work with Nexus (alongside SAP and ORBIS the most common hospital systems in Germany). New direction: the app should keep a **patient record** with all investigation results and be usable as the documentation system of a small cardiology practice. → D-72 a (scope decision, discussed in chat).
+**D-04 KIS target / product scope — ANSWERED (2026-10-01).** Two stages, recorded in CLAUDE.md "What this is": stage 1 (trial) one workstation, local patient record with all studies and reports, TESTBETRIEB; stage 2 (practice use) login and roles, audit trail, backup, GDT link to the practice-management system, several workstations. Billing/scheduling out of scope. Clipboard export stays the paste path into Nexus/other systems.
 
 **D-05 Vorbefund — ANSWERED (2026-10-01).** Not needed in this stage; comparison by opening the old report in the app (implies stored reports per patient, see D-72 a).
 
@@ -191,15 +191,15 @@ Correction to D-69 c: **RV Länge is the first value evaluated** and drives the 
 
 **D-71 Gateway rule on model numbers — ANSWERED (2026-10-01).** SPEC-extraction-gateway §2.6.4 amended: serial numbers never extractable; the device model may be extracted.
 
-**D-72 Follow-ups from the 2026-10-01 answers — OPEN.**
-(a) **Product scope (patient record / small practice):** see the discussion in chat; decide the v1 scope.
-(b) **Device values given as "> 2.8 mV" or "5.6 to 22.4 mV"** (Medtronic printout): store as text, or as number + qualifier (">", range min–max)? Which number is used for the highlight?
-(c) **EGM sentence:** one free-text sentence per episode type (AT/AF and VT/VF separately), or one sentence for all episodes?
-(d) **LAA flow categories:** two (normal ≥ 40 / reduziert < 40 cm/s), or three (then a second cut-off is needed)?
-(e) **New TEE blocks:** proposals in chat (LA/LAA morphology, aortic atheroma, bubble test, pulmonic valve).
-(f) **Device ranges:** for amplitudes only a lower limit matters — highlight below the lower limit (P 1.5, R 5.0 mV) or below the target (P 2.0 mV)? Threshold: chronic values (0.5–1.5 V) for Abfrage, acute (< 1.0 V) for Implantation? Keep or drop the prototype's charge-time (> 15 s) and BiV-pacing (< 98 %) bands, which are not in the table?
-(h) **CRT/ICD/S-ICD implantation narratives:** you write them, or I draft them for your review?
-(i) **Vena cephalica wording:** proposal in chat.
+**D-72 Follow-ups from the 2026-10-01 answers — ANSWERED (2026-10-01).**
+(a) Two-stage scope (see D-04).
+(b) Values such as "> 2.8 mV" or "5.6 to 22.4 mV" are stored as number + qualifier (">" or range min–max); the range check uses the number after ">" and the lower end of a range.
+(c) Up to 5 episodes: one EGM sentence per episode. More than 5: the general sentence "Nach Sichtung der EGMs handelt es sich am ehesten um ___." plus optional free text for an episode that does not fit the rest.
+(d) LAA flow: two categories, normal ≥ 40 / reduziert < 40 cm/s.
+(e) TEE blocks — LA/LAA: LAA morphology (Chicken wing / Windsock / Cactus / Cauliflower), spontaneous echo contrast (kein / gering / ausgeprägt / Sludge), LAA flow, thrombus field (D-25); no lobe count, no ostium/depth. Aortic atheroma: first ja/nein; if ja, per segment (ascendens / Bogen / descendens) plaque < 4 mm / ≥ 4 mm (4 mm confirmed), mobile Anteile ja/nein, ulzeriert ja/nein. Bubble test: at rest and/or Valsalva, result kein Shunt / Shunt, Vorhofseptumaneurysma ja/nein — no bubble counts. Pulmonic valve: assessed like the tricuspid valve.
+(f) Device ranges: highlight below the lower limit (P < 1.5, R < 5.0 mV); thresholds chronic values for interrogations, acute values for implantations; keep the charge-time (> 15 s) and BiV-pacing (< 98 %) warnings, neutral wording.
+(h) CRT/ICD/S-ICD implantation texts: drafted by Claude in the style of the pacemaker report, reviewed by you.
+(i) Vena cephalica: "Die Vena cephalica wurde in der Mohrenheim-Grube freipräpariert und anschließend unter Sicht punktiert."
 
 ## Reminders
 
