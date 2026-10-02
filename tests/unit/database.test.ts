@@ -34,8 +34,9 @@ describe('database per Betriebsmodus', () => {
     expect(liveRepo.getPatient(p.id)).toBeNull();
     live.close();
 
-    const reopened = new Repository(openDatabase(dir, 'TESTBETRIEB'));
-    expect(reopened.listPatients('').map((x) => x.lastName)).toEqual(['Test']);
+    const testAgain = openDatabase(dir, 'TESTBETRIEB');
+    expect(new Repository(testAgain).listPatients('').map((x) => x.lastName)).toEqual(['Test']);
+    testAgain.close(); // Windows cannot delete an open database file
   });
 
   it('refuses a test database opened as live database (renamed file)', () => {
