@@ -1,0 +1,47 @@
+# Builds and tests Kardio-Doku on Windows and publishes the installer as a
+# downloadable artifact ("Kardio-Doku-Setup"). Runs on GitHub, not in the app.
+name: Windows build
+
+on:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false' # no code-signing certificate
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: End-to-end test (real app window)
+        run: npm run test:e2e
+
+      - name: Build installer
+        run: npx electron-builder --win nsis --x64 --publish never
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kardio-Doku-Setup
+          path: release/*.exe
+          if-no-files-found: error
+          retention-days: 30
