@@ -15,3 +15,8 @@ dist/
 out/
 release/
 coverage/
+
+# Electron build output
+dist-electron/
+test-results/
+playwright-report/
