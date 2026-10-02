@@ -44,6 +44,9 @@ Prototype audit, SPEC-shared, SPEC-modules, SPEC-textgen, SPEC-decisions
 (D-20); review of the D-50 ranges (SPEC-textgen §X-6); source for the
 charge-time / BiV warnings (D-72 f).
 
+All milestones build **one app** with one installer. Each milestone adds to
+the same app; installing the new version keeps your patients and studies.
+
 ## M1 — Foundations (no clinical module yet)
 
 Goal: an installable, empty but safe shell.
@@ -90,8 +93,9 @@ Goal: you document a complete TTE by keyboard and paste the report.
 - Exports: clipboard (first line TESTDATEN in TESTBETRIEB), DOCX (header),
   PDF (watermark on every page); file names without patient names (D-44).
 
-Your test: document 10 real-world-like TTEs (synthetic data) and compare the
-time with today's workflow; check every generated sentence.
+Your test: document 10 fictive TTE cases by typing the values in by hand
+(no PDF reading yet, that comes in M4), time it against today's workflow, and
+check every generated sentence.
 
 ## M3 — Device-Abfrage with manual entry
 
@@ -164,5 +168,9 @@ system, several workstations with a shared database (D-03, D-04).
 - LIB-VHF-01, LIB-MI-01 text blocks (needed in M2, D-20).
 - Review of SPEC-textgen §X-6 ranges (needed in M4, D-50).
 - Anonymized sample documents (needed in M4, D-54).
+- A Mistral account with an API key for the trial (needed in M4; billed per
+  page). I give you the exact setup steps at the start of M4; the key is
+  entered once in the app's settings and stored only in Windows' protected
+  storage.
 - Source for charge-time / BiV warnings (needed in M3, D-72 f).
 - Carotid criteria values (needed in M8).
