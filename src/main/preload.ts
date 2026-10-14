@@ -13,6 +13,8 @@ const api: KardioApi = {
   getStudy: (id) => ipcRenderer.invoke(IPC.getStudy, id),
   createStudy: (input) => ipcRenderer.invoke(IPC.createStudy, input),
   updateStudy: (id, update) => ipcRenderer.invoke(IPC.updateStudy, id, update),
+  libraryBlocks: (moduleKey) => ipcRenderer.invoke(IPC.libraryBlocks, moduleKey),
+  exportStudy: (id, format) => ipcRenderer.invoke(IPC.exportStudy, id, format),
   onBeforeClose: (handler) => {
     ipcRenderer.removeAllListeners(IPC.beforeClose);
     ipcRenderer.on(IPC.beforeClose, () => {

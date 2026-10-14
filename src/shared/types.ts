@@ -66,3 +66,20 @@ export interface AppState {
   version: string;
   providers: ProviderInfo[];
 }
+
+export type ExportFormat = 'clipboard' | 'docx' | 'pdf';
+
+export interface ExportResult {
+  ok: boolean;
+  message: string;
+  path?: string;
+}
+
+export interface LibraryBlockInfo {
+  id: string;
+  title: string;
+  status: 'draft' | 'approved';
+  source: string;
+  reviewedOn: string | null;
+  text: string;
+}

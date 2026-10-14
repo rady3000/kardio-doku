@@ -1,7 +1,17 @@
 // Contract between renderer and main process, exposed by the preload script
 // as `window.kardio`.
 import type { Betriebsmodus } from './mode';
-import type { AppState, Patient, PatientInput, Study, StudyCreate, StudyUpdate } from './types';
+import type {
+  AppState,
+  ExportFormat,
+  ExportResult,
+  LibraryBlockInfo,
+  Patient,
+  PatientInput,
+  Study,
+  StudyCreate,
+  StudyUpdate,
+} from './types';
 
 export interface KardioApi {
   getAppState(): Promise<AppState>;
@@ -18,6 +28,11 @@ export interface KardioApi {
   createStudy(input: StudyCreate): Promise<Study>;
   updateStudy(id: number, update: StudyUpdate): Promise<Study>;
 
+  /** Text blocks the physician may insert in the current mode. */
+  libraryBlocks(moduleKey: string): Promise<LibraryBlockInfo[]>;
+  /** Exports the stored study; save dialog for DOCX/PDF. */
+  exportStudy(id: number, format: ExportFormat): Promise<ExportResult>;
+
   /** Main asks the renderer to flush pending autosaves before the window closes. */
   onBeforeClose(handler: () => Promise<void>): void;
 }
@@ -33,6 +48,8 @@ export const IPC = {
   getStudy: 'studies:get',
   createStudy: 'studies:create',
   updateStudy: 'studies:update',
+  libraryBlocks: 'library:blocks',
+  exportStudy: 'studies:export',
   beforeClose: 'app:before-close',
   closeReady: 'app:close-ready',
 } as const;

@@ -12,6 +12,8 @@ import {
   type AppState,
 } from '../shared/types';
 import { providerInfo } from '../gateway/registry';
+import { insertableBlocks } from '../core/library';
+import { exportStudy } from './export';
 import { databasePath, openDatabase, type Db } from './database';
 import { isAllowedRendererUrl } from './egress';
 import { Repository } from './repository';
@@ -83,6 +85,23 @@ function registerIpc(): void {
   ipcMain.handle(IPC.updateStudy, (_e, sid: unknown, update: unknown) =>
     repository().updateStudy(id.parse(sid), StudyUpdateSchema.parse(update)),
   );
+
+  ipcMain.handle(IPC.libraryBlocks, (_e, moduleKey: unknown) => insertableBlocks(z.string().parse(moduleKey), mode));
+  ipcMain.handle(IPC.exportStudy, async (_e, sid: unknown, format: unknown) => {
+    const study = repository().getStudy(id.parse(sid));
+    if (!study) throw new Error('Study not found.');
+    const patient = repository().getPatient(study.patientId)!;
+    const target = process.env.KARDIO_E2E_EXPORT_DIR; // end-to-end tests only: no save dialog
+    const fmt = z.enum(['clipboard', 'docx', 'pdf']).parse(format);
+    return exportStudy(
+      mainWindow,
+      study,
+      patient,
+      mode,
+      fmt,
+      target && fmt !== 'clipboard' ? path.join(target, `export.${fmt}`) : undefined,
+    );
+  });
 }
 
 function lockDownSession(): void {
