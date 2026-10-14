@@ -11,8 +11,13 @@ const exportDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kardio-e2e-export-'));
 const shots = process.env.KARDIO_SCREENSHOTS;
 
 test.afterAll(() => {
-  fs.rmSync(userData, { recursive: true, force: true });
-  fs.rmSync(exportDir, { recursive: true, force: true });
+  for (const dir of [userData, exportDir]) {
+    try {
+      fs.rmSync(dir, { recursive: true, force: true });
+    } catch {
+      // Windows may still lock the database while the app closes.
+    }
+  }
 });
 
 test('TTE: entry, report, edit, export', async () => {

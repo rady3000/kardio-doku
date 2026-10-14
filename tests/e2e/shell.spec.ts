@@ -20,7 +20,13 @@ async function launch(): Promise<{ app: ElectronApplication; page: Page }> {
   return { app, page };
 }
 
-test.afterAll(() => fs.rmSync(userData, { recursive: true, force: true }));
+test.afterAll(() => {
+  try {
+    fs.rmSync(userData, { recursive: true, force: true });
+  } catch {
+    // Windows keeps the file locked if the app is still closing; the temp folder is cleaned later.
+  }
+});
 
 test('M1 shell', async () => {
   let { app, page } = await launch();
@@ -51,6 +57,7 @@ test('M1 shell', async () => {
   await page.keyboard.press('Enter');
   await expect(page.getByTestId('report-preview')).toContainText('Transthorakale Echokardiographie:');
   if (shots) await page.screenshot({ path: path.join(shots, 'm1-study.png') });
+  await page.locator('#f-indication').focus(); // the new study form is ready for keyboard entry
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: 'Transthorakale Echokardiographie (TTE)' })).toBeVisible();
   if (shots) await page.screenshot({ path: path.join(shots, 'm1-patient.png') });
