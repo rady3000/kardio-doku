@@ -1,0 +1,4 @@
+# Golden files and rule files are compared byte for byte: always LF, on every platform.
+* text=auto eol=lf
+*.png binary
+*.zip binary
