@@ -1,0 +1,28 @@
+{
+  "id": "tte-tapse",
+  "version": 1,
+  "title": "TAPSE – Referenzbereich",
+  "field": "tapse",
+  "unit": "mm",
+  "source": "Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber quantification by echocardiography in adults: an update from the ASE and the EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014",
+  "reviewedOn": "2026-09-28",
+  "purpose": "reference",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": null,
+          "max": 17,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": null,
+          "min": 17,
+          "minIncl": true,
+          "normal": true
+        }
+      ]
+    }
+  ]
+}

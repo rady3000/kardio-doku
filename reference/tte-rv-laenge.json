@@ -1,0 +1,29 @@
+{
+  "id": "tte-rv-laenge",
+  "version": 1,
+  "title": "RV Länge (PLAX) – RV-Größe",
+  "field": "rv",
+  "unit": "mm",
+  "source": "Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber quantification by echocardiography in adults: an update from the ASE and the EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014",
+  "reviewedOn": "2026-09-29",
+  "purpose": "category",
+  "note": "SPEC-textgen TTE-R30-6 (D-70 b)",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": "normwertig",
+          "max": 30,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "dilatiert",
+          "min": 30,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

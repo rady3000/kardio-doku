@@ -1,0 +1,53 @@
+{
+  "id": "tte-bnp",
+  "version": 1,
+  "title": "BNP – erhöht",
+  "field": "bnp",
+  "unit": "pg/ml",
+  "source": "Pieske B, Tschöpe C, de Boer RA, et al. How to diagnose heart failure with preserved ejection fraction: the HFA–PEFF diagnostic algorithm. Eur Heart J 2019;40:3297–3317. doi:10.1093/eurheartj/ehz641 — natriuretic-peptide cut-offs only",
+  "reviewedOn": "2026-09-28",
+  "purpose": "category",
+  "sets": [
+    {
+      "when": {
+        "rhythm": "Sinusrhythmus"
+      },
+      "bands": [
+        {
+          "label": "nicht erhöht",
+          "max": 80,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "erhöht",
+          "min": 80,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    },
+    {
+      "when": {
+        "rhythm": [
+          "Vorhofflimmern",
+          "Vorhofflattern"
+        ]
+      },
+      "bands": [
+        {
+          "label": "nicht erhöht",
+          "max": 240,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "erhöht",
+          "min": 240,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

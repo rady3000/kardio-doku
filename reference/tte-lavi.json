@@ -1,0 +1,45 @@
+{
+  "id": "tte-lavi",
+  "version": 1,
+  "title": "LAVI – LA-Größe",
+  "field": "laesvi",
+  "unit": "ml/m²",
+  "source": "Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber quantification by echocardiography in adults: an update from the ASE and the EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014 (LA volume severity partitions)",
+  "reviewedOn": "2026-09-28",
+  "purpose": "category",
+  "note": "SPEC-textgen TTE-R30-2; written ranges 35–41 / 42–48 / > 48, gaps closed to the lower grade (G-2)",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": "normal dimensioniert",
+          "max": 34,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "leichtgradig dilatiert",
+          "min": 34,
+          "minIncl": false,
+          "max": 42,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": "mittelgradig dilatiert",
+          "min": 42,
+          "minIncl": true,
+          "max": 48,
+          "maxIncl": true,
+          "normal": false
+        },
+        {
+          "label": "hochgradig dilatiert",
+          "min": 48,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

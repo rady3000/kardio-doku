@@ -1,0 +1,28 @@
+{
+  "id": "tte-hfpef-ee",
+  "version": 1,
+  "title": "HFpEF R20-3 – E/e' (average)",
+  "field": "e_e_prime",
+  "unit": "",
+  "source": "Køber L, Adamo M, Ruwald AC, et al. 2026 ESC Guidelines for the management of heart failure. Eur Heart J 2026:ehag100. doi:10.1093/eurheartj/ehag100 — Table 10",
+  "reviewedOn": "2026-09-28",
+  "purpose": "category",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": "nicht erfüllt",
+          "max": 9,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "erfüllt",
+          "min": 9,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

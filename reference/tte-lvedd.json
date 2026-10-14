@@ -1,0 +1,83 @@
+{
+  "id": "tte-lvedd",
+  "version": 1,
+  "title": "LVEDD – LV-Größe",
+  "field": "lvedd",
+  "unit": "mm",
+  "source": "Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber quantification by echocardiography in adults: an update from the ASE and the EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014 (normal ranges); Lang RM, Bierig M, Devereux RB, et al. Recommendations for chamber quantification. J Am Soc Echocardiogr 2005;18:1440–1463 (severity grades)",
+  "reviewedOn": "2026-09-28",
+  "purpose": "category",
+  "note": "SPEC-textgen TTE-R30-3; 'leicht dilatiert' starts above the 2015 limit (D-67 a)",
+  "sets": [
+    {
+      "when": {
+        "sex": "männlich"
+      },
+      "bands": [
+        {
+          "label": "normal dimensioniert",
+          "max": 58,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "leicht dilatiert",
+          "min": 58,
+          "minIncl": false,
+          "max": 64,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": "mittelgradig dilatiert",
+          "min": 64,
+          "minIncl": true,
+          "max": 69,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": "hochgradig dilatiert",
+          "min": 69,
+          "minIncl": true,
+          "normal": false
+        }
+      ]
+    },
+    {
+      "when": {
+        "sex": "weiblich"
+      },
+      "bands": [
+        {
+          "label": "normal dimensioniert",
+          "max": 52,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "leicht dilatiert",
+          "min": 52,
+          "minIncl": false,
+          "max": 58,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": "mittelgradig dilatiert",
+          "min": 58,
+          "minIncl": true,
+          "max": 62,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": "hochgradig dilatiert",
+          "min": 62,
+          "minIncl": true,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

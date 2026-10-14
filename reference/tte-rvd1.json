@@ -1,0 +1,29 @@
+{
+  "id": "tte-rvd1",
+  "version": 1,
+  "title": "RVD1 basal",
+  "field": "rvd1",
+  "unit": "mm",
+  "source": "Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber quantification by echocardiography in adults: an update from the ASE and the EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014",
+  "reviewedOn": "2026-09-28",
+  "purpose": "category",
+  "note": "SPEC-textgen TTE-R30-6b",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": "normwertig",
+          "max": 41,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "dilatiert",
+          "min": 41,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

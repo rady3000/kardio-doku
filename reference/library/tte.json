@@ -1,0 +1,13 @@
+{
+  "module": "tte",
+  "blocks": [
+    {
+      "id": "LIB-HI-01",
+      "title": "Herzinsuffizienz (Erstdiagnose)",
+      "status": "draft",
+      "source": "Prototype TTE-B 'Herzinsuffizienz', made general (SPEC-textgen LIB-HI-01, D-20)",
+      "reviewedOn": null,
+      "text": "Es handelt sich um eine Erstdiagnose einer Herzinsuffizienz. Folgendes Vorgehen wird angestrebt:\nRekompensation: Fortführung der Rekompensationstherapie (i.v. Diurese, Bilanzierung der täglichen Ein- und Ausfuhr, tägliche Gewichtskontrolle sowie umtägige Elektrolytkontrollen).\nTherapieoptimierung: Einleitung bzw. Optimierung der leitliniengerechten Herzinsuffizienz-Therapie (ARNI, Beta-Blocker, Spironolacton und SGLT-2-Inhibitor).\nInvasive Diagnostik: Nach erfolgreicher Rekompensation Planung einer ambulanten, frühelektiven Koronarangiographie. Bei Ausschluss einer KHK wird im Verlauf die Durchführung eines Kardio-MRT zur weiteren Ätiologieklärung diskutiert.\nVerlauf: Eine echokardiographische und klinische Verlaufskontrolle in 3 Monaten ist in unserer Funktionsdiagnostik geplant. Sollte sich die LV-Pumpfunktion nach Sanierung (oder Ausschluss) einer KHK und unter optimierter Medikation nicht verbessert haben, wird die Indikation für eine Device-Therapie (Defibrillator / CRT-D/P) geprüft."
+    }
+  ]
+}

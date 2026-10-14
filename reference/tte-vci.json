@@ -1,0 +1,29 @@
+{
+  "id": "tte-vci",
+  "version": 1,
+  "title": "V. cava inferior – Durchmesser",
+  "field": "vci",
+  "unit": "mm",
+  "source": "Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber quantification by echocardiography in adults: an update from the ASE and the EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014; Rudski LG, Lai WW, Afilalo J, et al. Guidelines for the echocardiographic assessment of the right heart in adults. J Am Soc Echocardiogr 2010;23:685–713",
+  "reviewedOn": "2026-09-29",
+  "purpose": "category",
+  "note": "SPEC-textgen TTE-R30-8 (D-16)",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": "normalkalibrig",
+          "max": 21,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "dilatiert",
+          "min": 21,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "id": "tte-hfpef-lvmi",
+  "version": 1,
+  "title": "HFpEF R20-1 – LVMI",
+  "field": "lvmi",
+  "unit": "g/m²",
+  "source": "Køber L, Adamo M, Ruwald AC, et al. 2026 ESC Guidelines for the management of heart failure. Eur Heart J 2026:ehag100. doi:10.1093/eurheartj/ehag100 — Table 10",
+  "reviewedOn": "2026-09-28",
+  "purpose": "category",
+  "note": "≥ is fulfilled (source-stated exception to G-2, D-12)",
+  "sets": [
+    {
+      "when": {
+        "sex": "männlich"
+      },
+      "bands": [
+        {
+          "label": "nicht erfüllt",
+          "max": 115,
+          "maxIncl": false,
+          "normal": true
+        },
+        {
+          "label": "erfüllt",
+          "min": 115,
+          "minIncl": true,
+          "normal": false
+        }
+      ]
+    },
+    {
+      "when": {
+        "sex": "weiblich"
+      },
+      "bands": [
+        {
+          "label": "nicht erfüllt",
+          "max": 95,
+          "maxIncl": false,
+          "normal": true
+        },
+        {
+          "label": "erfüllt",
+          "min": 95,
+          "minIncl": true,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

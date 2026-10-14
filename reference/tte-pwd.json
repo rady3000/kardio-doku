@@ -1,0 +1,99 @@
+{
+  "id": "tte-pwd",
+  "version": 1,
+  "title": "PWd – Hinterwand",
+  "field": "pwd",
+  "unit": "mm",
+  "source": "Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber quantification by echocardiography in adults: an update from the ASE and the EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014 (normal ranges); Lang RM, Bierig M, Devereux RB, et al. Recommendations for chamber quantification. J Am Soc Echocardiogr 2005;18:1440–1463 (severity grades)",
+  "reviewedOn": "2026-09-28",
+  "purpose": "category",
+  "note": "SPEC-textgen TTE-R30-4/4b; below 6 mm no category (not defined in the source table)",
+  "sets": [
+    {
+      "when": {
+        "sex": "männlich"
+      },
+      "bands": [
+        {
+          "label": null,
+          "max": 6,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": "normwertig",
+          "min": 6,
+          "minIncl": true,
+          "max": 10,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "leicht hypertrophiert",
+          "min": 10,
+          "minIncl": false,
+          "max": 14,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": "mittelgradig hypertrophiert",
+          "min": 14,
+          "minIncl": true,
+          "max": 17,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": "hochgradig hypertrophiert",
+          "min": 17,
+          "minIncl": true,
+          "normal": false
+        }
+      ]
+    },
+    {
+      "when": {
+        "sex": "weiblich"
+      },
+      "bands": [
+        {
+          "label": null,
+          "max": 6,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": "normwertig",
+          "min": 6,
+          "minIncl": true,
+          "max": 9,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "leicht hypertrophiert",
+          "min": 9,
+          "minIncl": false,
+          "max": 13,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": "mittelgradig hypertrophiert",
+          "min": 13,
+          "minIncl": true,
+          "max": 16,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": "hochgradig hypertrophiert",
+          "min": 16,
+          "minIncl": true,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

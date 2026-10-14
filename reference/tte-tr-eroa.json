@@ -1,0 +1,53 @@
+{
+  "id": "tte-tr-eroa",
+  "version": 1,
+  "title": "TI – EROA (Kriterientabelle)",
+  "field": "tk_eroa",
+  "unit": "mm²",
+  "source": "Hahn RT, Zamorano JL. The need for a new tricuspid regurgitation grading scheme. Eur Heart J Cardiovasc Imaging 2017;18:1342–1343. doi:10.1093/ehjci/jex139 — Table 1",
+  "reviewedOn": "2026-09-28",
+  "purpose": "criteria",
+  "note": "Display only; written ranges < 20 / 20–39 / 40–59 / 60–79 / ≥ 80 mm²",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": "I",
+          "max": 20,
+          "maxIncl": false,
+          "normal": true
+        },
+        {
+          "label": "II",
+          "min": 20,
+          "minIncl": true,
+          "max": 40,
+          "maxIncl": false,
+          "normal": true
+        },
+        {
+          "label": "III",
+          "min": 40,
+          "minIncl": true,
+          "max": 60,
+          "maxIncl": false,
+          "normal": true
+        },
+        {
+          "label": "IV",
+          "min": 60,
+          "minIncl": true,
+          "max": 80,
+          "maxIncl": false,
+          "normal": true
+        },
+        {
+          "label": "V",
+          "min": 80,
+          "minIncl": true,
+          "normal": true
+        }
+      ]
+    }
+  ]
+}

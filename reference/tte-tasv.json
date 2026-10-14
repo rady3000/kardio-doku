@@ -1,0 +1,28 @@
+{
+  "id": "tte-tasv",
+  "version": 1,
+  "title": "TASV – Referenzbereich",
+  "field": "tasv",
+  "unit": "cm/s",
+  "source": "Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber quantification by echocardiography in adults: an update from the ASE and the EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014",
+  "reviewedOn": "2026-09-28",
+  "purpose": "reference",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": null,
+          "max": 9.5,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": null,
+          "min": 9.5,
+          "minIncl": true,
+          "normal": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "id": "tte-aorta-asc",
+  "version": 1,
+  "title": "Aorta ascendens – Durchmesser",
+  "field": "aorta_ascendens_val",
+  "unit": "mm",
+  "source": "Mazzolai L, Teixido-Tura G, Lanzi S, et al. 2024 ESC Guidelines for the management of peripheral arterial and aortic diseases. Eur Heart J 2024;45:3538–3700. doi:10.1093/eurheartj/ehae179",
+  "reviewedOn": "2026-09-28",
+  "purpose": "category",
+  "note": "SPEC-textgen TTE-R30-9; exactly 40 / 36 mm is normal (D-67 b)",
+  "sets": [
+    {
+      "when": {
+        "sex": "männlich"
+      },
+      "bands": [
+        {
+          "label": "normwertig",
+          "max": 40,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "dilatiert",
+          "min": 40,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    },
+    {
+      "when": {
+        "sex": "weiblich"
+      },
+      "bands": [
+        {
+          "label": "normwertig",
+          "max": 36,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "dilatiert",
+          "min": 36,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

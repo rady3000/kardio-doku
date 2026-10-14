@@ -1,0 +1,107 @@
+{
+  "id": "tte-lvef",
+  "version": 1,
+  "title": "LVEF – Kategorie",
+  "field": "lvef",
+  "unit": "%",
+  "source": "Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber quantification by echocardiography in adults: an update from the ASE and the EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014 (LVEF normal ranges and severity partitions)",
+  "reviewedOn": "2026-09-28",
+  "purpose": "category",
+  "note": "SPEC-textgen TTE-R30-1; boundary 41 (D-14)",
+  "sets": [
+    {
+      "when": {
+        "sex": "männlich"
+      },
+      "bands": [
+        {
+          "label": "hochgradig reduziert",
+          "max": 30,
+          "maxIncl": false,
+          "normal": false,
+          "forms": {
+            "adj": "hochgradig reduzierte"
+          }
+        },
+        {
+          "label": "mittelgradig reduziert",
+          "min": 30,
+          "minIncl": true,
+          "max": 41,
+          "maxIncl": false,
+          "normal": false,
+          "forms": {
+            "adj": "mittelgradig reduzierte"
+          }
+        },
+        {
+          "label": "leicht reduziert",
+          "min": 41,
+          "minIncl": true,
+          "max": 52,
+          "maxIncl": false,
+          "normal": false,
+          "forms": {
+            "adj": "leicht reduzierte"
+          }
+        },
+        {
+          "label": "normal",
+          "min": 52,
+          "minIncl": true,
+          "normal": true,
+          "forms": {
+            "adj": "normale"
+          }
+        }
+      ]
+    },
+    {
+      "when": {
+        "sex": "weiblich"
+      },
+      "bands": [
+        {
+          "label": "hochgradig reduziert",
+          "max": 30,
+          "maxIncl": false,
+          "normal": false,
+          "forms": {
+            "adj": "hochgradig reduzierte"
+          }
+        },
+        {
+          "label": "mittelgradig reduziert",
+          "min": 30,
+          "minIncl": true,
+          "max": 41,
+          "maxIncl": false,
+          "normal": false,
+          "forms": {
+            "adj": "mittelgradig reduzierte"
+          }
+        },
+        {
+          "label": "leicht reduziert",
+          "min": 41,
+          "minIncl": true,
+          "max": 54,
+          "maxIncl": false,
+          "normal": false,
+          "forms": {
+            "adj": "leicht reduzierte"
+          }
+        },
+        {
+          "label": "normal",
+          "min": 54,
+          "minIncl": true,
+          "normal": true,
+          "forms": {
+            "adj": "normale"
+          }
+        }
+      ]
+    }
+  ]
+}

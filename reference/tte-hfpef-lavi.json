@@ -1,0 +1,54 @@
+{
+  "id": "tte-hfpef-lavi",
+  "version": 1,
+  "title": "HFpEF R20-2 – LAVI",
+  "field": "laesvi",
+  "unit": "ml/m²",
+  "source": "Køber L, Adamo M, Ruwald AC, et al. 2026 ESC Guidelines for the management of heart failure. Eur Heart J 2026:ehag100. doi:10.1093/eurheartj/ehag100 — Table 10",
+  "reviewedOn": "2026-09-28",
+  "purpose": "category",
+  "note": "Vorhofflattern uses the AF cut-off (D-65 m)",
+  "sets": [
+    {
+      "when": {
+        "rhythm": "Sinusrhythmus"
+      },
+      "bands": [
+        {
+          "label": "nicht erfüllt",
+          "max": 34,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "erfüllt",
+          "min": 34,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    },
+    {
+      "when": {
+        "rhythm": [
+          "Vorhofflimmern",
+          "Vorhofflattern"
+        ]
+      },
+      "bands": [
+        {
+          "label": "nicht erfüllt",
+          "max": 40,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": "erfüllt",
+          "min": 40,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

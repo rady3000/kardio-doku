@@ -1,0 +1,38 @@
+{
+  "id": "tte-rv-funktion",
+  "version": 1,
+  "title": "RV-Funktion (TASV, mit TAPSE)",
+  "field": "tasv",
+  "unit": "cm/s",
+  "source": "Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber quantification by echocardiography in adults: an update from the ASE and the EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014 (S' < 9.5 cm/s); decision rule by the physician (D-66 a)",
+  "reviewedOn": "2026-09-28",
+  "purpose": "category",
+  "requires": [
+    "tapse"
+  ],
+  "note": "SPEC-textgen TTE-R30-7",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": "eingeschränkt",
+          "max": 9.5,
+          "maxIncl": false,
+          "normal": false,
+          "forms": {
+            "adj": "eingeschränkte"
+          }
+        },
+        {
+          "label": "normal",
+          "min": 9.5,
+          "minIncl": true,
+          "normal": true,
+          "forms": {
+            "adj": "normale"
+          }
+        }
+      ]
+    }
+  ]
+}

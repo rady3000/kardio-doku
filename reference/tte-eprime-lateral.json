@@ -1,0 +1,28 @@
+{
+  "id": "tte-eprime-lateral",
+  "version": 1,
+  "title": "e' lateral – Referenzbereich",
+  "field": "e_prime_lateral",
+  "unit": "cm/s",
+  "source": "Køber L, Adamo M, Ruwald AC, et al. 2026 ESC Guidelines for the management of heart failure. Eur Heart J 2026:ehag100. doi:10.1093/eurheartj/ehag100 — Table 10 — reference value as decided in SPEC-textgen TTE-R20.4 (source table to be confirmed by the physician)",
+  "reviewedOn": "2026-09-28",
+  "purpose": "reference",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": null,
+          "max": 10,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": null,
+          "min": 10,
+          "minIncl": true,
+          "normal": true
+        }
+      ]
+    }
+  ]
+}

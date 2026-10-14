@@ -1,0 +1,67 @@
+{
+  "id": "tte-lvesd",
+  "version": 1,
+  "title": "LVESD – Referenzbereich",
+  "field": "lvesd",
+  "unit": "mm",
+  "source": "Lang RM, Badano LP, Mor-Avi V, et al. Recommendations for cardiac chamber quantification by echocardiography in adults: an update from the ASE and the EACVI. Eur Heart J Cardiovasc Imaging 2015;16:233–270. doi:10.1093/ehjci/jev014 (normal ranges)",
+  "reviewedOn": "2026-09-28",
+  "purpose": "reference",
+  "note": "SPEC-textgen TTE-R30-5; highlight only",
+  "sets": [
+    {
+      "when": {
+        "sex": "männlich"
+      },
+      "bands": [
+        {
+          "label": null,
+          "max": 25,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": null,
+          "min": 25,
+          "minIncl": true,
+          "max": 40,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": null,
+          "min": 40,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    },
+    {
+      "when": {
+        "sex": "weiblich"
+      },
+      "bands": [
+        {
+          "label": null,
+          "max": 22,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": null,
+          "min": 22,
+          "minIncl": true,
+          "max": 35,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": null,
+          "min": 35,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}
