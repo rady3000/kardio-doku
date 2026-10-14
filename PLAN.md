@@ -1,7 +1,7 @@
 # PLAN.md — Kardio-Doku build plan
 
 Status: **APPROVED 2026-10-02** (plan and dependencies P1–P5). Current
-milestone: **M1 — built, awaiting your test.**
+milestone: **M2 — built, awaiting your test.**
 
 Scope: stage 1 (trial) per CLAUDE.md and SPEC-decisions D-04. Stage 2 is
 listed at the end for orientation only; it is not planned in detail.
@@ -47,7 +47,7 @@ charge-time / BiV warnings (D-72 f).
 All milestones build **one app** with one installer. Each milestone adds to
 the same app; installing the new version keeps your patients and studies.
 
-## M1 — Foundations (no clinical module yet) — BUILT, awaiting test
+## M1 — Foundations (no clinical module yet) — DONE (tested 2026-10-14)
 
 Goal: an installable, empty but safe shell.
 
@@ -67,7 +67,9 @@ Goal: an installable, empty but safe shell.
 Your test: install, switch modes, create a patient and a study, close and
 reopen — data still there; banner always visible in TESTBETRIEB.
 
-## M2 — Schema engine and TTE with manual entry
+## M2 — Schema engine and TTE with manual entry — BUILT, awaiting test
+
+Open review points: SPEC-decisions D-73.
 
 Goal: you document a complete TTE by keyboard and paste the report.
 

@@ -201,6 +201,27 @@ Correction to D-69 c: **RV Länge is the first value evaluated** and drives the 
 (h) CRT/ICD/S-ICD implantation texts: drafted by Claude in the style of the pacemaker report, reviewed by you.
 (i) Vena cephalica: "Die Vena cephalica wurde in der Mohrenheim-Grube freipräpariert und anschließend unter Sicht punktiert."
 
+**D-73 TTE implementation (M2) — review of drafted details — OPEN.** Where the spec left a detail open, M2 uses the choice below. Each one is in `src/modules/tte.ts` or `reference/*.json` and can be changed in minutes.
+(a) Rhythm options: the prototype's "VHF / Vorhofflattern" is split into "Vorhofflimmern" and "Vorhofflattern" (both use the AF cut-offs, D-65 m); "AV-Block III" kept. OK?
+(b) Grade wording with intermediate grades (D-69 a): AI/MI/MS/TS "leichte · leicht- bis mittelgradige · mittelgradige · mittel- bis hochgradige · hochgradige" (I° … III°); AS the same but "leichtgradige"; TR additionally "hochgradige bis massive (III–IV°) · massive (IV°) · massive bis torrentielle (IV–V°) · torrentielle (V°)", plus "physiologisch". OK?
+(c) The HFpEF count line is printed also when LVEF < 50 % (R20.3 makes only the conclusion depend on LVEF ≥ 50 %). Keep, or hide the count line too below 50 %?
+(d) Conservative choice (empty is safe): no HFpEF text when the rhythm is missing while LAVI or a peptide is entered, or when the sex is missing while LVMI is entered. OK?
+(e) RV size with RVD1/RVD2: "Der rechte Ventrikel ist dilatiert (RVD1 45 mm, dilatiert; RVD2 37 mm, normwertig)." OK?
+(f) RV function select reduced to "normal / eingeschränkt" (pre-selected by R30-7); the prototype grades are removed. OK?
+(g) LVESD: no category (R30-5), so the "LV-Größe (LVESD)" select stays manual, and the LV-size sentence uses both selects as in the prototype. OK?
+(h) LAVI category words follow the LA select: "leichtgradig dilatiert" (R30-2 writes "leicht dilatiert"). OK?
+(i) IVSd/PWd below 6 mm: no category, highlight only (the source table has no band below 6 mm). OK?
+(j) "nicht beurteilbar" sentences: generic "{Merkmal}: nicht beurteilbar." (e.g. "Aortenklappe: Stenose: nicht beurteilbar."), and "Die Wandbewegung ist nicht beurteilbar.", "Die Pulmonalklappe ist nicht beurteilbar." OK?
+(k) New or changed sentences: tricuspid stenosis "Es liegt eine {Grad} Trikuspidalklappenstenose vor (dp …)."; AI without the prototype's "Zusätzlich" (F-17): "Es besteht eine {Grad} Aortenklappeninsuffizienz (…)."; pulmonary valve: "Die Funktion ist normal." / "Es besteht eine leichte Insuffizienz." (F-29). OK?
+(l) Prototype wording kept, please review: "…war die Bestimmung der GLS unmöglich." (F-25); "Der LVEDD ist leicht dilatiert, der LVESD ist …"; "Regionale Wandbewegungsstörungen: {Text}."
+(m) Summary: "{…} LV-Funktion (LVEF 38 %)"; "kein Perikarderguss" in lower case (was "Kein PE"); prostheses, RA/RV size and PH are not in the summary (as in the prototype). Add any?
+(n) Measurement lines "Linker Ventrikel: LVEDD 61 mm; LVESD 38 mm; …", always a space before the unit (also "58 %", "-20,5 %"). OK?
+(o) Rule-set footer in DOCX, PDF and the preview, but not in the clipboard text (it would be pasted into the hospital record). OK?
+(p) e' septal < 7 / lateral < 10 cm/s: the rule files cite the ESC 2026 HF guideline — please confirm the source table (R20.4 names none).
+(q) "Alles normal" fills only empty fields and never overwrites an entry; a category calculated from a measurement replaces a "normal" preset (e.g. LVEDD 61 mm → "leicht dilatiert" even after "Alles normal"). OK?
+(r) Technical changes: "dp max/mean" split into two number fields; TR "PISA" replaced by "EROA (PISA)" in mm² (TTE-M, R40); new field "Vena contracta" for AI (TTE-M); with a prosthesis the native fields of that valve are hidden (as in the prototype).
+(s) LIB-HI-01 is still a draft: insertable only in TESTBETRIEB and marked "Entwurf, nicht geprüft". LIB-VHF-01 and LIB-MI-01 are still to be supplied (D-20).
+
 ## Reminders
 
 - Before milestone M4 (extraction): you supply the anonymized echo (GE, Philips) and device (Vitatron, Abbott, Medtronic) documents (D-54).
