@@ -49,7 +49,7 @@ test('M1 shell', async () => {
   // New study via keyboard; opens the study page; Esc returns.
   await page.keyboard.press('Control+u');
   await page.keyboard.press('Enter');
-  await expect(page.getByText('Das Formular für dieses Modul folgt in Meilenstein M2.')).toBeVisible();
+  await expect(page.getByTestId('report-preview')).toContainText('Transthorakale Echokardiographie:');
   if (shots) await page.screenshot({ path: path.join(shots, 'm1-study.png') });
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: 'Transthorakale Echokardiographie (TTE)' })).toBeVisible();

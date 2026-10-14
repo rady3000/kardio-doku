@@ -1,0 +1,106 @@
+{
+  "tte-aorta-asc": {
+    "reviewedOn": "2026-09-28",
+    "hash": "c24a7d22f9cf3e06"
+  },
+  "tte-bnp": {
+    "reviewedOn": "2026-09-28",
+    "hash": "a94d6820b41c7421"
+  },
+  "tte-eprime-lateral": {
+    "reviewedOn": "2026-09-28",
+    "hash": "28a0322e5e9c0948"
+  },
+  "tte-eprime-septal": {
+    "reviewedOn": "2026-09-28",
+    "hash": "af21c00395cb190f"
+  },
+  "tte-hfpef-ee": {
+    "reviewedOn": "2026-09-28",
+    "hash": "da532b78774d52ca"
+  },
+  "tte-hfpef-lavi": {
+    "reviewedOn": "2026-09-28",
+    "hash": "d5cddc5291e4710d"
+  },
+  "tte-hfpef-lvmi": {
+    "reviewedOn": "2026-09-28",
+    "hash": "332c292014893c2f"
+  },
+  "tte-hfpef-rwt": {
+    "reviewedOn": "2026-09-28",
+    "hash": "605dbde7b7cf0235"
+  },
+  "tte-hfpef-spap": {
+    "reviewedOn": "2026-09-28",
+    "hash": "68116cb29f2f8d07"
+  },
+  "tte-hfpef-trv": {
+    "reviewedOn": "2026-09-28",
+    "hash": "1bf944c754d940fb"
+  },
+  "tte-ivsd": {
+    "reviewedOn": "2026-09-28",
+    "hash": "61a1af56a886718a"
+  },
+  "tte-lavi": {
+    "reviewedOn": "2026-09-28",
+    "hash": "a983ad94df657733"
+  },
+  "tte-lvedd": {
+    "reviewedOn": "2026-09-28",
+    "hash": "3549649c47811bf2"
+  },
+  "tte-lvef": {
+    "reviewedOn": "2026-09-28",
+    "hash": "4b0dde49b5e2fb82"
+  },
+  "tte-lvesd": {
+    "reviewedOn": "2026-09-28",
+    "hash": "35dfe0ba946b4400"
+  },
+  "tte-ntprobnp": {
+    "reviewedOn": "2026-09-28",
+    "hash": "96837e2d315fff68"
+  },
+  "tte-pwd": {
+    "reviewedOn": "2026-09-28",
+    "hash": "5bba898dc9cd904b"
+  },
+  "tte-rv-funktion": {
+    "reviewedOn": "2026-09-28",
+    "hash": "0f05a9ea04dbbca4"
+  },
+  "tte-rv-laenge": {
+    "reviewedOn": "2026-09-29",
+    "hash": "7707cb3283cef6fc"
+  },
+  "tte-rvd1": {
+    "reviewedOn": "2026-09-28",
+    "hash": "d3027fa17f1b01eb"
+  },
+  "tte-rvd2": {
+    "reviewedOn": "2026-09-28",
+    "hash": "ccc75cb1cd9019e7"
+  },
+  "tte-tapse": {
+    "reviewedOn": "2026-09-28",
+    "hash": "7353d072c211c5f3"
+  },
+  "tte-tasv": {
+    "reviewedOn": "2026-09-28",
+    "hash": "bc9099edc3986499"
+  },
+  "tte-tr-eroa": {
+    "reviewedOn": "2026-09-28",
+    "hash": "3d5492ae460d7748"
+  },
+  "tte-tr-vc": {
+    "reviewedOn": "2026-09-28",
+    "hash": "b4b0985eb53ede1a"
+  },
+  "tte-vci": {
+    "reviewedOn": "2026-09-29",
+    "hash": "f1ee348d914d13e0"
+  }
+}

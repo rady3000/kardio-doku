@@ -1,0 +1,26 @@
+Transthorakale Echokardiographie:
+
+Indikation: Status praesens
+Rhythmus: Sinusrhythmus
+
+Messwerte:
+Linker Ventrikel: LVEDD 50 mm; LVESD 32 mm; IVSd 9 mm; PWd 9 mm; LVEF 62 %; LVMI 85 g/m²; RWT 0,36; 2D-GLS -20,5 %
+Diastolische Funktion: E 0,8 m/s; A 0,6 m/s; E/A 1,33; e' septal 9 cm/s; e' lateral 12 cm/s; E/e' 7,6
+Vorhöfe / rechter Ventrikel: LA 36 mm; LAVI 26 ml/m²; RV Länge 27 mm; TAPSE 23 mm; TASV 13 cm/s; TR Vmax 2,2 m/s; sPAP 24 mmHg
+Aorta / VCI: Aortenwurzel 32 mm; Aorta ascendens 33 mm; VCI 15 mm
+Biomarker: NT-proBNP 80 pg/ml
+
+BEFUND:
+Linker Ventrikel: Der linke Ventrikel ist normal dimensioniert. Das Septum ist normwertig, die Hinterwand ist normwertig. Die globale systolische Pumpfunktion ist normal. Es zeigen sich keine regionalen Wandbewegungsstörungen. 0 von 4 Kriterien für eine HFpEF sind erfüllt. Kein Hinweis auf eine HFpEF.
+Vorhöfe und Rechter Ventrikel: Der linke Vorhof ist normal dimensioniert. Der rechte Vorhof ist normwertig. Der rechte Ventrikel ist normwertig. Die rechtsventrikuläre systolische Funktion ist normal. Es besteht kein Hinweis auf eine pulmonale Hypertonie.
+
+Klappenbefund:
+Aortenklappe: Die Aortenklappe ist trikuspid, die Taschen sind zart. Hämodynamisch zeigt sich keine relevante Pathologie.
+Mitralklappe: Die Mitralklappensegel sind zart. Keine hämodynamisch relevante Stenose oder Insuffizienz.
+Trikuspidalklappe: Die Segel sind zart. Keine hämodynamisch relevante Insuffizienz.
+Pulmonalklappe: Die Funktion ist normal.
+
+Aorta und Perikard: Die Aorta ascendens ist normwertig. Kein Perikarderguss. Die V. cava inferior ist normalkalibrig (15 mm) mit atemabhängiger Kaliberschwankung > 50 %.
+
+Zusammenfassung:
+Normale biventrikuläre Pumpfunktion (LVEF 62 %), kein Hinweis auf eine HFpEF, kein Perikarderguss.

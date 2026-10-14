@@ -1,0 +1,25 @@
+Transthorakale Echokardiographie:
+
+Indikation: Kontrolle nach Lungenembolie
+Rhythmus: AV-Block III
+
+Messwerte:
+Linker Ventrikel: LVEDD 55 mm; LVEF 50 %; LVMI 120 g/m²; RWT 0,5
+Diastolische Funktion: E/e' 12
+Vorhöfe / rechter Ventrikel: LAVI 40 ml/m²
+Aorta / VCI: VCI 19 mm
+
+BEFUND:
+Linker Ventrikel: Die Wandbewegung ist nicht beurteilbar.
+Vorhöfe und Rechter Ventrikel: Der linke Vorhof ist bei eingeschränkter Schallbarkeit nicht beurteilbar. Pulmonale Hypertonie: nicht beurteilbar. Rechtsherzbelastungszeichen nicht sicher beurteilbar.
+
+Klappenbefund:
+Aortenklappe: Stenose: nicht beurteilbar.
+Mitralklappe: Insuffizienz: nicht beurteilbar.
+Pulmonalklappe: Die Pulmonalklappe ist nicht beurteilbar.
+
+Aorta und Perikard: Perikarderguss: nicht beurteilbar. Atemabhängige Kaliberschwankung der V. cava inferior: nicht beurteilbar.
+
+Empfehlung:
+Testblock Zeile 1.
+Testblock Zeile 2.

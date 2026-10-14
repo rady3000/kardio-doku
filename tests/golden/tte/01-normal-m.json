@@ -1,0 +1,14 @@
+{
+  "sex": "männlich",
+  "data": {
+    "values": {
+      "indication": "Status praesens", "rhythm": "Sinusrhythmus", "schallbedingungen": "gut",
+      "lvedd": 50, "lvesd": 32, "ivsd": 9, "pwd": 9, "lvef": 62, "lvmi": 85, "rwt": 0.36, "gls": -20.5,
+      "mitral_e": 0.8, "mitral_a": 0.6, "e_a_ratio": 1.33, "e_prime_septal": 9, "e_prime_lateral": 12, "e_e_prime": 7.6,
+      "la": 36, "laesvi": 26, "rv": 27, "tapse": 23, "tasv": 13, "tr_vmax": 2.2, "rvsp": 24,
+      "aortenwurzel": 32, "aorta_ascendens_val": 33, "vci": 15, "vci_kollaps": "> 50 %", "nt_probnp": 80
+    },
+    "presets": []
+  },
+  "normal": "all"
+}

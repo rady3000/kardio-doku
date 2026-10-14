@@ -1,0 +1,22 @@
+{
+  "sex": "weiblich",
+  "data": {
+    "values": {
+      "indication": "Dyspnoe", "rhythm": "Vorhofflimmern", "schallbedingungen": "mäßig",
+      "lvedd": 59, "lvesd": 45, "ivsd": 13.5, "pwd": 12, "lvef": 38, "lvmi": 128, "rwt": 0.48,
+      "e_e_prime": 14.2, "laesvi": 52, "rv": 36, "rvd1": 45, "rvd2": 37, "tapse": 13, "tasv": 8.2,
+      "tr_vmax": 3.4, "rvsp": 52, "pulm_hypertonie": "Hinweis", "ra_diameter": "mittelgradig dilatiert",
+      "lv_kinetik": "regionale Wandbewegungsstörungen", "lv_kinetik_text": "Hypokinesie inferior und inferolateral",
+      "lvesd_dim": "leicht dilatiert",
+      "ak_prothese": "Nein", "ak_taschen": "trikuspid", "ak_sklerose": "mäßig sklerosiert", "ak_stenose": "keine", "ak_insuffizienz": "mittelgradige",
+      "ak_jet": "zentral bis Mitte LV", "ak_pht": 380, "ak_vc": 5,
+      "mk_prothese": "Nein", "mk_segel": "leicht sklerosiert", "mk_insuffizienz": "mittel- bis hochgradige", "mk_stenose": "keine",
+      "mk_jet": "zentral", "mk_mechanismus": "Tethering / Tenting", "mk_vc": 6, "mk_eroa": 0.3,
+      "tk_prothese": "Nein", "tk_segel": "zart", "tk_insuffizienz": "hochgradige bis massive", "tk_vc": 13, "tk_eroa": 65, "tk_jet": "zentral", "tk_stenose": "keine",
+      "pk_funktion": "leichte Insuffizienz",
+      "aorta_ascendens_val": 38, "vci": 24, "vci_kollaps": "< 50 %",
+      "perikarderguss": "geringer Perikarderguss", "perikard_text": "Erguss 6 mm posterior.", "herzhoehlen": "Herzhöhlen entfaltet", "relevanz": "keine hämodynamische Relevanz",
+      "nt_probnp": 2450
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "sex": null,
+  "data": {
+    "values": {
+      "indication": "Sonstige (Freitext)", "indication_text": "Kontrolle nach Lungenembolie", "rhythm": "AV-Block III",
+      "lvef": 50, "lvedd": 55, "lvmi": 120, "rwt": 0.5, "laesvi": 40, "e_e_prime": 12,
+      "lv_kinetik": "nicht beurteilbar", "la_diameter_qualitativ": "nicht beurteilbar", "ak_stenose": "nicht beurteilbar", "ak_insuffizienz": "keine",
+      "mk_insuffizienz": "nicht beurteilbar", "pk_funktion": "nicht beurteilbar", "perikarderguss": "nicht beurteilbar", "vci": 19, "vci_kollaps": "nicht beurteilbar",
+      "pulm_hypertonie": "nicht beurteilbar"
+    },
+    "overrides": {
+      "vh.la": { "text": "Der linke Vorhof ist bei eingeschränkter Schallbarkeit nicht beurteilbar.", "basis": "Der linke Vorhof ist nicht beurteilbar." },
+      "ao.vci": { "text": "", "basis": "Die V. cava inferior ist normalkalibrig (19 mm)." }
+    },
+    "extras": { "vorhoefe": "Rechtsherzbelastungszeichen nicht sicher beurteilbar." },
+    "blocks": [{ "id": "LIB-HI-01", "text": "Testblock Zeile 1.\nTestblock Zeile 2." }]
+  }
+}

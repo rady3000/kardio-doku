@@ -1,0 +1,13 @@
+{
+  "sex": "männlich",
+  "data": {
+    "values": {
+      "indication": "Verlaufskontrolle unter / nach Chemotherapie", "rhythm": "Sinusrhythmus", "schallbedingungen": "deutlich eingeschränkt",
+      "lvef": 55, "lvedd": 52,
+      "ak_prothese": "Ja", "ak_prothese_typ": "Edwards Magna 23 mm", "ak_prothese_funktion": "regelrecht", "ak_vmax": 2.4, "ak_dp_max": 23, "ak_dp_mean": 12, "ak_aoef": 1.7,
+      "mk_prothese": "Ja", "mk_prothese_typ": "St. Jude 29 mm", "mk_prothese_funktion": "erhöhter transprothetischer Gradient", "mk_dp_mean": 7, "mk_prothese_text": "Leichtes paravalvuläres Leck nicht sicher auszuschließen.",
+      "tk_prothese": "Nein", "tk_segel": "zart", "tk_insuffizienz": "physiologisch", "tk_stenose": "leichte", "tk_dp_mean": 3,
+      "aorta_ascendens_val": 41, "perikarderguss": "kein Perikarderguss"
+    }
+  }
+}

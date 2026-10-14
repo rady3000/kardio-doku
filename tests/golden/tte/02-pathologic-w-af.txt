@@ -1,0 +1,26 @@
+Transthorakale Echokardiographie:
+
+Indikation: Dyspnoe
+Rhythmus: Vorhofflimmern
+
+Messwerte:
+Linker Ventrikel: LVEDD 59 mm; LVESD 45 mm; IVSd 13,5 mm; PWd 12 mm; LVEF 38 %; LVMI 128 g/m²; RWT 0,48
+Diastolische Funktion: E/e' 14,2
+Vorhöfe / rechter Ventrikel: LAVI 52 ml/m²; RV Länge 36 mm; RVD1 45 mm; RVD2 37 mm; TAPSE 13 mm; TASV 8,2 cm/s; TR Vmax 3,4 m/s; sPAP 52 mmHg
+Aorta / VCI: Aorta ascendens 38 mm; VCI 24 mm
+Biomarker: NT-proBNP 2450 pg/ml
+
+BEFUND:
+Linker Ventrikel: Der LVEDD ist mittelgradig dilatiert, der LVESD ist leicht dilatiert. Das Septum ist mittelgradig hypertrophiert, die Hinterwand ist leicht hypertrophiert. Die globale systolische Pumpfunktion ist mittelgradig reduziert. Regionale Wandbewegungsstörungen: Hypokinesie inferior und inferolateral. 4 von 4 Kriterien für eine HFpEF sind erfüllt.
+Vorhöfe und Rechter Ventrikel: Der linke Vorhof ist hochgradig dilatiert. Der rechte Vorhof ist mittelgradig dilatiert. Der rechte Ventrikel ist dilatiert (RVD1 45 mm, dilatiert; RVD2 37 mm, dilatiert). Die rechtsventrikuläre systolische Funktion ist eingeschränkt. Es besteht ein indirekter Hinweis auf eine pulmonale Hypertonie (sPAP 52 mmHg).
+
+Klappenbefund:
+Aortenklappe: Die Aortenklappe ist trikuspid, die Taschen sind mäßig sklerosiert. Es besteht eine mittelgradige Aortenklappeninsuffizienz (Jet: zentral bis Mitte LV; PHT 380 ms; VC 5 mm).
+Mitralklappe: Die Mitralklappensegel sind leicht sklerosiert. Es zeigt sich eine mittel- bis hochgradige Mitralklappeninsuffizienz (Jet: zentral; Mechanismus: Tethering / Tenting; VC 6 mm; EROA 0,3 cm²).
+Trikuspidalklappe: Die Segel sind zart. Es besteht eine hochgradige bis massive Trikuspidalklappeninsuffizienz (Jet: zentral; VC 13 mm; EROA 65 mm²).
+Pulmonalklappe: Es besteht eine leichte Insuffizienz.
+
+Aorta und Perikard: Die Aorta ascendens ist dilatiert. Es zeigt sich ein geringer Perikarderguss. Erguss 6 mm posterior. Herzhöhlen: Herzhöhlen entfaltet. Hämodynamik: keine hämodynamische Relevanz. Die V. cava inferior ist dilatiert (24 mm) mit atemabhängiger Kaliberschwankung < 50 %.
+
+Zusammenfassung:
+Mäßige Schallbedingungen, mittelgradig reduzierte LV-Funktion (LVEF 38 %), eingeschränkte RV-Funktion, LA-Dilatation, AI II°, MI II–III°, TI III–IV°, geringer Perikarderguss (keine hämodynamische Relevanz).
