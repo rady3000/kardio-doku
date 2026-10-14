@@ -7,7 +7,7 @@ import { flushAllAutosaves } from './autosave';
 import { PatientDetail } from './components/PatientDetail';
 import { PatientList } from './components/PatientList';
 import { SettingsView } from './components/SettingsView';
-import { StudyView } from './components/StudyView';
+import { StudyView } from './study/StudyView';
 
 type View = { kind: 'patients' } | { kind: 'study'; study: Study } | { kind: 'settings' };
 
@@ -128,6 +128,15 @@ export function App() {
       <div className="flex min-h-0 flex-1">
         {view.kind === 'settings' ? (
           <SettingsView state={state} onSwitchMode={switchMode} />
+        ) : view.kind === 'study' && selected ? (
+          <StudyView
+            key={view.study.id}
+            study={view.study}
+            patient={selected}
+            onBack={() => {
+              void flushAllAutosaves().then(() => setView({ kind: 'patients' }));
+            }}
+          />
         ) : (
           <>
             <PatientList
@@ -139,16 +148,7 @@ export function App() {
               onSelect={(id) => void selectPatient(id)}
               onCreate={() => void createPatient()}
             />
-            {view.kind === 'study' && selected ? (
-              <StudyView
-                key={view.study.id}
-                study={view.study}
-                patient={selected}
-                onBack={() => {
-                  void flushAllAutosaves().then(() => setView({ kind: 'patients' }));
-                }}
-              />
-            ) : selected ? (
+            {selected ? (
               <PatientDetail
                 key={selected.id}
                 patient={selected}
