@@ -1140,7 +1140,9 @@ the textbook (2026-10-01). Used for neutral out-of-range highlighting only
 Range checks (D-72 f): highlight below the lower limit (P < 1.5 mV, R < 5.0 mV);
 thresholds use the chronic values for interrogations and the acute values for
 implantations. Additional warnings kept from the prototype, neutral wording:
-charge time > 15 s, BiV pacing < 98 % (source to be named before `reviewedOn`).
+charge time > 15 s, BiV pacing < 98 % (source: Asirvatham SJ, Friedman PA, Hayes DL (eds.).
+Cardiac Pacing, Defibrillation and Resynchronization: A Clinical Approach. Wiley 2021,
+doi:10.1002/9781119264002 — D-74 d).
 Values entered as "> x" or "a to b" are stored as number + qualifier; the check
 uses x or a (D-72 b).
 

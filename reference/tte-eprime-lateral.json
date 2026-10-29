@@ -1,11 +1,11 @@
 {
   "id": "tte-eprime-lateral",
-  "version": 1,
+  "version": 2,
   "title": "e' lateral – Referenzbereich",
   "field": "e_prime_lateral",
   "unit": "cm/s",
-  "source": "Køber L, Adamo M, Ruwald AC, et al. 2026 ESC Guidelines for the management of heart failure. Eur Heart J 2026:ehag100. doi:10.1093/eurheartj/ehag100 — Table 10 — reference value as decided in SPEC-textgen TTE-R20.4 (source table to be confirmed by the physician)",
-  "reviewedOn": "2026-09-28",
+  "source": "Pieske B, Tschöpe C, de Boer RA, et al. How to diagnose heart failure with preserved ejection fraction: the HFA–PEFF diagnostic algorithm: a consensus recommendation from the Heart Failure Association (HFA) of the ESC. Eur Heart J 2019;40:3297–3317. doi:10.1093/eurheartj/ehz641 (e' reference values, confirmed by the physician, D-74)",
+  "reviewedOn": "2026-10-29",
   "purpose": "reference",
   "sets": [
     {

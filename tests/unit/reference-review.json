@@ -8,12 +8,12 @@
     "hash": "a94d6820b41c7421"
   },
   "tte-eprime-lateral": {
-    "reviewedOn": "2026-09-28",
-    "hash": "28a0322e5e9c0948"
+    "reviewedOn": "2026-10-29",
+    "hash": "5f9b215bf73a2a66"
   },
   "tte-eprime-septal": {
-    "reviewedOn": "2026-09-28",
-    "hash": "af21c00395cb190f"
+    "reviewedOn": "2026-10-29",
+    "hash": "b0a6cf7643598d3a"
   },
   "tte-hfpef-ee": {
     "reviewedOn": "2026-09-28",
@@ -62,6 +62,10 @@
   "tte-ntprobnp": {
     "reviewedOn": "2026-09-28",
     "hash": "96837e2d315fff68"
+  },
+  "tte-ph-zusammenfassung": {
+    "reviewedOn": "2026-10-29",
+    "hash": "23b6a9f25146a2bb"
   },
   "tte-pwd": {
     "reviewedOn": "2026-09-28",

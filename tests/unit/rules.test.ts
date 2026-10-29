@@ -185,6 +185,13 @@ describe('TTE-R20 HFpEF criteria and peptides', () => {
   });
 });
 
+describe('D-74 pulmonary hypertension in the summary', () => {
+  it('sPAP 35 mmHg and above', () => {
+    expect(label('tte-ph-zusammenfassung', 34.9)).toBe('kein Hinweis');
+    expect(label('tte-ph-zusammenfassung', 35)).toBe('Hinweis auf eine pulmonale Hypertonie in Ruhe');
+  });
+});
+
 describe('TTE-R40 TR criteria table (display only)', () => {
   it('VC columns', () => {
     expect(label('tte-tr-vc', 2.9)).toBe('I');

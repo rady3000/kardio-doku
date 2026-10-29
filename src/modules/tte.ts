@@ -108,7 +108,7 @@ export const tte: ModuleSchema = {
     'tte-lvef', 'tte-lavi', 'tte-lvedd', 'tte-ivsd', 'tte-pwd', 'tte-lvesd', 'tte-rv-laenge', 'tte-rvd1',
     'tte-rvd2', 'tte-rv-funktion', 'tte-tapse', 'tte-tasv', 'tte-vci', 'tte-aorta-asc', 'tte-hfpef-lvmi',
     'tte-hfpef-rwt', 'tte-hfpef-lavi', 'tte-hfpef-ee', 'tte-hfpef-spap', 'tte-hfpef-trv', 'tte-ntprobnp',
-    'tte-bnp', 'tte-eprime-septal', 'tte-eprime-lateral', 'tte-tr-vc', 'tte-tr-eroa',
+    'tte-bnp', 'tte-eprime-septal', 'tte-eprime-lateral', 'tte-tr-vc', 'tte-tr-eroa', 'tte-ph-zusammenfassung',
   ],
 
   sections: [
@@ -603,11 +603,17 @@ export const tte: ModuleSchema = {
                 ],
               },
               { id: 'zf.la', when: path('la_diameter_qualitativ', ['normal dimensioniert']), text: 'LA-Dilatation' },
+              // D-74: sPAP ≥ 35 mmHg → summary fragment (single-value rule tte-ph-zusammenfassung).
+              { id: 'zf.ph', when: { cat: ['tte-ph-zusammenfassung', 'Hinweis auf eine pulmonale Hypertonie in Ruhe'] }, text: '{cat:tte-ph-zusammenfassung} (sPAP {rvsp} mmHg)' },
               { id: 'zf.ai', when: path('ak_insuffizienz'), text: 'AI {ak_insuffizienz:short}' },
               { id: 'zf.mi', when: path('mk_insuffizienz'), text: 'MI {mk_insuffizienz:short}' },
               { id: 'zf.ti', when: path('tk_insuffizienz', ['keine', 'physiologisch']), text: 'TI {tk_insuffizienz:short}' },
               { id: 'zf.ms', when: path('mk_stenose'), text: 'MS {mk_stenose:short}' },
               { id: 'zf.as', when: path('ak_stenose'), text: 'AS {ak_stenose:short}[, AÖF {ak_aoef} cm²]' },
+              // D-74: prostheses in the summary (wording DRAFT).
+              { id: 'zf.ak_prothese', when: prothese('ak'), text: ['Z. n. Aortenklappenersatz', { join: '; ', before: ' (', after: ')', items: ['{ak_prothese_typ}', '{ak_prothese_funktion}'] }] },
+              { id: 'zf.mk_prothese', when: prothese('mk'), text: ['Z. n. Mitralklappenersatz', { join: '; ', before: ' (', after: ')', items: ['{mk_prothese_typ}', '{mk_prothese_funktion}'] }] },
+              { id: 'zf.tk_prothese', when: prothese('tk'), text: ['Z. n. Trikuspidalklappenersatz', { join: '; ', before: ' (', after: ')', items: ['{tk_prothese_typ}', '{tk_prothese_funktion}'] }] },
               {
                 id: 'zf.perikard',
                 choose: [

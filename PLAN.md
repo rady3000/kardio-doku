@@ -1,7 +1,7 @@
 # PLAN.md — Kardio-Doku build plan
 
 Status: **APPROVED 2026-10-02** (plan and dependencies P1–P5). Current
-milestone: **M2 — built, awaiting your test.**
+milestone: **M3 — in progress.**
 
 Scope: stage 1 (trial) per CLAUDE.md and SPEC-decisions D-04. Stage 2 is
 listed at the end for orientation only; it is not planned in detail.
@@ -67,9 +67,7 @@ Goal: an installable, empty but safe shell.
 Your test: install, switch modes, create a patient and a study, close and
 reopen — data still there; banner always visible in TESTBETRIEB.
 
-## M2 — Schema engine and TTE with manual entry — BUILT, awaiting test
-
-Open review points: SPEC-decisions D-73.
+## M2 — Schema engine and TTE with manual entry — DONE (accepted 2026-10-29, D-73/D-74)
 
 Goal: you document a complete TTE by keyboard and paste the report.
 
@@ -174,5 +172,4 @@ system, several workstations with a shared database (D-03, D-04).
   page). I give you the exact setup steps at the start of M4; the key is
   entered once in the app's settings and stored only in Windows' protected
   storage.
-- Source for charge-time / BiV warnings (needed in M3, D-72 f).
 - Carotid criteria values (needed in M8).

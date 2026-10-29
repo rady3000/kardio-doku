@@ -137,6 +137,17 @@ describe('valves', () => {
   });
 });
 
+describe('summary additions (D-74)', () => {
+  it('pulmonary hypertension from sPAP ≥ 35 mmHg', () => {
+    expect(line(run({ rvsp: 35 }).model, 'zusammenfassung')).toBe('Hinweis auf eine pulmonale Hypertonie in Ruhe (sPAP 35 mmHg).');
+    expect(line(run({ rvsp: 34 }).model, 'zusammenfassung')).toBe('');
+  });
+  it('prostheses', () => {
+    const { model } = run({ ak_prothese: 'Ja', ak_prothese_typ: 'Edwards Magna 23 mm', ak_prothese_funktion: 'regelrecht', mk_prothese: 'Ja' });
+    expect(line(model, 'zusammenfassung')).toBe('Z. n. Aortenklappenersatz (Edwards Magna 23 mm; regelrecht), Z. n. Mitralklappenersatz.');
+  });
+});
+
 describe('sentence edits (CLAUDE.md rule 6)', () => {
   const base = { perikarderguss: 'kein Perikarderguss' };
   it('the physician edit wins', () => {

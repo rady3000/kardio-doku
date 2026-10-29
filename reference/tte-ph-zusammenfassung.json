@@ -1,0 +1,29 @@
+{
+  "id": "tte-ph-zusammenfassung",
+  "version": 1,
+  "title": "sPAP – Hinweis auf pulmonale Hypertonie (Zusammenfassung)",
+  "field": "rvsp",
+  "unit": "mmHg",
+  "source": "Køber L, Adamo M, Ruwald AC, et al. 2026 ESC Guidelines for the management of heart failure. Eur Heart J 2026:ehag100. doi:10.1093/eurheartj/ehag100 — Table 10 (sPAP 35 mmHg); boundary: 35 mmHg and above, as decided by the physician (D-74)",
+  "reviewedOn": "2026-10-29",
+  "purpose": "category",
+  "note": "Summary fragment only (D-74); the HFpEF criterion R20-4 stays > 35 mmHg",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": "kein Hinweis",
+          "max": 35,
+          "maxIncl": false,
+          "normal": true
+        },
+        {
+          "label": "Hinweis auf eine pulmonale Hypertonie in Ruhe",
+          "min": 35,
+          "minIncl": true,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

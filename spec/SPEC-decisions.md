@@ -201,7 +201,7 @@ Correction to D-69 c: **RV Länge is the first value evaluated** and drives the 
 (h) CRT/ICD/S-ICD implantation texts: drafted by Claude in the style of the pacemaker report, reviewed by you.
 (i) Vena cephalica: "Die Vena cephalica wurde in der Mohrenheim-Grube freipräpariert und anschließend unter Sicht punktiert."
 
-**D-73 TTE implementation (M2) — review of drafted details — OPEN.** Where the spec left a detail open, M2 uses the choice below. Each one is in `src/modules/tte.ts` or `reference/*.json` and can be changed in minutes.
+**D-73 TTE implementation (M2) — review of drafted details — ANSWERED (2026-10-29).** M2 accepted ("M2 OK"). Answers: (a) rhythm split correct; (b) grade wording correct; (c) keep the count line also below LVEF 50 % (a diastolic dysfunction is possible there as well); (m) add prostheses and pulmonary hypertension to the summary → D-74; (o) rule-set footer as implemented; (p) source Pieske 2019 → D-74. All other points (d–l, n, q–s) stand as implemented. The original points:
 (a) Rhythm options: the prototype's "VHF / Vorhofflattern" is split into "Vorhofflimmern" and "Vorhofflattern" (both use the AF cut-offs, D-65 m); "AV-Block III" kept. OK?
 (b) Grade wording with intermediate grades (D-69 a): AI/MI/MS/TS "leichte · leicht- bis mittelgradige · mittelgradige · mittel- bis hochgradige · hochgradige" (I° … III°); AS the same but "leichtgradige"; TR additionally "hochgradige bis massive (III–IV°) · massive (IV°) · massive bis torrentielle (IV–V°) · torrentielle (V°)", plus "physiologisch". OK?
 (c) The HFpEF count line is printed also when LVEF < 50 % (R20.3 makes only the conclusion depend on LVEF ≥ 50 %). Keep, or hide the count line too below 50 %?
@@ -221,6 +221,12 @@ Correction to D-69 c: **RV Länge is the first value evaluated** and drives the 
 (q) "Alles normal" fills only empty fields and never overwrites an entry; a category calculated from a measurement replaces a "normal" preset (e.g. LVEDD 61 mm → "leicht dilatiert" even after "Alles normal"). OK?
 (r) Technical changes: "dp max/mean" split into two number fields; TR "PISA" replaced by "EROA (PISA)" in mm² (TTE-M, R40); new field "Vena contracta" for AI (TTE-M); with a prosthesis the native fields of that valve are hidden (as in the prototype).
 (s) LIB-HI-01 is still a draft: insertable only in TESTBETRIEB and marked "Entwurf, nicht geprüft". LIB-VHF-01 and LIB-MI-01 are still to be supplied (D-20).
+
+**D-74 Summary additions and sources — ANSWERED (2026-10-29).**
+(a) Pulmonary hypertension in the Zusammenfassung from sPAP **35 mmHg and above**: "Hinweis auf eine pulmonale Hypertonie in Ruhe (sPAP {x} mmHg)" (rule file `tte-ph-zusammenfassung`). The HFpEF criterion R20-4 stays at > 35 mmHg as in ESC 2026 Table 10, so at exactly 35 mmHg the summary shows the hint while R20-4 is not fulfilled.
+(b) Prostheses in the Zusammenfassung — wording DRAFT, please confirm: "Z. n. Aortenklappenersatz (Edwards Magna 23 mm; regelrecht)", likewise Mitral- and Trikuspidalklappenersatz.
+(c) e' septal < 7 / lateral < 10 cm/s: source Pieske B et al., Eur Heart J 2019;40:3297–3317, doi:10.1093/eurheartj/ehz641 (rule files updated, reviewedOn 2026-10-29).
+(d) Device warnings charge time > 15 s and BiV pacing < 98 % (D-72 f): source Asirvatham SJ, Friedman PA, Hayes DL (eds.). Cardiac Pacing, Defibrillation and Resynchronization: A Clinical Approach. Wiley 2021. ISBN 9781119263968, doi:10.1002/9781119264002.
 
 ## Reminders
 
