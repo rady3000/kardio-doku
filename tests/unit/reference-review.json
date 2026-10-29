@@ -1,4 +1,52 @@
 {
+  "dev-biv-pacing": {
+    "reviewedOn": "2026-10-29",
+    "hash": "61917f0c620eb0f5"
+  },
+  "dev-charge-time": {
+    "reviewedOn": "2026-10-29",
+    "hash": "315e8e97dfb70301"
+  },
+  "dev-impedance-lv": {
+    "reviewedOn": "2026-10-01",
+    "hash": "eeeef93843a8e209"
+  },
+  "dev-impedance-ra": {
+    "reviewedOn": "2026-10-01",
+    "hash": "95c55c01e1d0d332"
+  },
+  "dev-impedance-rv": {
+    "reviewedOn": "2026-10-01",
+    "hash": "df1adc8a9f5b4502"
+  },
+  "dev-sensing-lv": {
+    "reviewedOn": "2026-10-01",
+    "hash": "05d680e82459137d"
+  },
+  "dev-sensing-ra": {
+    "reviewedOn": "2026-10-01",
+    "hash": "c3280c9c25e115da"
+  },
+  "dev-sensing-rv": {
+    "reviewedOn": "2026-10-01",
+    "hash": "4df06e525dd2e67d"
+  },
+  "dev-shock-impedance": {
+    "reviewedOn": "2026-10-01",
+    "hash": "f6f284f562afb28f"
+  },
+  "dev-threshold-lv": {
+    "reviewedOn": "2026-10-01",
+    "hash": "2166d40c1a897fb2"
+  },
+  "dev-threshold-ra": {
+    "reviewedOn": "2026-10-01",
+    "hash": "fa2b630436a95d2f"
+  },
+  "dev-threshold-rv": {
+    "reviewedOn": "2026-10-01",
+    "hash": "cbfc21b8ea13d006"
+  },
   "tte-aorta-asc": {
     "reviewedOn": "2026-09-28",
     "hash": "c24a7d22f9cf3e06"

@@ -1,0 +1,71 @@
+{
+  "id": "dev-shock-impedance",
+  "version": 1,
+  "title": "Schockimpedanz – Referenzbereich",
+  "field": "icd_shock_impedance",
+  "unit": "Ω",
+  "source": "Ellenbogen KA, Kaszala K (eds.). Cardiac Pacing and ICDs. 7th ed. Wiley 2020. doi:10.1002/9781119578376 — reference table compiled by the physician (SPEC-textgen DEV-REF)",
+  "reviewedOn": "2026-10-01",
+  "purpose": "reference",
+  "note": "Transvenous coil 25–100 Ω; S-ICD subcutaneous array 25–110 Ω",
+  "sets": [
+    {
+      "when": {
+        "device_type": [
+          "VVI-ICD",
+          "DDD-ICD",
+          "CRT-D"
+        ]
+      },
+      "bands": [
+        {
+          "label": null,
+          "max": 25,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": null,
+          "min": 25,
+          "minIncl": true,
+          "max": 100,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": null,
+          "min": 100,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    },
+    {
+      "when": {
+        "device_type": "S-ICD"
+      },
+      "bands": [
+        {
+          "label": null,
+          "max": 25,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": null,
+          "min": 25,
+          "minIncl": true,
+          "max": 110,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": null,
+          "min": 110,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

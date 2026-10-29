@@ -1,0 +1,29 @@
+{
+  "id": "dev-threshold-rv",
+  "version": 1,
+  "title": "Reizschwelle RV (chronisch) – Referenzbereich",
+  "field": "threshold_rv_v",
+  "unit": "V",
+  "source": "Ellenbogen KA, Kaszala K (eds.). Cardiac Pacing and ICDs. 7th ed. Wiley 2020. doi:10.1002/9781119578376 — reference table compiled by the physician (SPEC-textgen DEV-REF)",
+  "reviewedOn": "2026-10-01",
+  "purpose": "reference",
+  "note": "Chronic values 0.5–1.5 V at 0.4–0.5 ms for interrogations (D-72 f); highlight above 1.5 V",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": null,
+          "max": 1.5,
+          "maxIncl": true,
+          "normal": true
+        },
+        {
+          "label": null,
+          "min": 1.5,
+          "minIncl": false,
+          "normal": false
+        }
+      ]
+    }
+  ]
+}

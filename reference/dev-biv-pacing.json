@@ -1,0 +1,29 @@
+{
+  "id": "dev-biv-pacing",
+  "version": 1,
+  "title": "BiV-Stimulationsanteil – Referenzbereich",
+  "field": "crt_lv_pacing_pct",
+  "unit": "%",
+  "source": "Asirvatham SJ, Friedman PA, Hayes DL (eds.). Cardiac Pacing, Defibrillation and Resynchronization: A Clinical Approach. Wiley 2021. doi:10.1002/9781119264002",
+  "reviewedOn": "2026-10-29",
+  "purpose": "reference",
+  "note": "Neutral highlight below 98 % (D-72 f, D-74 d)",
+  "sets": [
+    {
+      "bands": [
+        {
+          "label": null,
+          "max": 98,
+          "maxIncl": false,
+          "normal": false
+        },
+        {
+          "label": null,
+          "min": 98,
+          "minIncl": true,
+          "normal": true
+        }
+      ]
+    }
+  ]
+}
