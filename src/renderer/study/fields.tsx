@@ -2,26 +2,45 @@
 import { useEffect, useState } from 'react';
 import type { Scalar } from '../../core/conditions';
 import type { ValueSource } from '../../core/evaluate';
-import { formatDecimal, parseDecimal } from '../../core/format';
-import { selectOptions, type NumberField, type SelectField, type TextField } from '../../core/schema';
+import { formatDecimal, formatQualified, parseDecimal, parseQualified, readQualified, storeQualified } from '../../core/format';
+import { selectOptions, type DateField, type NumberField, type SelectField, type TextField } from '../../core/schema';
+import { DateInput } from '../components/DateInput';
 import { inputClass } from '../components/ui';
+
+/** Text shown in the input for a stored value. */
+function storedText(field: NumberField, stored: unknown): string {
+  if (field.qualified) {
+    const q = readQualified(stored);
+    return q ? formatQualified(q, 6) : '';
+  }
+  return typeof stored === 'number' ? formatDecimal(stored, 6) : '';
+}
+
+/** Parses input text into the stored form; null = invalid. */
+function parseInput(field: NumberField, text: string): number | string | null {
+  if (field.qualified) {
+    const q = parseQualified(text);
+    return q ? storeQualified(q) : null;
+  }
+  return parseDecimal(text);
+}
 
 export function NumberInput(props: {
   field: NumberField;
-  value: Scalar | undefined;
+  /** Stored value (number, or a qualified string such as ">2.8"). */
+  stored: unknown;
   outOfRange: boolean;
   category?: string;
-  onChange: (v: number | undefined) => void;
+  onChange: (v: number | string | undefined) => void;
 }) {
-  const { field, value } = props;
-  const [text, setText] = useState(typeof value === 'number' ? formatDecimal(value, 6) : '');
+  const { field, stored } = props;
+  const [text, setText] = useState(storedText(field, stored));
   const [invalid, setInvalid] = useState(false);
 
   useEffect(() => {
-    const parsed = parseDecimal(text);
-    if (typeof value === 'number' && parsed !== value) setText(formatDecimal(value, 6));
-    if (value === undefined && parsed !== null) setText('');
-  }, [value]);
+    // Sync when the stored value changes from outside (e.g. reset), not while typing.
+    if (parseInput(field, text) !== (stored ?? null)) setText(storedText(field, stored));
+  }, [stored]);
 
   return (
     <div className="flex items-center gap-1.5">
@@ -30,7 +49,8 @@ export function NumberInput(props: {
         className={`${inputClass.replace('w-full', 'w-20')} shrink-0 text-right tabular-nums ${
           invalid ? 'border-red-600' : props.outOfRange ? 'border-amber-500 bg-amber-50' : ''
         }`}
-        inputMode="decimal"
+        inputMode={field.qualified ? 'text' : 'decimal'}
+        placeholder={field.qualified ? '> x, a–b' : undefined}
         value={text}
         title={props.outOfRange ? 'außerhalb des Referenzbereichs' : undefined}
         onChange={(e) => {
@@ -41,14 +61,14 @@ export function NumberInput(props: {
             props.onChange(undefined);
             return;
           }
-          const n = parseDecimal(t);
+          const n = parseInput(field, t);
           setInvalid(n === null);
           if (n !== null) props.onChange(n);
         }}
       />
       <span className="w-10 shrink-0 text-[11px] text-slate-500">{field.unit}</span>
       {invalid ? (
-        <span className="text-[11px] text-red-700">ungültige Zahl</span>
+        <span className="text-[11px] text-red-700">{field.qualified ? 'Zahl, > x, < x oder a–b' : 'ungültige Zahl'}</span>
       ) : props.category ? (
         <span className={`truncate text-[11px] ${props.outOfRange ? 'text-amber-800' : 'text-slate-500'}`}>{props.category}</span>
       ) : props.outOfRange ? (
@@ -115,5 +135,20 @@ export function TextInput(props: { field: TextField; value: Scalar | undefined; 
     <textarea {...common} rows={2} className={`${inputClass} h-auto py-1`} />
   ) : (
     <input {...common} className={inputClass} />
+  );
+}
+
+export function DateFieldInput(props: { field: DateField; value: Scalar | undefined; onChange: (v: string | undefined) => void }) {
+  const [error, setError] = useState<string | null>(null);
+  return (
+    <div className="flex items-center gap-2">
+      <DateInput
+        id={`f-${props.field.key}`}
+        value={typeof props.value === 'string' ? props.value : null}
+        onChange={(iso) => props.onChange(iso ?? undefined)}
+        onError={setError}
+      />
+      {error && <span className="text-[11px] text-red-700">{error}</span>}
+    </div>
   );
 }

@@ -6,12 +6,14 @@ import type { CriteriaTable, DerivedDisplay, Field, ModuleSchema, Section } from
 import { renderString } from '../../core/template';
 import { formatDecimal } from '../../core/format';
 import { buttonClass } from '../components/ui';
-import { NumberInput, SelectInput, TextInput } from './fields';
+import type { StudyData } from '../../core/studyData';
+import { DateFieldInput, NumberInput, SelectInput, TextInput } from './fields';
 
 export function FormSection(props: {
   schema: ModuleSchema;
   section: Section;
   ev: Evaluation;
+  data: StudyData;
   setValue: (key: string, v: string | number | null | undefined) => void;
   onNormal: () => void;
 }) {
@@ -20,6 +22,8 @@ export function FormSection(props: {
   const displays = schema.displays.filter((d) => d.section === section.key);
   const tables = schema.tables.filter((t) => t.section === section.key);
   const hasNormal = section.fields.some((f) => f.normal !== undefined);
+  const warnings = ev.warnings.filter((w) => w.section === section.key);
+  if (fields.length === 0 && displays.length === 0 && tables.length === 0) return null; // e.g. ICD section for a pacemaker
 
   return (
     <section data-section={section.key} className="rounded-sm border border-slate-200 bg-white">
@@ -36,6 +40,11 @@ export function FormSection(props: {
           <FieldRow key={f.key} field={f} {...props} />
         ))}
       </div>
+      {warnings.map((w) => (
+        <p key={w.text} role="note" className="mx-3 mb-2 rounded-sm border border-amber-300 bg-amber-50 px-2 py-1 text-amber-900">
+          {w.text}
+        </p>
+      ))}
       {displays.map((d) => (
         <DisplayBox key={d.label} display={d} ev={ev} schema={schema} />
       ))}
@@ -49,6 +58,7 @@ export function FormSection(props: {
 function FieldRow(props: {
   field: Field;
   ev: Evaluation;
+  data: StudyData;
   setValue: (key: string, v: string | number | null | undefined) => void;
 }) {
   const { field, ev } = props;
@@ -63,7 +73,7 @@ function FieldRow(props: {
         {field.type === 'number' ? (
           <NumberInput
             field={field}
-            value={value}
+            stored={props.data.values[field.key]}
             outOfRange={ev.outOfRange.has(field.key)}
             category={categoryFor(field.referenceRule, ev)}
             onChange={(v) => props.setValue(field.key, v)}
@@ -76,6 +86,8 @@ function FieldRow(props: {
             suggestion={ev.suggestions.get(field.key)}
             onChange={(v) => props.setValue(field.key, v)}
           />
+        ) : field.type === 'date' ? (
+          <DateFieldInput field={field} value={value} onChange={(v) => props.setValue(field.key, v)} />
         ) : (
           <TextInput field={field} value={value} onChange={(v) => props.setValue(field.key, v)} />
         )}

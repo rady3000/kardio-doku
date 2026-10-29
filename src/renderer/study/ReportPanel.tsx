@@ -17,6 +17,7 @@ export interface ReportActions {
 export function ReportPanel(props: {
   model: ReportModel;
   blockers: string[];
+  warnings: string[];
   library: LibraryBlockInfo[];
   extras: Record<string, string>;
   actions: ReportActions;
@@ -40,6 +41,11 @@ export function ReportPanel(props: {
           </button>
           <LibraryPicker blocks={props.library} onInsert={props.actions.insertBlock} />
         </div>
+        {props.warnings.map((w) => (
+          <p key={w} role="note" className="rounded-sm border border-amber-300 bg-amber-50 px-2 py-0.5 text-amber-900">
+            {w}
+          </p>
+        ))}
         {blocked && <p className="text-red-700">Export gesperrt – unbestätigte Werte: {props.blockers.join(', ')}</p>}
         {props.exportMessage && (
           <p role="status" className={props.exportMessage.ok ? 'text-emerald-700' : 'text-red-700'}>
@@ -87,8 +93,9 @@ export function ReportPanel(props: {
 
 function SectionView(props: { section: ReportSection; extras: Record<string, string>; actions: ReportActions }) {
   const { section } = props;
-  const lines = section.lines.filter((l) => l.sentences.length > 0 || !l.library);
-  if (!lines.some((l) => l.sentences.length > 0) && section.lines.every((l) => l.library)) return null;
+  // Lines and sections without text are not shown (as in the exported report).
+  const lines = section.lines.filter((l) => l.sentences.length > 0);
+  if (lines.length === 0) return null;
   return (
     <div className="mt-3">
       {section.heading && <p className="font-semibold">{section.heading}</p>}

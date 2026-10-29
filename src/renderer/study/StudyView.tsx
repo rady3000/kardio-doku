@@ -172,6 +172,7 @@ export function StudyView(props: { study: Study; patient: Patient; onBack: () =>
         <div className="flex min-h-0 flex-1">
           <StudyForm
             schema={report.schema}
+            data={data}
             report={report}
             setValue={setValue}
             onNormal={(key) => applyNormal(report.schema, [key])}
@@ -180,6 +181,7 @@ export function StudyView(props: { study: Study; patient: Patient; onBack: () =>
           <ReportPanel
             model={report.model}
             blockers={report.blockers}
+            warnings={report.evaluation.warnings.map((w) => w.text)}
             library={library}
             extras={data.extras}
             actions={actions}
@@ -198,6 +200,7 @@ export function StudyView(props: { study: Study; patient: Patient; onBack: () =>
 
 function StudyForm(props: {
   schema: ModuleSchema;
+  data: StudyData;
   report: NonNullable<ReturnType<typeof buildStudyReport>>;
   setValue: (key: string, v: Value) => void;
   onNormal: (sectionKey: string) => void;
@@ -228,6 +231,7 @@ function StudyForm(props: {
           schema={schema}
           section={s}
           ev={report.evaluation}
+          data={props.data}
           setValue={props.setValue}
           onNormal={() => props.onNormal(s.key)}
         />
