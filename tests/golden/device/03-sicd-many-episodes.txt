@@ -1,0 +1,11 @@
+Device-Abfrage:
+
+Abfrage eines S-ICD (Boston Scientific). Das Aggregat wurde am 14.02.2023 bei Tachy-Brady-Syndrom implantiert.
+
+Messwerte: Batteriestatus: RRT/ERI erreicht.
+ICD-spezifische Parameter: VF-Zone > 220 bpm. Schockimpedanz 105 Ω; Ladezeit 16 s.
+
+Beobachtungen: VT/VF-Episoden: 7 (Schocks: 2). Nach Sichtung der EGMs handelt es sich am ehesten um Oversensing durch Myopotentiale. Eine Episode entspricht einer schnellen VT.
+
+Zusammenfassung:
+Regelrechte Aggregat- und Sondenfunktion.

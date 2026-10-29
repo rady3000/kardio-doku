@@ -1,0 +1,11 @@
+{
+  "sex": null,
+  "data": {
+    "values": {
+      "device_type": "S-ICD", "device_company": "Boston Scientific", "implantation_date": "2023-02-14", "device_indication": "Tachy-Brady-Syndrom",
+      "battery_status": "RRT/ERI erreicht", "icd_vf_zone": ">220", "icd_shock_impedance": 105, "icd_charge_time": 16,
+      "vt_vf_episodes": 7, "shock_count": 2, "egm_alle": "Oversensing durch Myopotentiale", "egm_zusatz": "Eine Episode entspricht einer schnellen VT.",
+      "conclusion": "Regelrechte Aggregat- und Sondenfunktion"
+    }
+  }
+}

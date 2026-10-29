@@ -1,0 +1,19 @@
+{
+  "sex": "weiblich",
+  "data": {
+    "values": {
+      "device_type": "CRT-D", "pacing_mode": "DDD", "device_company": "Abbott", "device_model": "Gallant HF",
+      "implantation_date": "2019-11-20", "device_indication": "Andere", "other_indication_text": "ischämische Kardiomyopathie mit LSB, Primärprophylaxe",
+      "pocket_finding": "Hämatom", "patient_condition": "berichtet über Palpitationen", "base_rhythm": "Vorhofflimmern",
+      "battery_status": "OK", "battery_remaining": 14, "battery_remaining_unit": "Monate",
+      "impedance_ra": 410, "impedance_rv": "<200", "sensing_ra": 1.1, "sensing_rv": "5.6..22.4",
+      "threshold_rv_v": 1.25, "threshold_rv_ms": 0.4,
+      "icd_vt_zone": ">171", "icd_vf_zone": ">214", "icd_shock_impedance": 62, "icd_charge_time": 9.8,
+      "crt_lv_vector": "Quadripolar: LV2 zu LV4", "crt_lv_pacing_pct": 93.5, "crt_lv_impedance": 720, "crt_lv_sensing": 9.4, "crt_lv_threshold_v": 2.75, "crt_lv_threshold_ms": 0.5,
+      "af_burden": 34, "at_af_episodes": 2, "at_af_longest": "18 h", "vt_vf_episodes": 1, "atp_count": 1, "shock_count": 0,
+      "egm_1": "paroxysmales Vorhofflimmern", "egm_2": "Vorhofflimmern mit schneller Überleitung", "egm_3": "eine langsame VT, durch ATP terminiert",
+      "reprogramming": "VT-Zone auf 171/min belassen, Modus DDD.",
+      "conclusion": "Auffälligkeit", "conclusion_text": "erniedrigte RV-Impedanz, Kontrolle der Sonde empfohlen", "next_follow_up": "in 4 Wochen"
+    }
+  }
+}

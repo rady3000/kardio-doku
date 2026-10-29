@@ -1,0 +1,12 @@
+Device-Abfrage:
+
+Abfrage eines DDD-SM (Medtronic Azure XT DR MRI). Programmierter Modus: DDDR. Das Aggregat wurde am 03.05.2021 bei AV-Block III° implantiert.
+Klinisch zeigt sich die Aggregattasche reizlos, unauffällig. Der Patient ist in gutem Allgemeinzustand und beschwerdefrei.
+Grundrhythmus: Sinusrhythmus. EKG-Befund ohne Stimulation: AV-Block III° mit Ersatzrhythmus 38/min. EKG-Befund mit Stimulation: Regelrechte Stimulation mit LSB-Morphologie.
+
+Messwerte: Batteriestatus: OK, Restlaufzeit 8,5 Jahre. Stimulationsanteile: AP 12 % / VP 99,8 %. Wahrnehmung: RA 2,8 mV / RV > 12 mV. Reizschwellen: RA 0,75 V bei 0,4 ms / RV 1 V bei 0,4 ms. Impedanzen: RA 456 Ω / RV 589 Ω.
+
+Beobachtungen: AF-Burden: < 1 %. Keine AT/AF-Episoden. Keine VT/VF-Episoden.
+
+Zusammenfassung:
+Regelrechte Aggregat- und Sondenfunktion. Nächste Kontrolle: in 12 Monaten.

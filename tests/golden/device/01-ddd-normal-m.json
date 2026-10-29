@@ -1,0 +1,16 @@
+{
+  "sex": "männlich",
+  "data": {
+    "values": {
+      "device_type": "DDD-SM", "pacing_mode": "DDDR", "device_company": "Medtronic", "device_model": "Azure XT DR MRI",
+      "device_serial": "TEST-0001", "implantation_date": "2021-05-03", "device_indication": "AV-Block III°",
+      "base_rhythm": "Sinusrhythmus", "ecg_native": "AV-Block III° mit Ersatzrhythmus 38/min", "ecg_pacing": "Regelrechte Stimulation mit LSB-Morphologie.",
+      "battery_remaining": 8.5, "battery_remaining_unit": "Jahre",
+      "impedance_ra": 456, "impedance_rv": 589, "sensing_ra": 2.8, "sensing_rv": ">12",
+      "threshold_ra_v": 0.75, "threshold_ra_ms": 0.4, "threshold_rv_v": 1, "threshold_rv_ms": 0.4,
+      "ap_anteil": 12, "vp_anteil": 99.8, "af_burden": "<1", "at_af_episodes": 0, "vt_vf_episodes": 0,
+      "conclusion": "Regelrechte Aggregat- und Sondenfunktion", "next_follow_up": "in 12 Monaten"
+    }
+  },
+  "normal": "all"
+}
