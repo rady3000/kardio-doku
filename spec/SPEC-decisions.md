@@ -228,6 +228,22 @@ Correction to D-69 c: **RV Länge is the first value evaluated** and drives the 
 (c) e' septal < 7 / lateral < 10 cm/s: source Pieske B et al., Eur Heart J 2019;40:3297–3317, doi:10.1093/eurheartj/ehz641 (rule files updated, reviewedOn 2026-10-29).
 (d) Device warnings charge time > 15 s and BiV pacing < 98 % (D-72 f): source Asirvatham SJ, Friedman PA, Hayes DL (eds.). Cardiac Pacing, Defibrillation and Resynchronization: A Clinical Approach. Wiley 2021. ISBN 9781119263968, doi:10.1002/9781119264002.
 
+**D-75 Device-Abfrage implementation (M3) — review of drafted details — OPEN.** Where the spec left a detail open, M3 uses the choice below (`src/modules/device.ts`, `reference/dev-*.json`).
+(a) Report title "Device-Abfrage:". Other wording?
+(b) "Regelrechte" removed from "Abfrage eines …" and from the measurement line (F-01); "regelrecht" appears only through your conclusion selection (D-62). OK?
+(c) The serial number is stored but not printed in the report. Print it?
+(d) The indication list has no ICD/CRT indications (AV-Block III°, AV-Block II° Mobitz, Sick-Sinus-Syndrom, Tachy-Brady-Syndrom, Andere + free text). Which entries should be added (e.g. primary / secondary prevention, CRT indication)?
+(e) Pacing modes: AAI, AAIR, VVI, VVIR, DDD, DDDR, DDI, DDIR, VDD, Andere (free text). OK?
+(f) Pocket sentences besides the prototype's normal sentence: "Klinisch zeigen sich Infektzeichen an der Aggregattasche." / "Klinisch zeigt sich ein Hämatom an der Aggregattasche." / "Klinisch zeigt sich eine Druckstelle an der Aggregattasche." / "Die Aggregattasche ist nicht beurteilbar." OK?
+(g) "Die Patientin …" / "Der Patient …" follows the patient's sex (F-05); without a sex no sentence. OK?
+(h) Measurement sentences: "Batteriestatus: OK, Restlaufzeit 8,5 Jahre." · "Stimulationsanteile: AP 12 % / VP 99,8 %." · "Wahrnehmung: RA 2,8 mV / RV > 12 mV." · "Reizschwellen: RA 0,75 V bei 0,4 ms / RV 1 V bei 0,4 ms." · "Impedanzen: RA 456 Ω / RV 589 Ω." · ICD: "VT-Zone > 171 bpm; VF-Zone > 214 bpm. Schockimpedanz 62 Ω; Ladezeit 9,8 s." · CRT: "LV-Vektor: …; BiV-Stimulation 93,5 %; LV-Impedanz 720 Ω; LV-Wahrnehmung 9,4 mV; LV-Reizschwelle 2,75 V bei 0,5 ms." OK?
+(i) Episodes: "AF-Burden: 34 %." · "Keine AT/AF-Episoden." / "AT/AF-Episoden: 2 (längste Episode 18 h)." · "Keine VT/VF-Episoden." / "VT/VF-Episoden: 1 (ATP: 1; Schocks: 0)." The episode count for D-72 c is AT/AF + VT/VF. OK?
+(j) Thresholds are highlighted only above the chronic upper limit (RA/RV > 1,5 V, LV > 2,5 V), whatever the pulse width; low thresholds are not highlighted. OK?
+(k) Pacing impedances highlighted outside 300–1500 Ω (both sides, also LV); shock impedance transvenous 25–100 Ω, S-ICD 25–110 Ω (both sides). OK?
+(l) The neutral warning appears only for "regelrecht" + a highlighted value (D-62). Should battery RRT/ERI/EOS or a pocket finding also trigger it?
+(m) RA fields hidden for VVI-SM and VVI-ICD; all lead fields and ATP hidden for S-ICD; ICD/CRT sections only for matching types. OK?
+(n) "Alles normal" presets only: Aggregattasche "reizlos, unauffällig", Allgemeinzustand "in gutem Allgemeinzustand und beschwerdefrei", Batteriestatus OK. Measured values and the conclusion are never preset (D-62).
+
 ## Reminders
 
 - Before milestone M4 (extraction): you supply the anonymized echo (GE, Philips) and device (Vitatron, Abbott, Medtronic) documents (D-54).

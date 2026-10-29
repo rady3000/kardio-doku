@@ -1,7 +1,7 @@
 {
   "name": "kardio-doku",
   "productName": "Kardio-Doku",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Clinical documentation for cardiology investigations (prototype for in-house evaluation)",
   "author": "Kardio-Doku",

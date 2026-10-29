@@ -1,7 +1,7 @@
 # PLAN.md — Kardio-Doku build plan
 
 Status: **APPROVED 2026-10-02** (plan and dependencies P1–P5). Current
-milestone: **M3 — in progress.**
+milestone: **M3 — built, awaiting your test.**
 
 Scope: stage 1 (trial) per CLAUDE.md and SPEC-decisions D-04. Stage 2 is
 listed at the end for orientation only; it is not planned in detail.
@@ -97,7 +97,9 @@ Your test: document 10 fictive TTE cases by typing the values in by hand
 (no PDF reading yet, that comes in M4), time it against today's workflow, and
 check every generated sentence.
 
-## M3 — Device-Abfrage with manual entry
+## M3 — Device-Abfrage with manual entry — BUILT, awaiting test
+
+Open review points: SPEC-decisions D-75.
 
 - Device schema: device type and pacing mode (D-56), manufacturer / model
   catalogue (D-35), serial manual only, battery (D-58), lead values with
