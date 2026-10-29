@@ -1,8 +1,9 @@
 // Resolves a study: visibility, effective values (entered / pre-selected /
-// "Alles normal"), classifications and derived values. Pure function.
+// "Alles normal"), classifications, derived values and warnings. Pure function.
 import { evaluate as evalCond, type Resolver, type Scalar } from './conditions';
+import { formatQualified, readQualified } from './format';
 import { classify, type Classification, type RuleSet } from './rules/ruleSet';
-import { allFields, type Field, type ModuleSchema, optionValue, selectOptions } from './schema';
+import { allFields, type Derived, type Field, type ModuleSchema, optionValue, selectOptions } from './schema';
 import type { StudyData } from './studyData';
 
 export interface Context {
@@ -12,8 +13,10 @@ export interface Context {
 export type ValueSource = 'entered' | 'auto' | 'preset';
 
 export interface Evaluation {
-  /** Effective value per visible, filled field. */
+  /** Effective value per visible, filled field (numbers: the value used for checks). */
   values: Map<string, Scalar>;
+  /** Report form of qualified numbers, e.g. "> 2,8" or "5,6–22,4" (D-72 b). */
+  display: Map<string, string>;
   source: Map<string, ValueSource>;
   visible: Set<string>;
   /** Category per rule set (only when the rule produced a band). */
@@ -23,6 +26,8 @@ export interface Evaluation {
   derived: Map<string, number>;
   /** Fields outside their reference range (neutral highlight only). */
   outOfRange: Set<string>;
+  /** Neutral warnings that currently apply (never part of the report). */
+  warnings: { section: string; text: string }[];
   resolver: Resolver;
 }
 
@@ -33,26 +38,36 @@ export function evaluateStudy(
   ctx: Context,
 ): Evaluation {
   const values = new Map<string, Scalar>();
+  const display = new Map<string, string>();
   const source = new Map<string, ValueSource>();
   const visible = new Set<string>();
   const classifications = new Map<string, Classification>();
   const suggestions = new Map<string, string>();
-  const derived = new Map<string, number>();
+  const derivedDefs = new Map(schema.derived.map((d) => [d.key, d]));
   const presets = new Set(data.presets);
+  let outOfRange: Set<string> | null = null;
+
+  // Derived values are computed on demand from the values known so far, so
+  // visibility conditions may use them (e.g. number of episodes).
+  const derivedValue = (d: Derived): number => {
+    if (d.kind === 'countFilled') return d.fields.filter((f) => values.has(f)).length;
+    if (d.kind === 'sum') return d.fields.reduce((s, f) => s + (typeof values.get(f) === 'number' ? (values.get(f) as number) : 0), 0);
+    return d.items.filter((i) => evalCond(i.when, resolver)).length;
+  };
 
   const lookup = (key: string): Scalar | undefined => {
     if (key === 'sex') return ctx.sex ?? undefined;
-    return values.get(key) ?? derived.get(key);
+    if (values.has(key)) return values.get(key);
+    const d = derivedDefs.get(key);
+    return d ? derivedValue(d) : undefined;
   };
   const resolver: Resolver = {
     value: lookup,
-    category: (ruleId) => {
-      const c = classificationFor(ruleId);
-      return c?.band.label ?? undefined;
-    },
+    category: (ruleId) => classificationFor(ruleId)?.band.label ?? undefined,
+    outOfRange: (key) => (outOfRange ? (key === null ? outOfRange.size > 0 : outOfRange.has(key)) : false),
   };
 
-  // A rule is evaluated lazily on the values known so far (schema order).
+  // A rule is evaluated on the values known so far (schema order).
   function classificationFor(ruleId: string): Classification | undefined {
     const rule = rules.get(ruleId);
     if (!rule) return undefined;
@@ -89,28 +104,45 @@ export function evaluateStudy(
   }
 
   function set(field: Field, v: Scalar, s: ValueSource) {
-    if (field.type === 'number' && typeof v !== 'number') return;
-    if (field.type === 'select' && !selectOptions(field).some((o) => o.value === v)) return;
-    values.set(field.key, v);
+    if (field.type === 'number') {
+      if (field.qualified) {
+        const q = readQualified(v);
+        if (!q) return;
+        values.set(field.key, q.a);
+        if (q.q) display.set(field.key, formatQualified(q, field.decimals));
+      } else if (typeof v === 'number') {
+        values.set(field.key, v);
+      } else return;
+    } else if (field.type === 'select') {
+      if (!selectOptions(field).some((o) => optionValue(o) === v)) return;
+      values.set(field.key, v);
+    } else if (field.type === 'date') {
+      if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return;
+      values.set(field.key, v);
+    } else {
+      values.set(field.key, v);
+    }
     source.set(field.key, s);
   }
 
   // Final pass: every rule on the final values (later fields may feed conditions).
   for (const id of schema.rules) classificationFor(id);
 
-  for (const d of schema.derived) {
-    if (d.kind === 'countFilled') derived.set(d.key, d.fields.filter((f) => values.has(f)).length);
-    else derived.set(d.key, d.items.filter((i) => evalCond(i.when, resolver)).length);
-  }
+  const derived = new Map<string, number>();
+  for (const d of schema.derived) derived.set(d.key, derivedValue(d));
 
-  const outOfRange = new Set<string>();
+  outOfRange = new Set<string>();
   for (const field of allFields(schema)) {
     if (field.type !== 'number' || !field.referenceRule || !values.has(field.key)) continue;
     const c = classifications.get(field.referenceRule);
     if (c && !c.band.normal) outOfRange.add(field.key);
   }
 
-  return { values, source, visible, classifications, suggestions, derived, outOfRange, resolver };
+  const warnings = (schema.warnings ?? [])
+    .filter((w) => evalCond(w.when, resolver))
+    .map((w) => ({ section: w.section, text: w.text }));
+
+  return { values, display, source, visible, classifications, suggestions, derived, outOfRange, warnings, resolver };
 }
 
 /** Option object for a select value (for `{key:short}` etc.). */

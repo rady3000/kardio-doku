@@ -3,6 +3,7 @@
 import { evaluate as evalCond, type Scalar } from './conditions';
 import { evaluateStudy, optionFor, type Context, type Evaluation } from './evaluate';
 import { formatDecimal } from './format';
+import { formatGermanDate } from '../shared/dates';
 import type { RuleSet } from './rules/ruleSet';
 import {
   NB,
@@ -99,7 +100,7 @@ export function generateReport(
       const opt = optionFor(field, v);
       return form === 'short' ? opt?.short : opt?.forms?.[form];
     }
-    return formatValue(field, v);
+    return ev.display.get(key) ?? formatValue(field, v);
   };
 
   const render = (t: Template): string | undefined => {
@@ -210,7 +211,7 @@ export function generateReport(
         const f = fields.get(k)!;
         return {
           label: f.reportLabel ?? f.label,
-          value: formatValue(f, ev.values.get(k)!),
+          value: ev.display.get(k) ?? formatValue(f, ev.values.get(k)!),
           unit: f.type === 'number' ? f.unit : '',
         };
       }),
@@ -238,12 +239,18 @@ export function generateReport(
 
 function formatValue(field: Field, v: Scalar): string {
   if (field.type === 'number' && typeof v === 'number') return formatDecimal(v, field.decimals);
+  if (field.type === 'date' && typeof v === 'string') return formatGermanDate(v);
   return String(v);
 }
 
 function tidy(s: string | undefined): string | undefined {
   if (s === undefined) return undefined;
-  const t = s.replace(/\s+/g, ' ').replace(/\s+([.,;)])/g, '$1').replace(/\(\s+/g, '(').trim();
+  const t = s
+    .replace(/\s+/g, ' ')
+    .replace(/\s+([.,;)])/g, '$1')
+    .replace(/\(\s+/g, '(')
+    .replace(/([^.])\.\.(?!\.)/g, '$1.') // free text ending in "." before a template "."
+    .trim();
   return t === '' ? undefined : t;
 }
 

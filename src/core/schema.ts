@@ -33,6 +33,12 @@ export interface NumberField extends FieldBase {
   decimals: number;
   /** Rule set used for the neutral out-of-range highlight. */
   referenceRule?: string;
+  /** Accepts "> x", "< x" and ranges "a–b" (D-72 b); checks use x or a. */
+  qualified?: boolean;
+}
+
+export interface DateField extends FieldBase {
+  type: 'date';
 }
 
 export interface SelectField extends FieldBase {
@@ -49,7 +55,7 @@ export interface TextField extends FieldBase {
   multiline?: boolean;
 }
 
-export type Field = NumberField | SelectField | TextField;
+export type Field = NumberField | SelectField | TextField | DateField;
 
 export interface Section {
   key: string;
@@ -60,7 +66,8 @@ export interface Section {
 /** Derived value. Each one cites its source in `source` (CLAUDE.md working method). */
 export type Derived =
   | { key: string; label: string; source: string; kind: 'countFilled'; fields: readonly string[] }
-  | { key: string; label: string; source: string; kind: 'countTrue'; items: readonly { label: string; when: Cond }[] };
+  | { key: string; label: string; source: string; kind: 'countTrue'; items: readonly { label: string; when: Cond }[] }
+  | { key: string; label: string; source: string; kind: 'sum'; fields: readonly string[] };
 
 /** Live display of a derived value inside a form section; hover shows its inputs. */
 export interface DerivedDisplay {
@@ -70,6 +77,13 @@ export interface DerivedDisplay {
   when?: Cond;
   details?: readonly { label: string; when: Cond }[];
   inputs: readonly string[];
+}
+
+/** Neutral warning shown in the form and next to the report; never part of the report (D-62). */
+export interface Warning {
+  section: string;
+  when: Cond;
+  text: string;
 }
 
 /** Criteria table shown next to a section; the entered value's column is highlighted. */
@@ -146,6 +160,7 @@ export interface ModuleSchema {
   derived: readonly Derived[];
   displays: readonly DerivedDisplay[];
   tables: readonly CriteriaTable[];
+  warnings?: readonly Warning[];
   /** Rule sets this module uses (each must exist in reference/). */
   rules: readonly string[];
   /** Library file with physician-selectable text blocks. */

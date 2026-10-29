@@ -12,6 +12,8 @@ export type Cond =
   | { gte: [string, number] }
   | { lt: [string, number] }
   | { lte: [string, number] }
+  /** Any of the listed fields (all fields if empty) is outside its reference range. */
+  | { outOfRange: readonly string[] }
   | { all: readonly Cond[] }
   | { any: readonly Cond[] }
   | { not: Cond };
@@ -22,6 +24,7 @@ export type Scalar = string | number;
 export interface Resolver {
   value(key: string): Scalar | undefined;
   category(ruleId: string): string | undefined;
+  outOfRange?(key: string | null): boolean;
 }
 
 export function evaluate(cond: Cond, r: Resolver): boolean {
@@ -45,6 +48,10 @@ export function evaluate(cond: Cond, r: Resolver): boolean {
   if ('gte' in cond) return num(r, cond.gte[0], (v) => v >= cond.gte[1]);
   if ('lt' in cond) return num(r, cond.lt[0], (v) => v < cond.lt[1]);
   if ('lte' in cond) return num(r, cond.lte[0], (v) => v <= cond.lte[1]);
+  if ('outOfRange' in cond) {
+    if (!r.outOfRange) return false;
+    return cond.outOfRange.length ? cond.outOfRange.some((k) => r.outOfRange!(k)) : r.outOfRange(null);
+  }
   if ('all' in cond) return cond.all.every((c) => evaluate(c, r));
   if ('any' in cond) return cond.any.some((c) => evaluate(c, r));
   return !evaluate(cond.not, r);
@@ -70,6 +77,7 @@ export function condKeys(cond: Cond): { keys: string[]; rules: string[] } {
     else if ('gte' in c) keys.push(c.gte[0]);
     else if ('lt' in c) keys.push(c.lt[0]);
     else if ('lte' in c) keys.push(c.lte[0]);
+    else if ('outOfRange' in c) keys.push(...c.outOfRange);
     else if ('all' in c) c.all.forEach(walk);
     else if ('any' in c) c.any.forEach(walk);
     else walk(c.not);

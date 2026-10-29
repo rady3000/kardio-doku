@@ -59,8 +59,12 @@ export function validateSchema(schema: ModuleSchema, rules: ReadonlyMap<string, 
     if (f.type === 'select' && f.autoFrom) ruleKnown(f.autoFrom, `field ${f.key}`);
   }
   for (const d of schema.derived) {
-    if (d.kind === 'countFilled') for (const k of d.fields) if (!keys.has(k)) problems.push(`derived ${d.key}: unknown ${k}`);
+    if (d.kind === 'countFilled' || d.kind === 'sum') for (const k of d.fields) if (!keys.has(k)) problems.push(`derived ${d.key}: unknown ${k}`);
     if (d.kind === 'countTrue') d.items.forEach((i) => checkCond(i.when, `derived ${d.key}`));
+  }
+  for (const w of schema.warnings ?? []) {
+    checkCond(w.when, `warning ${w.text}`);
+    if (!schema.sections.some((s) => s.key === w.section)) problems.push(`warning ${w.text}: unknown section ${w.section}`);
   }
   for (const disp of schema.displays) {
     checkTemplate(disp.template, `display ${disp.label}`);
