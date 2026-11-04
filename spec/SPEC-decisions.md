@@ -228,7 +228,7 @@ Correction to D-69 c: **RV Länge is the first value evaluated** and drives the 
 (c) e' septal < 7 / lateral < 10 cm/s: source Pieske B et al., Eur Heart J 2019;40:3297–3317, doi:10.1093/eurheartj/ehz641 (rule files updated, reviewedOn 2026-10-29).
 (d) Device warnings charge time > 15 s and BiV pacing < 98 % (D-72 f): source Asirvatham SJ, Friedman PA, Hayes DL (eds.). Cardiac Pacing, Defibrillation and Resynchronization: A Clinical Approach. Wiley 2021. ISBN 9781119263968, doi:10.1002/9781119264002.
 
-**D-75 Device-Abfrage implementation (M3) — review of drafted details — OPEN.** Where the spec left a detail open, M3 uses the choice below (`src/modules/device.ts`, `reference/dev-*.json`).
+**D-75 Device-Abfrage implementation (M3) — review of drafted details — ANSWERED (2026-11-04).** M3 accepted ("M3 ok"). Answers: (a) title "Device-Abfrage" kept; (c) serial number not printed; (d) indications added: "Z.n. Kammerflimmern", "Primärprävention bei LVEF < 35 %", "LVEF < 35 % und LSB"; (j) thresholds OK; (l) battery RRT/ERI/EOS and pocket findings also trigger the warning. All other points stand as implemented. LIB-VHF-01 / LIB-MI-01 follow later. The original points:
 (a) Report title "Device-Abfrage:". Other wording?
 (b) "Regelrechte" removed from "Abfrage eines …" and from the measurement line (F-01); "regelrecht" appears only through your conclusion selection (D-62). OK?
 (c) The serial number is stored but not printed in the report. Print it?

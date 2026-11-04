@@ -133,6 +133,20 @@ describe('conclusion (D-62) and empty is safe', () => {
     expect(r.text).toContain('Regelrechte Aggregat- und Sondenfunktion.');
     expect(r.text).not.toContain('Hinweis');
   });
+  it('battery RRT/ERI/EOS and pocket findings also trigger a warning (D-75 l)', () => {
+    const r = (v: Record<string, string>) =>
+      runDevice({ ...v, conclusion: 'Regelrechte Aggregat- und Sondenfunktion' }).ev.warnings.map((w) => w.text).join();
+    expect(r({ battery_status: 'EOS' })).toMatch(/Batteriestatus/);
+    expect(r({ battery_status: 'RRT/ERI erreicht' })).toMatch(/Batteriestatus/);
+    expect(r({ battery_status: 'OK' })).toBe('');
+    expect(r({ pocket_finding: 'Hämatom' })).toMatch(/Aggregattasche/);
+    expect(r({ pocket_finding: 'reizlos, unauffällig' })).toBe('');
+  });
+  it('ICD/CRT indications (D-75 d)', () => {
+    expect(runDevice({ implantation_date: '2020-01-02', device_indication: 'Z.n. Kammerflimmern' }).text).toContain(
+      'Das Aggregat wurde am 02.01.2020 bei Z.n. Kammerflimmern implantiert.',
+    );
+  });
   it('no warning when all values are inside the reference ranges', () => {
     expect(runDevice({ device_type: 'DDD-SM', sensing_rv: 9, conclusion: 'Regelrechte Aggregat- und Sondenfunktion' }).ev.warnings).toEqual([]);
   });

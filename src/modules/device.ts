@@ -59,7 +59,7 @@ export const device: ModuleSchema = {
         { key: 'device_model', label: 'Modell', type: 'text', extractable: true },
         { key: 'device_serial', label: 'Seriennummer', type: 'text', help: 'Nur manuelle Eingabe, nie extrahiert (Gateway §2.6.4).' },
         { key: 'implantation_date', label: 'Implantationsdatum', type: 'date', extractable: true },
-        { key: 'device_indication', label: 'Indikation', type: 'select', allowNb: false, options: ['AV-Block III°', 'AV-Block II° Mobitz', 'Sick-Sinus-Syndrom', 'Tachy-Brady-Syndrom', 'Andere'], extractable: true },
+        { key: 'device_indication', label: 'Indikation', type: 'select', allowNb: false, options: ['AV-Block III°', 'AV-Block II° Mobitz', 'Sick-Sinus-Syndrom', 'Tachy-Brady-Syndrom', 'Z.n. Kammerflimmern', 'Primärprävention bei LVEF < 35 %', 'LVEF < 35 % und LSB', 'Andere'], extractable: true }, // D-75 d
         { key: 'other_indication_text', label: 'Indikation (Freitext)', type: 'text', visibleIf: { eq: ['device_indication', 'Andere'] } },
         { key: 'pocket_finding', label: 'Aggregattasche', type: 'select', normal: 'reizlos, unauffällig', options: ['reizlos, unauffällig', 'Infektzeichen', 'Hämatom', 'Druckstelle'] },
         {
@@ -190,6 +190,17 @@ export const device: ModuleSchema = {
       section: 'beurteilung',
       when: { all: [{ eq: ['conclusion', REGELRECHT] }, { outOfRange: [] }] },
       text: 'Hinweis: Mindestens ein Messwert liegt außerhalb des Referenzbereichs, die Beurteilung lautet „regelrecht“.',
+    },
+    // D-75 l: battery status and pocket findings also trigger the warning.
+    {
+      section: 'beurteilung',
+      when: { all: [{ eq: ['conclusion', REGELRECHT] }, { in: ['battery_status', ['RRT/ERI erreicht', 'EOS']] }] },
+      text: 'Hinweis: Batteriestatus RRT/ERI bzw. EOS, die Beurteilung lautet „regelrecht“.',
+    },
+    {
+      section: 'beurteilung',
+      when: { all: [{ eq: ['conclusion', REGELRECHT] }, { in: ['pocket_finding', ['Infektzeichen', 'Hämatom', 'Druckstelle']] }] },
+      text: 'Hinweis: Befund an der Aggregattasche, die Beurteilung lautet „regelrecht“.',
     },
   ],
 
