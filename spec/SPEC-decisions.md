@@ -244,6 +244,24 @@ Correction to D-69 c: **RV Länge is the first value evaluated** and drives the 
 (m) RA fields hidden for VVI-SM and VVI-ICD; all lead fields and ATP hidden for S-ICD; ICD/CRT sections only for matching types. OK?
 (n) "Alles normal" presets only: Aggregattasche "reizlos, unauffällig", Allgemeinzustand "in gutem Allgemeinzustand und beschwerdefrei", Batteriestatus OK. Measured values and the conclusion are never preset (D-62).
 
+**D-76 Mistral OCR — documentation check before M4 (2026-11-04) — OPEN.** Read on docs.mistral.ai (OCR processor, API reference /v1/ocr, model pages, annotations, zero data retention, regional inference) and the help centre.
+Findings:
+- Endpoint `POST /v1/ocr`. Current model **OCR 4.1** (GA since 16.07.2026); OCR 4.0 is deprecated (29.09.2026), OCR 3 (25.12) still available. The alias `mistral-ocr-latest` exists; the exact 4.1 API name must be confirmed on the first call (the response returns `model`).
+- Input: a document by URL, as base64, or via the Files API (PDF and images). Pages selectable (`pages`, 0-based). Limits per cookbook about 50 MB and 1000 pages.
+- Output per page: `markdown`, `dimensions` (`dpi`, `height`, `width`), `tables`, `images`, optional `header`/`footer`, and **`blocks`** in reading order (`include_blocks`, default true): `type` (text, title, table, …), `top_left_x`, `top_left_y`, `bottom_right_x`, `bottom_right_y`, `content`. Bounding boxes are **paragraph/block level**, not word level. The coordinate unit is not documented (probably pixels at the given `dpi`) → verify on the first real document.
+- Confidence (`confidence_scores_granularity`): page (`average_page_confidence_score`, `minimum_page_confidence_score`), block (`average_content_confidence_score`, `minimum_content_confidence_score`, `block_type_confidence_score`) or word (`word_confidence_scores` per page/table; item fields not documented).
+- **Document annotations** (`document_annotation_format`, JSON schema → structured fields) return the fields **without page, bounding box or confidence**. Under gateway §3.1 such values would be discarded; they can only be used if code finds the same text in an OCR block afterwards.
+- Price: OCR 4 USD per 1000 pages; annotations 5 USD per 1000 annotated pages; batch API at half price.
+- Data: by default input and output are kept 30 days for abuse monitoring. **Zero data retention** can be requested for `/v1/ocr` (pay-as-you-go, approval by Mistral); the Files API is outside ZDR. Use for training: a separate opt-out switch in the admin panel (Privacy). An EU endpoint `api.eu.mistral.ai` exists; OCR support there is not documented.
+- Self-hosting (needed for ECHTBETRIEB): no public offer; only via an enterprise licence ("Contact us").
+Consequences proposed for M4 (your decision):
+(a) **Stage 1 = OCR only + deterministic label matching in code** (extractionHints per vendor, e.g. "LVEF_BiP_Q"): no model interpretation, the value is found inside an OCR block, so page + box + confidence come with it. Stage 2 (annotation model proposes values, code must find them in a block, otherwise discarded) only as the comparison arm in the harness (D-07).
+(b) Highlight = the block box (paragraph or table row region), plus the raw text line shown next to the value; for tables the box may cover the whole table → the raw text line is what you confirm against.
+(c) Confidence used = the minimum word confidence of the value's text if available, else the block minimum; threshold 0.85 (gateway §4.3).
+(d) Pin the model version (not `-latest`) and store it per extraction (gateway §4.4).
+(e) Account setup: training opt-out switched off, ZDR requested, documents sent inline as base64 (no Files API); EU endpoint if OCR is supported there.
+(f) Network: `api.mistral.ai` (and `api.eu.mistral.ai`) must be allowed in the environment for test calls.
+
 ## Reminders
 
 - Before milestone M4 (extraction): you supply the anonymized echo (GE, Philips) and device (Vitatron, Abbott, Medtronic) documents (D-54).
