@@ -244,7 +244,7 @@ Correction to D-69 c: **RV Länge is the first value evaluated** and drives the 
 (m) RA fields hidden for VVI-SM and VVI-ICD; all lead fields and ATP hidden for S-ICD; ICD/CRT sections only for matching types. OK?
 (n) "Alles normal" presets only: Aggregattasche "reizlos, unauffällig", Allgemeinzustand "in gutem Allgemeinzustand und beschwerdefrei", Batteriestatus OK. Measured values and the conclusion are never preset (D-62).
 
-**D-76 Mistral OCR — documentation check before M4 (2026-11-04) — OPEN.** Read on docs.mistral.ai (OCR processor, API reference /v1/ocr, model pages, annotations, zero data retention, regional inference) and the help centre.
+**D-76 Mistral OCR — documentation check before M4 (2026-11-04) — ANSWERED (2026-11-20).** Proposals (a)–(f) accepted ("D-76 ok"); api.mistral.ai and api.eu.mistral.ai allowed. Verified with a synthetic, fictitious PDF on 2026-11-20 (see the end of this entry). Read on docs.mistral.ai (OCR processor, API reference /v1/ocr, model pages, annotations, zero data retention, regional inference) and the help centre.
 Findings:
 - Endpoint `POST /v1/ocr`. Current model **OCR 4.1** (GA since 16.07.2026); OCR 4.0 is deprecated (29.09.2026), OCR 3 (25.12) still available. The alias `mistral-ocr-latest` exists; the exact 4.1 API name must be confirmed on the first call (the response returns `model`).
 - Input: a document by URL, as base64, or via the Files API (PDF and images). Pages selectable (`pages`, 0-based). Limits per cookbook about 50 MB and 1000 pages.
@@ -261,6 +261,13 @@ Consequences proposed for M4 (your decision):
 (d) Pin the model version (not `-latest`) and store it per extraction (gateway §4.4).
 (e) Account setup: training opt-out switched off, ZDR requested, documents sent inline as base64 (no Files API); EU endpoint if OCR is supported there.
 (f) Network: `api.mistral.ai` (and `api.eu.mistral.ai`) must be allowed in the environment for test calls.
+Verified on 2026-11-20 (one synthetic A4 echo table, no real data):
+- Model names: `mistral-ocr-4-1` (aliases `mistral-ocr-4`, `mistral-ocr-latest`); requesting `mistral-ocr-4-1` returns `model: "mistral-ocr-4-1"`, while `-latest` returns only the alias → pin `mistral-ocr-4-1`.
+- Coordinates are **pixels of the rendered page**, origin top left: `dimensions` 721 × 1019 px at 87 dpi for A4. A box in PDF points = px × 72 / dpi.
+- A whole table is **one block** (one box for all rows); rows have no own box. Single text lines outside tables get their own block.
+- Block confidence (granularity "block"): `average_content_confidence_score`, `minimum_content_confidence_score`, `block_type_confidence_score`. Word confidence (granularity "word"): `word_confidence_scores` items `{text, confidence, start_index}`, where `start_index` is the character offset in the page `markdown`; block confidence is then null. Word scores therefore map exactly onto the characters of a value.
+- The EU endpoint `api.eu.mistral.ai` serves `/v1/ocr` with the same model → use it (data processed in the EU).
+- Cost of the test: 1 page per call.
 
 ## Reminders
 
