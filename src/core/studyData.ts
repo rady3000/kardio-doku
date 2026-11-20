@@ -12,8 +12,29 @@ export const StudyDataSchema = z.object({
   extras: z.record(z.string(), z.string()).default({}),
   /** Physician-inserted library blocks, in order. */
   blocks: z.array(z.object({ id: z.string(), text: z.string() })).default([]),
-  /** Extracted values not yet confirmed (milestone M4). Export is blocked while any feeds the report. */
+  /** Extracted values not yet confirmed (gateway §4.1). Export is blocked while any feeds the report. */
   unconfirmed: z.array(z.string()).default([]),
+  /** Where an extracted value came from (gateway §4): page, box, source line, confidence. */
+  provenance: z
+    .record(
+      z.string(),
+      z.object({
+        extractionId: z.number().int(),
+        documentId: z.number().int(),
+        page: z.number().int(),
+        box: z.tuple([z.number(), z.number(), z.number(), z.number()]),
+        pageWidth: z.number(),
+        pageHeight: z.number(),
+        rawText: z.string(),
+        confidence: z.number(),
+        extracted: z.union([z.number(), z.string()]),
+      }),
+    )
+    .default({}),
+  /** Fields whose extraction was discarded, with the reason ("Extraktion fehlgeschlagen"). */
+  extractionFailed: z.record(z.string(), z.string()).default({}),
+  /** Documents whose source view was opened (required before "Alle bestätigen"). */
+  sourceViewed: z.array(z.number().int()).default([]),
 });
 export type StudyData = z.infer<typeof StudyDataSchema>;
 

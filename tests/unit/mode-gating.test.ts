@@ -9,7 +9,7 @@ const fake = (id: string, isLocal: boolean): ExtractionProvider => ({
   displayName: id,
   isLocal,
   implemented: true,
-  extract: async () => ({ provider: id, model: id, values: [] }),
+  ocr: async () => ({ provider: id, model: id, pages: [], pagesProcessed: 0 }),
 });
 const providers = [fake('cloud', false), fake('local', true)];
 
@@ -27,6 +27,7 @@ describe('mode gating', () => {
   it('allows cloud and local providers in TESTBETRIEB', () => {
     expect(availableProviders('TESTBETRIEB', providers).map((p) => p.id)).toEqual(['cloud', 'local']);
     expect(getProvider('TESTBETRIEB', 'mistral-ocr').id).toBe('mistral-ocr');
+    expect(getProvider('TESTBETRIEB', 'mistral-ocr').implemented).toBe(true);
   });
 
   it('shows cloud providers greyed out with the reason in ECHTBETRIEB', () => {
@@ -37,10 +38,11 @@ describe('mode gating', () => {
 
   it('runs with no provider configured: the mock provider makes no network call', async () => {
     const mock = getProvider('ECHTBETRIEB', 'mock');
-    await expect(mock.extract({ fileName: 'x.pdf', bytes: new Uint8Array() }, [])).resolves.toEqual({
+    await expect(mock.ocr({ fileName: 'x.pdf', mime: 'application/pdf', bytes: new Uint8Array() })).resolves.toEqual({
       provider: 'mock',
       model: 'mock',
-      values: [],
+      pages: [],
+      pagesProcessed: 0,
     });
   });
 });

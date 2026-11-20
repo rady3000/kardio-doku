@@ -13,7 +13,7 @@ describe('settings', () => {
 
   it('round-trips the mode', () => {
     const dir = tmp();
-    saveSettings(dir, { mode: 'ECHTBETRIEB' });
+    saveSettings(dir, { mode: 'ECHTBETRIEB', provider: 'none', confidenceThreshold: 0.85 });
     expect(loadSettings(dir).mode).toBe('ECHTBETRIEB');
   });
 

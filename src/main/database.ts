@@ -40,6 +40,42 @@ const MIGRATIONS: readonly string[] = [
   );
   CREATE INDEX studies_patient ON studies(patient_id);
   `,
+  // M4: source documents in the mode-partitioned file (gateway §2.3 item 4) and
+  // the extraction audit record (gateway §4.4).
+  `
+  CREATE TABLE documents (
+    id             INTEGER PRIMARY KEY,
+    study_id       INTEGER NOT NULL REFERENCES studies(id),
+    file_name      TEXT NOT NULL,
+    mime           TEXT NOT NULL,
+    data           BLOB NOT NULL,
+    anonymized_at  TEXT,
+    created_at     TEXT NOT NULL
+  );
+  CREATE INDEX documents_study ON documents(study_id);
+  CREATE TABLE extractions (
+    id               INTEGER PRIMARY KEY,
+    study_id         INTEGER NOT NULL REFERENCES studies(id),
+    document_id      INTEGER NOT NULL REFERENCES documents(id),
+    mode             TEXT NOT NULL,
+    provider         TEXT NOT NULL,
+    model            TEXT NOT NULL,
+    field_key        TEXT NOT NULL,
+    raw_text         TEXT,
+    value_extracted  TEXT,
+    unit             TEXT,
+    confidence       REAL,
+    page             INTEGER,
+    bbox             TEXT,
+    status           TEXT NOT NULL CHECK (status IN ('accepted', 'rejected')),
+    reason           TEXT,
+    value_confirmed  TEXT,
+    was_corrected    INTEGER,
+    timestamp        TEXT NOT NULL,
+    confirmed_at     TEXT
+  );
+  CREATE INDEX extractions_study ON extractions(study_id);
+  `,
 ];
 
 export function databasePath(dataDir: string, mode: Betriebsmodus): string {

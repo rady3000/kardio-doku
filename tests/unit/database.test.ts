@@ -53,7 +53,7 @@ describe('database per Betriebsmodus', () => {
   it('migrates idempotently', () => {
     openDatabase(dir, 'TESTBETRIEB').close();
     const db = openDatabase(dir, 'TESTBETRIEB');
-    expect(db.pragma('user_version', { simple: true })).toBe(1);
+    expect(db.pragma('user_version', { simple: true })).toBe(2);
     db.close();
   });
 });

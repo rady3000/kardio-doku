@@ -1,29 +1,14 @@
 // Extraction provider interface (SPEC-extraction-gateway §3). This directory is
 // the only place in the application allowed to make network calls; the egress
-// test (tests/unit/egress.test.ts) enforces that.
-//
-// M1 defines the interface and the mode gating only. Extraction itself,
-// provenance checks and plausibility rules arrive in M4.
+// test (tests/unit/egress.test.ts) enforces that. A provider only reads the
+// document (OCR); finding field values is deterministic code in
+// src/core/extraction (D-76 a).
+import type { OcrResult } from '../core/extraction/ocr';
 
 export interface SourceDocument {
   fileName: string;
+  mime: string;
   bytes: Uint8Array;
-}
-
-export interface ExtractedValue {
-  fieldKey: string;
-  rawText: string;
-  value: number | string;
-  unit: string | null;
-  confidence: number;
-  page: number;
-  bbox: [number, number, number, number];
-}
-
-export interface ExtractionResult {
-  provider: string;
-  model: string;
-  values: ExtractedValue[];
 }
 
 export interface ExtractionProvider {
@@ -35,5 +20,5 @@ export interface ExtractionProvider {
   implemented: boolean;
   /** When an unimplemented provider is planned, shown in the settings page. */
   plannedFor?: string;
-  extract(document: SourceDocument, fieldKeys: string[]): Promise<ExtractionResult>;
+  ocr(document: SourceDocument): Promise<OcrResult>;
 }

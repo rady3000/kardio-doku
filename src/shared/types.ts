@@ -83,3 +83,29 @@ export interface LibraryBlockInfo {
   reviewedOn: string | null;
   text: string;
 }
+
+export interface DocumentInfo {
+  id: number;
+  studyId: number;
+  fileName: string;
+  mime: string;
+  anonymizedAt: string | null;
+  createdAt: string;
+}
+
+export interface ExtractionSummary {
+  ok: boolean;
+  message: string;
+  accepted: string[];
+  rejected: { field: string; reason: string }[];
+  skipped: string[];
+}
+
+export interface ExtractionSettings {
+  provider: string;
+  confidenceThreshold: number;
+  hasApiKey: boolean;
+  encryptionAvailable: boolean;
+  /** Documents sent to a cloud provider so far in this database (for the cost estimate). */
+  documentsProcessed: number;
+}

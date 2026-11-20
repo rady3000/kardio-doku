@@ -7,7 +7,7 @@ export const mistralOcrSelfHostedProvider: ExtractionProvider = {
   isLocal: true,
   implemented: false,
   plannedFor: 'nach der Testphase',
-  async extract() {
+  async ocr() {
     throw new Error('Self-hosted Mistral OCR is not implemented in v1.');
   },
 };
