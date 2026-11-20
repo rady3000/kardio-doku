@@ -11,8 +11,8 @@ import {
   StudyUpdateSchema,
   type AppState,
 } from '../shared/types';
-import { availableProviders, getProvider, providerInfo } from '../gateway/registry';
-import { setKeySource } from '../gateway/providers/mistralOcr';
+import { availableProviders, getProvider, providerInfo, setGatewayFetch, setGatewayKeySource } from '../gateway/registry';
+import { gatewayFetch } from '../gateway/electronFetch';
 import fs from 'node:fs';
 import { insertableBlocks } from '../core/library';
 import { exportStudy } from './export';
@@ -270,7 +270,8 @@ if (!app.requestSingleInstanceLock()) {
       // End-to-end tests only: the network-free mock provider with a recorded OCR response.
       if (process.env.KARDIO_E2E_MOCK_OCR) settings.provider = 'mock';
       switchDatabase(settings.mode);
-      setKeySource(() => loadApiKey(userDir()));
+      setGatewayKeySource(() => loadApiKey(userDir()));
+      setGatewayFetch(gatewayFetch);
     } catch (err) {
       dialog.showErrorBox(
         'Kardio-Doku – Datenbank kann nicht geöffnet werden',

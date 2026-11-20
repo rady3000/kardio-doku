@@ -6,6 +6,7 @@ import type { ExtractionProvider } from './provider';
 import { mockProvider } from './providers/mock';
 import { mistralOcrProvider } from './providers/mistralOcr';
 import { mistralOcrSelfHostedProvider } from './providers/mistralOcrSelfHosted';
+export { setFetch as setGatewayFetch, setKeySource as setGatewayKeySource } from './providers/mistralOcr';
 
 const ALL_PROVIDERS: readonly ExtractionProvider[] = [
   mistralOcrProvider,

@@ -9,6 +9,11 @@ export const MISTRAL_ENDPOINT = 'https://api.eu.mistral.ai/v1/ocr';
 export const MISTRAL_MODEL = 'mistral-ocr-4-1';
 
 let keySource: () => string | null = () => null;
+/** The app passes Electron's net.fetch (system proxy settings, e.g. hospital networks); tests use Node's fetch. */
+let fetchImpl: typeof fetch = (...args) => fetch(...args);
+export function setFetch(fn: typeof fetch): void {
+  fetchImpl = fn;
+}
 export function setKeySource(fn: () => string | null): void {
   keySource = fn;
 }
@@ -31,7 +36,7 @@ export const mistralOcrProvider: ExtractionProvider = {
   async ocr(doc) {
     const key = keySource();
     if (!key) throw new Error('Kein API-Schlüssel für Mistral OCR gespeichert (Einstellungen).');
-    const res = await fetch(MISTRAL_ENDPOINT, {
+    const res = await fetchImpl(MISTRAL_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
       body: JSON.stringify(mistralRequestBody(doc.mime, doc.bytes)),
