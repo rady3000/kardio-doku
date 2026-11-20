@@ -2,6 +2,7 @@
 // sections, fields, derived values, rule references and sentence templates.
 // One generic form renderer and one report generator work on any schema.
 import type { Cond } from './conditions';
+import type { ExtractionSpec } from './extraction/spec';
 
 export const NB = 'nicht beurteilbar';
 
@@ -35,6 +36,8 @@ export interface NumberField extends FieldBase {
   referenceRule?: string;
   /** Accepts "> x", "< x" and ranges "a–b" (D-72 b); checks use x or a. */
   qualified?: boolean;
+  /** Document extraction: labels, expected unit, plausible range (gateway §3.4). */
+  extraction?: ExtractionSpec;
 }
 
 export interface DateField extends FieldBase {

@@ -2,7 +2,9 @@
 // Data only — fields, rule references and sentence templates. Clinical
 // content follows spec/SPEC-modules.md (Modul 1), spec/SPEC-textgen.md
 // (TTE-R20, TTE-R30, TTE-R40, TTE-P, TTE-M, TTE-T, TTE-S) and the decisions in
-// spec/SPEC-decisions.md. Details drafted during M2 await review: SPEC-decisions D-73.
+// spec/SPEC-decisions.md. Extraction labels: prototype prompt (SPEC-textgen X-1) — to be
+// completed from the GE / Philips sample documents (D-54); units and plausible ranges:
+// SPEC-textgen X-6 (D-50, DRAFT pending review).
 import type { Cond } from '../core/conditions';
 import { NB, type ModuleSchema, type SelectOption } from '../core/schema';
 
@@ -139,14 +141,14 @@ export const tte: ModuleSchema = {
       key: 'lv',
       title: 'Linker Ventrikel',
       fields: [
-        { key: 'lvedd', label: 'LVEDD', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-lvedd', extractable: true },
-        { key: 'lvesd', label: 'LVESD', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-lvesd', extractable: true },
-        { key: 'ivsd', label: 'IVSd', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-ivsd', extractable: true },
-        { key: 'pwd', label: 'PWd', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-pwd', extractable: true },
-        { key: 'lvef', label: 'LVEF', type: 'number', unit: '%', decimals: 1, referenceRule: 'tte-lvef', extractable: true },
-        { key: 'lvmi', label: 'LVMI', type: 'number', unit: 'g/m²', decimals: 1, referenceRule: 'tte-hfpef-lvmi', extractable: true },
-        { key: 'rwt', label: 'RWT', type: 'number', unit: '', decimals: 2, referenceRule: 'tte-hfpef-rwt', extractable: true },
-        { key: 'gls', label: '2D-GLS', type: 'number', unit: '%', decimals: 1, extractable: true },
+        { key: 'lvedd', label: 'LVEDD', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-lvedd', extractable: true, extraction: { labels: ['LVIDd', 'LVEDD'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [20, 100] } },
+        { key: 'lvesd', label: 'LVESD', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-lvesd', extractable: true, extraction: { labels: ['LVIDs', 'LVESD'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [10, 90] } },
+        { key: 'ivsd', label: 'IVSd', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-ivsd', extractable: true, extraction: { labels: ['IVSd'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [3, 40] } },
+        { key: 'pwd', label: 'PWd', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-pwd', extractable: true, extraction: { labels: ['LVPWd', 'PWd'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [3, 40] } },
+        { key: 'lvef', label: 'LVEF', type: 'number', unit: '%', decimals: 1, referenceRule: 'tte-lvef', extractable: true, extraction: { labels: ['LVEF_BiP_Q', 'EF Biplane', 'LVEF'], unit: '%', unitOptional: true, range: [5, 90] } },
+        { key: 'lvmi', label: 'LVMI', type: 'number', unit: 'g/m²', decimals: 1, referenceRule: 'tte-hfpef-lvmi', extractable: true, extraction: { labels: ['LVMI', 'LV Mass Index'], unit: 'g/m²', range: [20, 400] } },
+        { key: 'rwt', label: 'RWT', type: 'number', unit: '', decimals: 2, referenceRule: 'tte-hfpef-rwt', extractable: true, extraction: { labels: ['RWT'], unit: '', unitOptional: true, range: [0.1, 1.5] } },
+        { key: 'gls', label: '2D-GLS', type: 'number', unit: '%', decimals: 1, extractable: true, extraction: { labels: ['G peak SL(Avg)', 'GLS'], unit: '%', unitOptional: true, range: [0, 35], rangeOnAbsolute: true } },
         {
           key: 'lvedd_dim',
           label: 'LV-Größe (LVEDD)',
@@ -176,20 +178,20 @@ export const tte: ModuleSchema = {
       key: 'diastole',
       title: 'Diastolische Funktion',
       fields: [
-        { key: 'mitral_e', label: 'Mitral E', reportLabel: 'E', type: 'number', unit: 'm/s', decimals: 2, extractable: true },
-        { key: 'mitral_a', label: 'Mitral A', reportLabel: 'A', type: 'number', unit: 'm/s', decimals: 2, extractable: true },
-        { key: 'e_a_ratio', label: 'E/A', type: 'number', unit: '', decimals: 2, extractable: true },
+        { key: 'mitral_e', label: 'Mitral E', reportLabel: 'E', type: 'number', unit: 'm/s', decimals: 2, extractable: true, extraction: { labels: ['MV E Vel', 'MV E'], unit: 'm/s', alternatives: [{ unit: 'cm/s', factor: 0.01 }], range: [0.2, 2.5] } },
+        { key: 'mitral_a', label: 'Mitral A', reportLabel: 'A', type: 'number', unit: 'm/s', decimals: 2, extractable: true, extraction: { labels: ['MV A Vel', 'MV A'], unit: 'm/s', alternatives: [{ unit: 'cm/s', factor: 0.01 }], range: [0.1, 2.5] } },
+        { key: 'e_a_ratio', label: 'E/A', type: 'number', unit: '', decimals: 2, extractable: true, extraction: { labels: ['MV E/A Ratio', 'E/A'], unit: '', unitOptional: true, range: [0.2, 6] } },
         { key: 'e_prime_septal', label: "e' septal", type: 'number', unit: 'cm/s', decimals: 1, referenceRule: 'tte-eprime-septal' },
         { key: 'e_prime_lateral', label: "e' lateral", type: 'number', unit: 'cm/s', decimals: 1, referenceRule: 'tte-eprime-lateral' },
-        { key: 'e_e_prime', label: "E/e' (Mittelwert)", reportLabel: "E/e'", type: 'number', unit: '', decimals: 1, referenceRule: 'tte-hfpef-ee', extractable: true, help: 'Wert des Echogeräts (Mittelwert), wird nicht berechnet (D-10).' },
+        { key: 'e_e_prime', label: "E/e' (Mittelwert)", reportLabel: "E/e'", type: 'number', unit: '', decimals: 1, referenceRule: 'tte-hfpef-ee', extractable: true, help: 'Wert des Echogeräts (Mittelwert), wird nicht berechnet (D-10).', extraction: { labels: ["E/e' avg", "E/E' avg", "E/e' (Avg)", "E/e' Mittel"], unit: '', unitOptional: true, range: [2, 50] } },
       ],
     },
     {
       key: 'vorhoefe',
       title: 'Vorhöfe, rechter Ventrikel, Pulmonaldruck',
       fields: [
-        { key: 'la', label: 'LA', type: 'number', unit: 'mm', decimals: 1, extractable: true },
-        { key: 'laesvi', label: 'LAVI (LAESVI)', reportLabel: 'LAVI', type: 'number', unit: 'ml/m²', decimals: 1, referenceRule: 'tte-lavi', extractable: true },
+        { key: 'la', label: 'LA', type: 'number', unit: 'mm', decimals: 1, extractable: true, extraction: { labels: ['LA Diam', 'LA'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [15, 90] } },
+        { key: 'laesvi', label: 'LAVI (LAESVI)', reportLabel: 'LAVI', type: 'number', unit: 'ml/m²', decimals: 1, referenceRule: 'tte-lavi', extractable: true, extraction: { labels: ['LAVI', 'LAESVi', 'LAESV Index', 'LA Vol Index (BP)'], unit: 'ml/m²', range: [5, 200] } },
         {
           key: 'la_diameter_qualitativ',
           label: 'LA-Größe',
@@ -199,7 +201,7 @@ export const tte: ModuleSchema = {
           options: ['normal dimensioniert', 'leichtgradig dilatiert', 'mittelgradig dilatiert', 'hochgradig dilatiert'],
         },
         { key: 'ra_diameter', label: 'RA-Größe', type: 'select', normal: 'normwertig', options: ['normwertig', 'leicht dilatiert', 'mittelgradig dilatiert', 'hochgradig dilatiert'] },
-        { key: 'rv', label: 'RV Länge (PLAX)', reportLabel: 'RV Länge', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-rv-laenge', extractable: true },
+        { key: 'rv', label: 'RV Länge (PLAX)', reportLabel: 'RV Länge', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-rv-laenge', extractable: true, extraction: { labels: ['RV Länge', 'RVIDd'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [10, 80] } },
         { key: 'rvd1', label: 'RVD1 basal', reportLabel: 'RVD1', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-rvd1', visibleIf: { cat: ['tte-rv-laenge', 'dilatiert'] } },
         { key: 'rvd2', label: 'RVD2 mittventrikulär', reportLabel: 'RVD2', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-rvd2', visibleIf: { cat: ['tte-rv-laenge', 'dilatiert'] } },
         {
@@ -210,8 +212,8 @@ export const tte: ModuleSchema = {
           normal: 'normwertig',
           options: ['normwertig', 'dilatiert', 'leicht dilatiert', 'mittelgradig dilatiert', 'hochgradig dilatiert'],
         },
-        { key: 'tapse', label: 'TAPSE', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-tapse', extractable: true },
-        { key: 'tasv', label: 'TASV (S′)', reportLabel: 'TASV', type: 'number', unit: 'cm/s', decimals: 1, referenceRule: 'tte-tasv', extractable: true },
+        { key: 'tapse', label: 'TAPSE', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-tapse', extractable: true, extraction: { labels: ['TAPSE'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [3, 40] } },
+        { key: 'tasv', label: 'TASV (S′)', reportLabel: 'TASV', type: 'number', unit: 'cm/s', decimals: 1, referenceRule: 'tte-tasv', extractable: true, extraction: { labels: ["TV S'", "TDI S'", "RV S'"], unit: 'cm/s', alternatives: [{ unit: 'm/s', factor: 100 }], range: [2, 30] } },
         {
           key: 'rv_funktion',
           label: 'RV-Funktion',
@@ -224,8 +226,8 @@ export const tte: ModuleSchema = {
           ],
           help: 'Automatisch aus TASV, wenn TAPSE und TASV eingegeben sind (TTE-R30-7).',
         },
-        { key: 'tr_vmax', label: 'TR-Geschwindigkeit', reportLabel: 'TR Vmax', type: 'number', unit: 'm/s', decimals: 2, referenceRule: 'tte-hfpef-trv', extractable: true },
-        { key: 'rvsp', label: 'sPAP (RVSP)', reportLabel: 'sPAP', type: 'number', unit: 'mmHg', decimals: 1, referenceRule: 'tte-hfpef-spap', extractable: true, help: 'Wert aus dem Echobefund; wird nicht berechnet (D-16).' },
+        { key: 'tr_vmax', label: 'TR-Geschwindigkeit', reportLabel: 'TR Vmax', type: 'number', unit: 'm/s', decimals: 2, referenceRule: 'tte-hfpef-trv', extractable: true, extraction: { labels: ['TR Vmax', 'TR max vel'], unit: 'm/s', alternatives: [{ unit: 'cm/s', factor: 0.01 }], range: [0.5, 6] } },
+        { key: 'rvsp', label: 'sPAP (RVSP)', reportLabel: 'sPAP', type: 'number', unit: 'mmHg', decimals: 1, referenceRule: 'tte-hfpef-spap', extractable: true, help: 'Wert aus dem Echobefund; wird nicht berechnet (D-16).', extraction: { labels: ['RVSP', 'sPAP', 'PASP'], unit: 'mmHg', range: [10, 150] } },
         { key: 'pulm_hypertonie', label: 'Pulmonale Hypertonie', type: 'select', normal: 'kein Hinweis', options: ['kein Hinweis', 'Hinweis'] },
       ],
     },
@@ -237,10 +239,10 @@ export const tte: ModuleSchema = {
         { key: 'ak_taschen', label: 'Anatomie', type: 'select', normal: 'trikuspid', options: ['trikuspid', 'bikuspid', 'nicht bestimmbar'], visibleIf: nativ('ak') },
         { key: 'ak_sklerose', label: 'Sklerose', type: 'select', normal: 'zart', options: SKLEROSE, visibleIf: nativ('ak') },
         { key: 'ak_stenose', label: 'Stenose', reportLabel: 'Stenose', type: 'select', normal: 'keine', options: grades('leichtgradige'), visibleIf: nativ('ak') },
-        { key: 'ak_vmax', label: 'Vmax', type: 'number', unit: 'm/s', decimals: 2, extractable: true },
-        { key: 'ak_dp_max', label: 'dp max', type: 'number', unit: 'mmHg', decimals: 1, extractable: true },
-        { key: 'ak_dp_mean', label: 'dp mean', type: 'number', unit: 'mmHg', decimals: 1, extractable: true },
-        { key: 'ak_aoef', label: 'AÖF', type: 'number', unit: 'cm²', decimals: 2, extractable: true },
+        { key: 'ak_vmax', label: 'Vmax', type: 'number', unit: 'm/s', decimals: 2, extractable: true, extraction: { labels: ['AV Vmax', 'Vmax Aorta', 'Vmax AV'], unit: 'm/s', alternatives: [{ unit: 'cm/s', factor: 0.01 }], range: [0.5, 7] } },
+        { key: 'ak_dp_max', label: 'dp max', type: 'number', unit: 'mmHg', decimals: 1, extractable: true, extraction: { labels: ['AV maxPG', 'Pmax Aorta'], unit: 'mmHg', range: [2, 200] } },
+        { key: 'ak_dp_mean', label: 'dp mean', type: 'number', unit: 'mmHg', decimals: 1, extractable: true, extraction: { labels: ['AV meanPG', 'Pmean Aorta'], unit: 'mmHg', range: [1, 150] } },
+        { key: 'ak_aoef', label: 'AÖF', type: 'number', unit: 'cm²', decimals: 2, extractable: true, extraction: { labels: ['AVA', 'AÖF', 'AV Area'], unit: 'cm²', range: [0.2, 6] } },
         { key: 'ak_insuffizienz', label: 'Insuffizienz', reportLabel: 'Insuffizienz', type: 'select', normal: 'keine', options: grades('leichte'), visibleIf: nativ('ak') },
         { key: 'ak_jet', label: 'Jetrichtung', type: 'select', options: ['klein zentral', 'zentral bis Mitte LV', 'zentral bis LV-Spitze', 'exzentrisch bis Mitte LV', 'exzentrisch bis LV-Spitze'], visibleIf: { in: ['ak_insuffizienz', AI_DETAILS] } },
         { key: 'ak_pht', label: 'PHT', type: 'number', unit: 'ms', decimals: 0, visibleIf: { in: ['ak_insuffizienz', AI_DETAILS] } },
@@ -288,10 +290,10 @@ export const tte: ModuleSchema = {
       key: 'aorta',
       title: 'Aorta, V. cava inferior, Perikard',
       fields: [
-        { key: 'aortenwurzel', label: 'Aortenwurzel', type: 'number', unit: 'mm', decimals: 1, extractable: true },
-        { key: 'aorta_ascendens_val', label: 'Aorta ascendens', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-aorta-asc', extractable: true },
+        { key: 'aortenwurzel', label: 'Aortenwurzel', type: 'number', unit: 'mm', decimals: 1, extractable: true, extraction: { labels: ['Ao Root', 'Aortenwurzel'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [15, 80] } },
+        { key: 'aorta_ascendens_val', label: 'Aorta ascendens', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-aorta-asc', extractable: true, extraction: { labels: ['Ao Asc', 'Aorta ascendens'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [15, 80] } },
         { key: 'aorta_ascendens', label: 'Aorta ascendens (Beurteilung)', type: 'select', autoFrom: 'tte-aorta-asc', normal: 'normwertig', options: ['normwertig', 'dilatiert'] },
-        { key: 'vci', label: 'VCI', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-vci', extractable: true },
+        { key: 'vci', label: 'VCI', type: 'number', unit: 'mm', decimals: 1, referenceRule: 'tte-vci', extractable: true, extraction: { labels: ['IVC', 'VCI'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [3, 40] } },
         { key: 'vci_kollaps', label: 'Atemabhängige Kaliberschwankung', reportLabel: 'Atemabhängige Kaliberschwankung der V. cava inferior', type: 'select', options: ['> 50 %', '< 50 %'] },
         { key: 'perikarderguss', label: 'Perikarderguss', type: 'select', normal: 'kein Perikarderguss', options: ['kein Perikarderguss', 'geringer Perikarderguss', 'mittelgroßer Perikarderguss', 'großer Perikarderguss'] },
         { key: 'perikard_text', label: 'Ergussbeschreibung', type: 'text', visibleIf: path('perikarderguss', ['kein Perikarderguss']) },
@@ -303,8 +305,8 @@ export const tte: ModuleSchema = {
       key: 'bio',
       title: 'Laborchemische Biomarker',
       fields: [
-        { key: 'nt_probnp', label: 'NT-proBNP', type: 'number', unit: 'pg/ml', decimals: 1, referenceRule: 'tte-ntprobnp', extractable: true },
-        { key: 'bnp', label: 'BNP', type: 'number', unit: 'pg/ml', decimals: 1, referenceRule: 'tte-bnp', extractable: true },
+        { key: 'nt_probnp', label: 'NT-proBNP', type: 'number', unit: 'pg/ml', decimals: 1, referenceRule: 'tte-ntprobnp', extractable: true, extraction: { labels: ['NT-proBNP', 'NTproBNP'], unit: 'pg/ml', alternatives: [{ unit: 'ng/l', factor: 1 }], range: [5, 70000] } },
+        { key: 'bnp', label: 'BNP', type: 'number', unit: 'pg/ml', decimals: 1, referenceRule: 'tte-bnp', extractable: true, extraction: { labels: ['BNP'], unit: 'pg/ml', alternatives: [{ unit: 'ng/l', factor: 1 }], range: [1, 10000] } },
       ],
     },
   ],
