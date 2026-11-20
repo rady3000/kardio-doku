@@ -1,5 +1,8 @@
 // Settings: Betriebsmodus switch (gateway §2.3) and extraction providers.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { ExtractionSettings } from '../../shared/types';
+import { api } from '../api';
+import { buttonClass as btn, inputClass } from './ui';
 import type { Betriebsmodus } from '../../shared/mode';
 import type { AppState } from '../../shared/types';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -46,8 +49,10 @@ export function SettingsView(props: { state: AppState; onSwitchMode: (mode: Betr
         <section>
           <SectionTitle>Dokumentenextraktion</SectionTitle>
           <p className="mb-2 text-slate-600">
-            Kein Anbieter konfiguriert. Die manuelle Eingabe ist immer verfügbar; die Extraktion füllt nur vor.
+            Die manuelle Eingabe ist immer verfügbar; die Extraktion füllt nur vor. Jeder extrahierte Wert bleibt bis zu
+            Ihrer Bestätigung gesperrt.
           </p>
+          <ExtractionSettingsForm mode={state.mode} />
           <table className="w-full border-collapse">
             <tbody>
               {state.providers.map((p) => (
@@ -107,6 +112,101 @@ export function SettingsView(props: { state: AppState; onSwitchMode: (mode: Betr
           </p>
         </ConfirmDialog>
       )}
+    </div>
+  );
+}
+
+/** Provider, API key (Electron safeStorage, never shown again), confidence threshold (gateway §6). */
+function ExtractionSettingsForm({ mode }: { mode: Betriebsmodus }) {
+  const [s, setS] = useState<ExtractionSettings | null>(null);
+  const [key, setKey] = useState('');
+  const [msg, setMsg] = useState<string | null>(null);
+  useEffect(() => {
+    void api.getExtractionSettings().then(setS);
+  }, [mode]);
+  if (!s) return null;
+  const run = async (f: () => Promise<ExtractionSettings>, ok: string) => {
+    try {
+      setS(await f());
+      setMsg(ok);
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message.replace(/^Error invoking remote method '[^']+': (Error: )?/, '') : String(err));
+    }
+  };
+  const cloudBlocked = mode === 'ECHTBETRIEB';
+  return (
+    <div className="mb-3 grid max-w-2xl grid-cols-[11rem_1fr] items-center gap-x-3 gap-y-2">
+      <label htmlFor="x-provider" className="text-right text-slate-600">
+        Anbieter
+      </label>
+      <select
+        id="x-provider"
+        className={`${inputClass} w-72`}
+        value={s.provider === 'mock' ? 'none' : s.provider}
+        onChange={(e) => void run(() => api.setExtractionSettings({ provider: e.target.value }), 'Anbieter gespeichert.')}
+      >
+        <option value="none">Kein Anbieter (nur manuelle Eingabe)</option>
+        <option value="mistral-ocr" disabled={cloudBlocked}>
+          Mistral OCR (Cloud, EU){cloudBlocked ? ' – im Echtbetrieb gesperrt' : ''}
+        </option>
+      </select>
+      <label htmlFor="x-key" className="text-right text-slate-600">
+        API-Schlüssel
+      </label>
+      <div className="flex items-center gap-2">
+        <input
+          id="x-key"
+          type="password"
+          autoComplete="off"
+          className={`${inputClass} w-72`}
+          placeholder={s.hasApiKey ? 'gespeichert (verschlüsselt)' : 'Mistral API-Schlüssel'}
+          value={key}
+          onChange={(e) => setKey(e.target.value)}
+        />
+        <button
+          type="button"
+          className={btn}
+          disabled={key.trim().length < 10}
+          onClick={() =>
+            void run(async () => {
+              const r = await api.setApiKey(key);
+              setKey('');
+              return r;
+            }, 'Schlüssel verschlüsselt gespeichert.')
+          }
+        >
+          Speichern
+        </button>
+        {s.hasApiKey && (
+          <button type="button" className={btn} onClick={() => void run(() => api.deleteApiKey(), 'Schlüssel gelöscht.')}>
+            Löschen
+          </button>
+        )}
+      </div>
+      {!s.encryptionAvailable && (
+        <p className="col-start-2 text-[11px] text-red-700">Verschlüsselte Ablage nicht verfügbar – ein Schlüssel kann nicht gespeichert werden.</p>
+      )}
+      <label htmlFor="x-threshold" className="text-right text-slate-600">
+        Mindest-Konfidenz
+      </label>
+      <input
+        id="x-threshold"
+        type="number"
+        min={0.5}
+        max={1}
+        step={0.01}
+        className={`${inputClass} w-24`}
+        value={s.confidenceThreshold}
+        onChange={(e) => {
+          const v = Number(e.target.value);
+          if (v >= 0.5 && v <= 1) void run(() => api.setExtractionSettings({ confidenceThreshold: v }), 'Gespeichert.');
+        }}
+      />
+      <span className="text-right text-slate-600">Verarbeitet</span>
+      <span className="text-slate-600">
+        {s.documentsProcessed} Dokumente in dieser Datenbank (Mistral OCR: ca. 0,004 USD je Seite)
+      </span>
+      {msg && <p className="col-start-2 text-[12px] text-slate-700">{msg}</p>}
     </div>
   );
 }

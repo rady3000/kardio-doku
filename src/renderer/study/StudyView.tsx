@@ -1,5 +1,5 @@
 // Study page: generic form (left) and live report (right) for any module.
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { allFields, type ModuleSchema } from '../../core/schema';
 import { buildStudyReport } from '../../core/studyReport';
 import { parseStudyData, type StudyData } from '../../core/studyData';
@@ -13,6 +13,9 @@ import { patientDisplayName } from '../components/PatientList';
 import { SaveIndicator, buttonClass } from '../components/ui';
 import { FormSection } from './FormSection';
 import { ReportPanel, type ReportActions } from './ReportPanel';
+import { DocumentsBar } from '../extraction/DocumentsBar';
+import { SourceDialog } from '../extraction/SourceDialog';
+import type { ExtractionUi } from './FormSection';
 
 type Value = string | number | null | undefined;
 
@@ -36,14 +39,52 @@ export function StudyView(props: { study: Study; patient: Patient; onBack: () =>
     void api.libraryBlocks(study.moduleKey).then(setLibrary);
   }, [study.moduleKey]);
 
+  const dataRef = useRef(data);
+  dataRef.current = data;
+  const [sourceKey, setSourceKey] = useState<string | null>(null);
+
   const setValue = useCallback((key: string, v: Value) => {
+    // Editing an unconfirmed extracted value confirms it implicitly, as a correction (gateway §4.1, §4.4).
+    const prov = dataRef.current.provenance[key];
+    if (prov && dataRef.current.unconfirmed.includes(key)) {
+      void api.confirmExtraction(prov.extractionId, String(v ?? ''), true);
+    }
     setData((d) => {
       const values = { ...d.values };
       if (v === undefined) delete values[key];
       else values[key] = v;
-      return { ...d, values, presets: d.presets.filter((k) => k !== key) };
+      const extractionFailed = { ...d.extractionFailed };
+      delete extractionFailed[key];
+      return {
+        ...d,
+        values,
+        presets: d.presets.filter((k) => k !== key),
+        unconfirmed: d.unconfirmed.filter((k) => k !== key),
+        extractionFailed,
+      };
     });
   }, []);
+
+  /** Confirms extracted values unchanged (audit: was_corrected = false). */
+  const confirmFields = useCallback((keys: string[]) => {
+    for (const key of keys) {
+      const prov = dataRef.current.provenance[key];
+      if (prov) void api.confirmExtraction(prov.extractionId, String(dataRef.current.values[key] ?? ''), false);
+    }
+    setData((d) => ({ ...d, unconfirmed: d.unconfirmed.filter((k) => !keys.includes(k)) }));
+  }, []);
+
+  const showSource = useCallback((key: string) => {
+    const doc = dataRef.current.provenance[key]?.documentId;
+    if (doc === undefined) return;
+    setSourceKey(key);
+    setData((d) => (d.sourceViewed.includes(doc) ? d : { ...d, sourceViewed: [...d.sourceViewed, doc] }));
+  }, []);
+
+  const reloadData = useCallback(async () => {
+    const fresh = await api.getStudy(study.id);
+    if (fresh) setData(parseStudyData(fresh.data));
+  }, [study.id]);
 
   /** "Alles normal": fills empty fields with their normal value; computed categories still win (presets). */
   const applyNormal = useCallback(
@@ -168,12 +209,38 @@ export function StudyView(props: { study: Study; patient: Patient; onBack: () =>
         </div>
       </div>
 
+      {report && allFields(report.schema).some((f) => f.type === 'number' && f.extraction) && (
+        <DocumentsBar studyId={study.id} beforeChange={flushAllAutosaves} onExtracted={reloadData} />
+      )}
+      {report && sourceKey && data.provenance[sourceKey] && (
+        <SourceDialog
+          label={allFields(report.schema).find((f) => f.key === sourceKey)?.label ?? sourceKey}
+          unit={(() => {
+            const f = allFields(report.schema).find((x) => x.key === sourceKey);
+            return f?.type === 'number' ? f.unit : '';
+          })()}
+          value={data.values[sourceKey]}
+          provenance={data.provenance[sourceKey]!}
+          unconfirmed={data.unconfirmed.includes(sourceKey)}
+          onConfirm={() => {
+            confirmFields([sourceKey]);
+            setSourceKey(null);
+          }}
+          onDiscard={() => {
+            setValue(sourceKey, undefined);
+            setSourceKey(null);
+          }}
+          onClose={() => setSourceKey(null)}
+        />
+      )}
       {report ? (
         <div className="flex min-h-0 flex-1">
           <StudyForm
             schema={report.schema}
             data={data}
             report={report}
+            extraction={{ onSource: showSource, onConfirm: (k) => confirmFields([k]) }}
+            onConfirmAll={() => confirmFields(data.unconfirmed)}
             setValue={setValue}
             onNormal={(key) => applyNormal(report.schema, [key])}
             sexMissing={!patient.sex}
@@ -202,6 +269,8 @@ function StudyForm(props: {
   schema: ModuleSchema;
   data: StudyData;
   report: NonNullable<ReturnType<typeof buildStudyReport>>;
+  extraction: ExtractionUi;
+  onConfirmAll: () => void;
   setValue: (key: string, v: Value) => void;
   onNormal: (sectionKey: string) => void;
   sexMissing: boolean;
@@ -218,12 +287,32 @@ function StudyForm(props: {
     all[all.indexOf(t) + 1]?.focus();
   };
   const sexRules = allFields(schema).length > 0 && props.sexMissing;
+  const pending = props.data.unconfirmed.filter((k) => props.data.provenance[k]);
+  // "Alle bestätigen" requires the source panel to have been opened at least once per document (gateway §4.1).
+  const docsPending = [...new Set(pending.map((k) => props.data.provenance[k]!.documentId))];
+  const allViewed = docsPending.every((d) => props.data.sourceViewed.includes(d));
   return (
     <div className="min-w-0 flex-1 space-y-2 overflow-y-auto p-3" onKeyDown={onKeyDown}>
       {sexRules && (
         <p className="rounded-sm border border-amber-300 bg-amber-50 px-2 py-1 text-amber-900">
           Geschlecht des Patienten fehlt – geschlechtsabhängige Einteilungen (z. B. LVEF, LVEDD) erzeugen keinen Text.
         </p>
+      )}
+      {pending.length > 0 && (
+        <div className="flex items-center gap-3 rounded-sm border border-amber-400 bg-amber-50 px-2 py-1 text-amber-900" data-testid="unconfirmed-bar">
+          <span>
+            {pending.length} extrahierte Werte unbestätigt – bitte mit der Quelle vergleichen („Quelle“). Export bis zur Bestätigung gesperrt.
+          </span>
+          <button
+            type="button"
+            className="ml-auto rounded-sm border border-amber-600 bg-white px-2 py-0.5 disabled:opacity-50"
+            disabled={!allViewed}
+            title={allViewed ? undefined : 'Zuerst mindestens einmal die Quelle öffnen'}
+            onClick={props.onConfirmAll}
+          >
+            Alle bestätigen
+          </button>
+        </div>
       )}
       {schema.sections.map((s) => (
         <FormSection
@@ -232,6 +321,7 @@ function StudyForm(props: {
           section={s}
           ev={report.evaluation}
           data={props.data}
+          extraction={props.extraction}
           setValue={props.setValue}
           onNormal={() => props.onNormal(s.key)}
         />

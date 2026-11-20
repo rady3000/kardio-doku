@@ -1,7 +1,7 @@
 {
   "name": "kardio-doku",
   "productName": "Kardio-Doku",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Clinical documentation for cardiology investigations (prototype for in-house evaluation)",
   "author": "Kardio-Doku",
@@ -21,6 +21,7 @@
     "docx": "^9.8.1",
     "electron": "^44.5.1",
     "electron-builder": "^26.15.3",
+    "pdfjs-dist": "^6.5.438",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "tailwindcss": "^4.3.3",
@@ -36,7 +37,8 @@
     "test": "vitest run",
     "test:e2e": "npm run build && playwright test",
     "dist": "npm run build && electron-builder --win nsis --x64",
-    "reference:manifest": "node scripts/reference-manifest.mjs"
+    "reference:manifest": "node scripts/reference-manifest.mjs",
+    "harness": "NODE_USE_ENV_PROXY=1 vitest run --config vitest.harness.config.ts"
   },
   "build": {
     "appId": "local.kardiodoku.app",

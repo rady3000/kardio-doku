@@ -9,11 +9,17 @@ import { buttonClass } from '../components/ui';
 import type { StudyData } from '../../core/studyData';
 import { DateFieldInput, NumberInput, SelectInput, TextInput } from './fields';
 
+export interface ExtractionUi {
+  onSource: (key: string) => void;
+  onConfirm: (key: string) => void;
+}
+
 export function FormSection(props: {
   schema: ModuleSchema;
   section: Section;
   ev: Evaluation;
   data: StudyData;
+  extraction: ExtractionUi;
   setValue: (key: string, v: string | number | null | undefined) => void;
   onNormal: () => void;
 }) {
@@ -59,17 +65,24 @@ function FieldRow(props: {
   field: Field;
   ev: Evaluation;
   data: StudyData;
+  extraction: ExtractionUi;
   setValue: (key: string, v: string | number | null | undefined) => void;
 }) {
   const { field, ev } = props;
   const value = ev.values.get(field.key);
   const wide = field.type === 'text';
+  const unconfirmed = props.data.unconfirmed.includes(field.key);
+  const provenance = props.data.provenance[field.key];
+  const failed = props.data.extractionFailed[field.key];
   return (
     <div className={`flex items-center gap-2 ${wide ? 'col-span-2' : ''}`}>
       <label htmlFor={`f-${field.key}`} className="w-36 shrink-0 truncate text-right text-slate-600" title={field.help ?? field.label}>
         {field.label}
       </label>
-      <div className="min-w-0 flex-1">
+      <div
+        className={`min-w-0 flex-1 ${unconfirmed ? 'rounded-sm outline-2 outline-offset-1 outline-dashed outline-amber-500' : ''}`}
+        data-unconfirmed={unconfirmed || undefined}
+      >
         {field.type === 'number' ? (
           <NumberInput
             field={field}
@@ -91,7 +104,32 @@ function FieldRow(props: {
         ) : (
           <TextInput field={field} value={value} onChange={(v) => props.setValue(field.key, v)} />
         )}
+        {failed && !value && <div className="text-[11px] text-red-700">Extraktion fehlgeschlagen: {failed}</div>}
       </div>
+      {provenance && (
+        <div className="flex shrink-0 gap-1">
+          <button
+            type="button"
+            tabIndex={-1}
+            className="rounded-sm border border-slate-300 px-1 text-[11px] text-slate-700 hover:bg-slate-100"
+            title="Quelldokument mit markierter Stelle anzeigen"
+            onClick={() => props.extraction.onSource(field.key)}
+          >
+            Quelle
+          </button>
+          {unconfirmed && (
+            <button
+              type="button"
+              tabIndex={-1}
+              className="rounded-sm border border-amber-500 bg-amber-50 px-1 text-[11px] text-amber-900 hover:bg-amber-100"
+              title="Wert bestätigen"
+              onClick={() => props.extraction.onConfirm(field.key)}
+            >
+              ✓
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
