@@ -79,7 +79,8 @@ test('M1 shell', async () => {
   await confirm.click();
   await expect(page.getByTestId('mode-badge')).toHaveText('ECHTBETRIEB');
   await expect(page.getByTestId('testdaten-banner')).toHaveCount(0);
-  await expect(page.getByText('Im Echtbetrieb gesperrt', { exact: false })).toBeVisible();
+  await expect(page.getByRole('cell', { name: /^Im Echtbetrieb gesperrt/ })).toBeVisible();
+  await expect(page.locator('#x-provider option[value="mistral-ocr"]')).toBeDisabled();
   await page.keyboard.press('Alt+1');
   await expect(page.getByText('Noch keine Patienten angelegt.')).toBeVisible();
 

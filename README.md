@@ -29,5 +29,12 @@ npm run reference:manifest                      # record the review (new reviewe
 UPDATE_GOLDEN=1 npx vitest run tests/unit/golden.test.ts   # accept intended report text changes
 ```
 
+Extraction accuracy (gateway §5.4) over `seed/` and the git-ignored `samples-real/`
+(live calls to Mistral OCR, EU endpoint; needs network access and a key):
+
+```
+npm run harness      # writes harness-report.md
+```
+
 Data lives in the user profile (`%APPDATA%\Kardio-Doku\data\test.db` and
 `live.db`). No real patient documents in this repository.

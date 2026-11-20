@@ -269,6 +269,15 @@ Verified on 2026-11-20 (one synthetic A4 echo table, no real data):
 - The EU endpoint `api.eu.mistral.ai` serves `/v1/ocr` with the same model → use it (data processed in the EU).
 - Cost of the test: 1 page per call.
 
+**D-77 Extraction implementation (M4, part 1) — OPEN.** Built: Mistral OCR 4.1 via the EU endpoint (pinned model, document inline, Electron net.fetch with the system proxy), deterministic label matching (stage 1, D-76 a), automatic rejection (no box, confidence < threshold, unit, plausible range, ambiguous), unconfirmed values with source view (page + box + source line + confidence), "Alle bestätigen" after the source was opened, manual edit = confirmation as correction, export block, audit table with `was_corrected`, API key in safeStorage, provider/threshold settings, evaluation harness (`npm run harness`). Synthetic seed: 18 of 18 values correct, 0 silent errors (2 documents).
+Open points:
+(a) **Plausibility ranges (D-50, SPEC-textgen X-6) are still the draft.** Please answer the three questions there: any range too narrow; VT/VF zones printed as cycle length in ms → convert or discard; should e' septal/lateral and RVD1/RVD2 also be read from documents?
+(b) TTE labels come from your prototype prompt (e.g. "LVEF_BiP_Q", "G peak SL(Avg)", "MV E", "TV S'"); GE and Philips labels are completed from your sample printouts.
+(c) **Device extraction is not active yet.** Device reports use the same label under different headings ("Gemessene Impedanz" under A. and V. Elektrode); this needs section-aware matching built against your Vitatron, Abbott and Medtronic samples.
+(d) Extraction only fills empty fields; an entered value is never overwritten (it is listed as "bereits eingegeben"). OK?
+(e) A table is one box in Mistral's output; the source view then frames the whole table and shows the exact source line to compare against. OK?
+(f) Not built yet: the stage-2 comparison arm (only if stage 1 is not good enough on your samples), header masking per document type (gateway §2.6.3, optional), the full seed set of ~20 documents (gateway §2.5).
+
 ## Reminders
 
 - Before milestone M4 (extraction): you supply the anonymized echo (GE, Philips) and device (Vitatron, Abbott, Medtronic) documents (D-54).
