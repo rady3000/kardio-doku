@@ -101,3 +101,45 @@ describe('automatic rejection (gateway §4.3, test §7.6–7.7)', () => {
     expect(o.ok === false && o.reason).toMatch(/mehrdeutig/);
   });
 });
+
+describe('layouts seen on real GE printouts (D-77; synthetic data here)', () => {
+  const page = (text: string, blocks: OcrResult['pages'][number]['blocks']): OcrResult => ({
+    provider: 'test',
+    model: 'test',
+    pagesProcessed: 1,
+    pages: [{ index: 0, width: 700, height: 1000, dpi: 87, text, blocks, words: [] }],
+  });
+  const block = (content: string, text: string, box: [number, number, number, number], type = 'table') => ({
+    type,
+    box,
+    content,
+    start: text.indexOf(content),
+    minConfidence: 0.99,
+  });
+
+  it('several label/value pairs in one table row; a unit cell only if the field accepts it', () => {
+    const table = '|  2D |  | Mitralklappe |  |\n| --- | --- | --- | --- |\n|  IVSd | 1.2 cm | MV E Max | 0.62 m/s |\n|  LVPWd | 1.1 cm | MV E/A Ratio | 2.86 |';
+    const ocr = page(table, [block(table, table, [70, 400, 600, 500])]);
+    const r = Object.fromEntries(extractFromOcr(tte, ocr, 0.85).filter((x) => x.outcome.ok).map((x) => [x.field.key, x.outcome.ok && x.outcome.stored]));
+    expect(r).toEqual({ ivsd: 12, pwd: 11, mitral_e: 0.62, e_a_ratio: 2.86 });
+  });
+
+  it('label and value as separate blocks on the same row', () => {
+    const text = 'M-Mode\n\nTAPSE\n\n2.2 cm';
+    const ocr = page(text, [
+      block('M-Mode', text, [68, 788, 127, 803], 'caption'),
+      block('TAPSE', text, [69, 805, 110, 817], 'text'),
+      block('2.2 cm', text, [192, 805, 230, 817], 'text'),
+    ]);
+    const c = findCandidates(ocr, 'tapse', specOf('tapse'))[0]!;
+    expect(c.rawText).toBe('TAPSE 2.2 cm');
+    expect(c.box).toEqual([69, 805, 230, 817]);
+    expect(validateCandidates(specOf('tapse'), [c], 0.85, false)).toMatchObject({ ok: true, stored: 22 });
+  });
+
+  it('a label cell must match exactly: "G peak SL Voll" (APLAX) is not the average', () => {
+    const t = '|  G peak SL Voll | -11 % |\n| --- | --- |\n|  (APLAX) |  |\n|  G peak SL Voll (Avg) | -12 % |';
+    const ocr = page(t, [block(t, t, [70, 100, 300, 200])]);
+    expect(findCandidates(ocr, 'gls', specOf('gls')).map((c) => c.valueText)).toEqual(['-12']);
+  });
+});

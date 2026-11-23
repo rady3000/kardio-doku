@@ -277,6 +277,7 @@ Open points:
 (d) Extraction only fills empty fields; an entered value is never overwritten (it is listed as "bereits eingegeben"). OK?
 (e) A table is one box in Mistral's output; the source view then frames the whole table and shows the exact source line to compare against. OK?
 (f) Not built yet: the stage-2 comparison arm (only if stage 1 is not good enough on your samples), header masking per document type (gateway §2.6.3, optional), the full seed set of ~20 documents (gateway §2.5).
+First real sample (2026-11-23): one anonymized GE printout, 2 pages, image-only PDF (no text layer, so OCR is required). First run 4 of 18 values found, 0 wrong. Mistral read all values correctly; the misses came from the matching rules. Fixed: several label/value pairs per table row (three-column GE table), label and value as separate text blocks on one row (M-Mode "TAPSE" "2.2 cm"), labels added: "LVEF BiP Q", "MV E Max", "MV A Max", "E/E' Mitt", "G peak SL Voll (Avg)". Second run: **18 of 18 correct, 0 silent errors, 0 discarded, 0 unexpected extra values**. Also fixed: TTE values are shown with up to 2 decimals in the report (E/e' 7,64 had been printed as 7,6). Note on this sample: "MV E/A Ratio 2.86" does not match E/A = 0,62/0,55 = 1,13; the app takes the printed ratio unchanged (D-23).
 
 ## Reminders
 

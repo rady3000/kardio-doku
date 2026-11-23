@@ -1,14 +1,20 @@
 // Deterministic label matching on OCR text (D-76 a). No model interprets the
-// document: a value is taken only where a known label is followed by a number,
-// so every value carries its page, box and the exact source line.
+// document: a value is taken only where a known label stands directly next to
+// a number, so every value carries its page, box and the exact source text.
+//
+// Three layouts are recognised (all verified on real OCR output, D-77):
+// 1. Table rows: a cell equal to the label, the value in the next cell
+//    ("| IVSd | 1.2 cm | MV E Max | 0.62 m/s |" — several pairs per row).
+// 2. Text lines: "Label: 57 %" / "Label 57 %".
+// 3. Separate text blocks on one row: block "TAPSE" and block "2.2 cm" to its right.
 import { parseDecimal, parseQualified, type Qualified } from '../format';
-import type { OcrPage, OcrResult } from './ocr';
-import type { ExtractionSpec } from './spec';
+import type { OcrBlock, OcrPage, OcrResult } from './ocr';
+import { normaliseUnit, type ExtractionSpec } from './spec';
 
 export interface Candidate {
   fieldKey: string;
   label: string;
-  /** The source line as printed (table cells joined with spaces). */
+  /** The source text as printed (label and value; table cells joined with spaces). */
   rawText: string;
   valueText: string;
   value: Qualified;
@@ -20,95 +26,177 @@ export interface Candidate {
   confidence: number | null;
 }
 
-interface Line {
+/** A piece of page text with its character offset in the page text. */
+interface Span {
   text: string;
-  /** Offset of each character of `text` in the page text. */
-  offsets: number[];
+  start: number;
 }
 
 const NUMBER = String.raw`[<>]?\s*-?\d+(?:[.,]\d+)?(?:\s*(?:-|–|bis|to)\s*\d+(?:[.,]\d+)?)?`;
+const VALUE_CELL = new RegExp(String.raw`^(${NUMBER})\s*([^\s\d][^\s]*)?$`);
+const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const norm = (s: string) => s.replace(/\s+/g, ' ').trim().replace(/:$/, '').trim().toLowerCase();
 
-/** Splits the page text into lines; a markdown table row becomes its cells joined by single spaces. */
-function lines(page: OcrPage): Line[] {
-  const out: Line[] = [];
-  let pos = 0;
-  for (const raw of page.text.split('\n')) {
-    const start = pos;
-    pos += raw.length + 1;
-    const trimmed = raw.trim();
-    if (!trimmed || /^\|?\s*:?-{3,}/.test(trimmed)) continue;
-    let text = '';
-    const offsets: number[] = [];
-    const push = (s: string, at: number) => {
-      for (let i = 0; i < s.length; i++) {
-        text += s[i];
-        offsets.push(at + i);
-      }
-    };
-    if (trimmed.startsWith('|')) {
-      let cellStart = raw.indexOf('|') + 1;
-      for (const cell of raw.slice(cellStart).split('|')) {
-        const lead = cell.length - cell.trimStart().length;
-        const value = cell.trim();
-        if (value) {
-          if (text) push(' ', start + cellStart - 1);
-          push(value, start + cellStart + lead);
-        }
-        cellStart += cell.length + 1;
-      }
-    } else {
-      const lead = raw.length - raw.trimStart().length;
-      const body = trimmed.replace(/^(#+|[-*])\s+/, '');
-      push(body, start + lead + (trimmed.length - body.length));
-    }
-    if (text) out.push({ text, offsets });
-  }
-  return out;
+function parseValue(text: string): Qualified | null {
+  const t = text.replace(/\s+/g, ' ');
+  const n = parseDecimal(t);
+  return parseQualified(t) ?? (n !== null ? { q: null, a: n } : null);
 }
 
-const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function blockFor(page: OcrPage, offset: number): OcrBlock | null {
+  return page.blocks.find((b) => b.start >= 0 && offset >= b.start && offset < b.start + b.content.length) ?? null;
+}
 
 function confidenceFor(page: OcrPage, from: number, to: number): number | null {
   const words = page.words.filter((w) => w.start < to && w.start + w.text.length > from);
   if (words.length) return Math.min(...words.map((w) => w.confidence));
-  const block = blockFor(page, from);
-  return block?.minConfidence ?? null;
+  return blockFor(page, from)?.minConfidence ?? null;
 }
 
-function blockFor(page: OcrPage, offset: number) {
-  return page.blocks.find((b) => b.start >= 0 && offset >= b.start && offset < b.start + b.content.length) ?? null;
+/** Markdown table rows of a page as cells with offsets. */
+function tableRows(page: OcrPage): Span[][] {
+  const rows: Span[][] = [];
+  let pos = 0;
+  for (const raw of page.text.split('\n')) {
+    const lineStart = pos;
+    pos += raw.length + 1;
+    const t = raw.trim();
+    if (!t.startsWith('|') || /^\|?\s*:?-{3,}/.test(t)) continue;
+    const cells: Span[] = [];
+    let cellStart = raw.indexOf('|') + 1;
+    const parts = raw.slice(cellStart).split('|');
+    parts.forEach((cell, i) => {
+      if (i === parts.length - 1 && cell.trim() === '') return; // after the closing pipe
+      const lead = cell.length - cell.trimStart().length;
+      cells.push({ text: cell.trim(), start: lineStart + cellStart + lead });
+      cellStart += cell.length + 1;
+    });
+    rows.push(cells);
+  }
+  return rows;
+}
+
+/** Non-table text lines ("Label: 57 %"), without markdown heading or list markers. */
+function textLines(page: OcrPage): Span[] {
+  const out: Span[] = [];
+  let pos = 0;
+  for (const raw of page.text.split('\n')) {
+    const lineStart = pos;
+    pos += raw.length + 1;
+    const t = raw.trim();
+    if (!t || t.startsWith('|')) continue;
+    const body = t.replace(/^(#+|[-*])\s+/, '');
+    out.push({ text: body, start: lineStart + raw.indexOf(body) });
+  }
+  return out;
+}
+
+interface Found {
+  rawText: string;
+  valueText: string;
+  unitText: string;
+  /** Offsets of the value characters in the page text. */
+  from: number;
+  to: number;
+  box: [number, number, number, number] | null;
+}
+
+function inTables(page: OcrPage, label: string, spec: ExtractionSpec): Found[] {
+  const out: Found[] = [];
+  const units = [spec.unit, ...(spec.alternatives ?? []).map((a) => a.unit)].filter(Boolean).map(normaliseUnit);
+  for (const cells of tableRows(page)) {
+    cells.forEach((cell, i) => {
+      if (norm(cell.text) !== norm(label)) return;
+      const v = cells[i + 1];
+      const m = v ? VALUE_CELL.exec(v.text) : null;
+      if (!v || !m) return;
+      let unitText = m[2] ?? '';
+      // Unit in its own cell ("| 58 | % |") only when it is a unit this field accepts.
+      const next = cells[i + 2];
+      if (!unitText && next && units.includes(normaliseUnit(next.text))) unitText = next.text;
+      const offset = v.text.indexOf(m[1]!);
+      out.push({
+        rawText: [cell.text, v.text, unitText && !m[2] ? unitText : ''].filter(Boolean).join(' '),
+        valueText: m[1]!,
+        unitText,
+        from: v.start + offset,
+        to: v.start + offset + m[1]!.length,
+        box: blockFor(page, v.start)?.box ?? null,
+      });
+    });
+  }
+  return out;
+}
+
+function inTextLines(page: OcrPage, label: string): Found[] {
+  const re = new RegExp(`^${escape(label)}\\s*[:=]?\\s*(${NUMBER})\\s*([^\\s\\d][^\\s]*)?\\s*$`, 'i');
+  const out: Found[] = [];
+  for (const line of textLines(page)) {
+    const m = re.exec(line.text);
+    if (!m) continue;
+    const offset = line.text.indexOf(m[1]!, label.length);
+    const from = line.start + offset;
+    out.push({
+      rawText: line.text,
+      valueText: m[1]!,
+      unitText: m[2] ?? '',
+      from,
+      to: from + m[1]!.length,
+      box: blockFor(page, from)?.box ?? null,
+    });
+  }
+  return out;
+}
+
+/** Label block and value block side by side on the same row (vertical overlap, value to the right). */
+function inBlockPairs(page: OcrPage, label: string): Found[] {
+  const out: Found[] = [];
+  const textBlocks = page.blocks.filter((b) => b.type !== 'table' && b.start >= 0);
+  for (const lb of textBlocks) {
+    if (norm(lb.content) !== norm(label)) continue;
+    const [, ly0, lx1, ly1] = lb.box;
+    const right = textBlocks
+      .filter((b) => b !== lb && b.box[0] >= lx1 && Math.min(ly1, b.box[3]) - Math.max(ly0, b.box[1]) > 0.5 * (ly1 - ly0))
+      .sort((a, b) => a.box[0] - b.box[0])[0];
+    const m = right ? VALUE_CELL.exec(right.content.trim()) : null;
+    if (!right || !m) continue;
+    const offset = right.content.indexOf(m[1]!);
+    out.push({
+      rawText: `${lb.content.trim()} ${right.content.trim()}`,
+      valueText: m[1]!,
+      unitText: m[2] ?? '',
+      from: right.start + offset,
+      to: right.start + offset + m[1]!.length,
+      box: [
+        Math.min(lb.box[0], right.box[0]),
+        Math.min(lb.box[1], right.box[1]),
+        Math.max(lb.box[2], right.box[2]),
+        Math.max(lb.box[3], right.box[3]),
+      ],
+    });
+  }
+  return out;
 }
 
 /** All label matches for one field, in label priority order. */
 export function findCandidates(ocr: OcrResult, fieldKey: string, spec: ExtractionSpec): Candidate[] {
   const found: Candidate[] = [];
   for (const label of spec.labels) {
-    // Label at the start of a line or cell row, then optional ":" / "=", then the number and an optional unit.
-    const re = new RegExp(`^${escape(label)}\\s*[:=]?\\s*(${NUMBER})\\s*([^\\s\\d][^\\s]*)?\\s*$`, 'i');
     for (const page of ocr.pages) {
-      for (const line of lines(page)) {
-        const m = re.exec(line.text);
-        if (!m) continue;
-        const valueText = m[1]!;
-        const text = valueText.replace(/\s+/g, ' ');
-        const negative = parseDecimal(text);
-        const value: Qualified | null = parseQualified(text) ?? (negative !== null ? { q: null, a: negative } : null);
+      for (const f of [...inTables(page, label, spec), ...inTextLines(page, label), ...inBlockPairs(page, label)]) {
+        const value = parseValue(f.valueText);
         if (!value) continue;
-        const vStart = line.text.indexOf(valueText, label.length);
-        const from = line.offsets[vStart]!;
-        const to = line.offsets[vStart + valueText.length - 1]! + 1;
-        const block = blockFor(page, from);
         found.push({
           fieldKey,
           label,
-          rawText: line.text,
-          valueText,
+          rawText: f.rawText,
+          valueText: f.valueText,
           value,
-          unitText: m[2] ?? '',
+          unitText: f.unitText,
           page: page.index,
-          box: block ? block.box : null,
+          box: f.box,
           pageSize: { width: page.width, height: page.height },
-          confidence: confidenceFor(page, from, to),
+          confidence: confidenceFor(page, f.from, f.to),
         });
       }
     }
