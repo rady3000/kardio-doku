@@ -137,6 +137,13 @@ describe('layouts seen on real GE printouts (D-77; synthetic data here)', () => 
     expect(validateCandidates(specOf('tapse'), [c], 0.85, false)).toMatchObject({ ok: true, stored: 22 });
   });
 
+  it("e' septal / lateral in m/s are converted to cm/s; E/E' Sept is not mistaken for E' Sept", () => {
+    const t = "|  E' Sept | 0.05 m/s |\n| --- | --- |\n|  E/E' Sept | 12.18 |\n|  E' Lat | 0.11 m/s |";
+    const ocr = page(t, [block(t, t, [70, 100, 300, 200])]);
+    const r = Object.fromEntries(extractFromOcr(tte, ocr, 0.85).filter((x) => x.outcome.ok).map((x) => [x.field.key, x.outcome.ok && x.outcome.stored]));
+    expect(r).toEqual({ e_prime_septal: 5, e_prime_lateral: 11 });
+  });
+
   it('a label cell must match exactly: "G peak SL Voll" (APLAX) is not the average', () => {
     const t = '|  G peak SL Voll | -11 % |\n| --- | --- |\n|  (APLAX) |  |\n|  G peak SL Voll (Avg) | -12 % |';
     const ocr = page(t, [block(t, t, [70, 100, 300, 200])]);

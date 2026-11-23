@@ -181,8 +181,8 @@ export const tte: ModuleSchema = {
         { key: 'mitral_e', label: 'Mitral E', reportLabel: 'E', type: 'number', unit: 'm/s', decimals: 2, extractable: true, extraction: { labels: ['MV E Vel', 'MV E Max', 'MV E'], unit: 'm/s', alternatives: [{ unit: 'cm/s', factor: 0.01 }], range: [0.2, 2.5] } },
         { key: 'mitral_a', label: 'Mitral A', reportLabel: 'A', type: 'number', unit: 'm/s', decimals: 2, extractable: true, extraction: { labels: ['MV A Vel', 'MV A Max', 'MV A'], unit: 'm/s', alternatives: [{ unit: 'cm/s', factor: 0.01 }], range: [0.1, 2.5] } },
         { key: 'e_a_ratio', label: 'E/A', type: 'number', unit: '', decimals: 2, extractable: true, extraction: { labels: ['MV E/A Ratio', 'E/A'], unit: '', unitOptional: true, range: [0.2, 6] } },
-        { key: 'e_prime_septal', label: "e' septal", type: 'number', unit: 'cm/s', decimals: 2, referenceRule: 'tte-eprime-septal' },
-        { key: 'e_prime_lateral', label: "e' lateral", type: 'number', unit: 'cm/s', decimals: 2, referenceRule: 'tte-eprime-lateral' },
+        { key: 'e_prime_septal', label: "e' septal", type: 'number', unit: 'cm/s', decimals: 2, referenceRule: 'tte-eprime-septal', extractable: true, extraction: { labels: ["E' Sept", "e' sept", "e' septal"], unit: 'cm/s', alternatives: [{ unit: 'm/s', factor: 100 }], range: [1, 25] } }, // D-78
+        { key: 'e_prime_lateral', label: "e' lateral", type: 'number', unit: 'cm/s', decimals: 2, referenceRule: 'tte-eprime-lateral', extractable: true, extraction: { labels: ["E' Lat", "e' lat", "e' lateral"], unit: 'cm/s', alternatives: [{ unit: 'm/s', factor: 100 }], range: [1, 30] } }, // D-78
         { key: 'e_e_prime', label: "E/e' (Mittelwert)", reportLabel: "E/e'", type: 'number', unit: '', decimals: 2, referenceRule: 'tte-hfpef-ee', extractable: true, help: 'Wert des Echogeräts (Mittelwert), wird nicht berechnet (D-10).', extraction: { labels: ["E/e' avg", "E/E' avg", "E/e' (Avg)", "E/E' Mitt", "E/e' Mittel"], unit: '', unitOptional: true, range: [2, 50] } },
       ],
     },
