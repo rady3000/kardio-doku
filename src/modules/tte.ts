@@ -191,7 +191,7 @@ export const tte: ModuleSchema = {
       title: 'Vorhöfe, rechter Ventrikel, Pulmonaldruck',
       fields: [
         { key: 'la', label: 'LA', type: 'number', unit: 'mm', decimals: 2, extractable: true, extraction: { labels: ['LA Diam', 'LA'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [15, 90] } },
-        { key: 'laesvi', label: 'LAVI (LAESVI)', reportLabel: 'LAVI', type: 'number', unit: 'ml/m²', decimals: 2, referenceRule: 'tte-lavi', extractable: true, extraction: { labels: ['LAVI', 'LAESVi', 'LAESV Index', 'LA Vol Index (BP)'], unit: 'ml/m²', range: [5, 200] } },
+        { key: 'laesvi', label: 'LAVI (LAESVI)', reportLabel: 'LAVI', type: 'number', unit: 'ml/m²', decimals: 2, referenceRule: 'tte-lavi', extractable: true, extraction: { labels: ['LAVI', 'LAESVi', 'LAESV Index', 'LA Vol Index (BP)', 'LAESVInd MOD BP'], unit: 'ml/m²', range: [5, 200] } },
         {
           key: 'la_diameter_qualitativ',
           label: 'LA-Größe',

@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { isAllowedRendererUrl } from '../../src/main/egress';
+import { isAllowedGatewayUrl } from '../../src/gateway/allowedHosts';
 
 const SRC = path.resolve(__dirname, '../../src');
 const GATEWAY = path.join(SRC, 'gateway');
@@ -71,5 +72,20 @@ describe('network egress', () => {
   it('declares a Content-Security-Policy without network connections', () => {
     const html = fs.readFileSync(path.join(SRC, 'renderer', 'index.html'), 'utf-8');
     expect(html).toMatch(/connect-src 'none'/);
+  });
+
+  it('the gateway session allows only the provider endpoint over https', () => {
+    expect(isAllowedGatewayUrl('https://api.eu.mistral.ai/v1/ocr')).toBe(true);
+    expect(isAllowedGatewayUrl('http://api.eu.mistral.ai/v1/ocr')).toBe(false);
+    expect(isAllowedGatewayUrl('https://api.mistral.ai/v1/ocr')).toBe(false);
+    expect(isAllowedGatewayUrl('https://api.eu.mistral.ai/v1/chat/completions')).toBe(false);
+    expect(isAllowedGatewayUrl('https://example.org/v1/ocr')).toBe(false);
+    expect(isAllowedGatewayUrl('not a url')).toBe(false);
+  });
+
+  it('the gateway does not use the window session, which blocks all network requests', () => {
+    const code = stripComments(fs.readFileSync(path.join(GATEWAY, 'electronFetch.ts'), 'utf-8'));
+    expect(code).toMatch(/session\.fromPartition\(/);
+    expect(code).not.toMatch(/defaultSession|\bnet\s*\.\s*fetch/);
   });
 });
