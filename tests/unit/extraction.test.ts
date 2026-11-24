@@ -149,4 +149,18 @@ describe('layouts seen on real GE printouts (D-77; synthetic data here)', () => 
     const ocr = page(t, [block(t, t, [70, 100, 300, 200])]);
     expect(findCandidates(ocr, 'gls', specOf('gls')).map((c) => c.valueText)).toEqual(['-12']);
   });
+
+  it('a label wrapped onto the next row is joined; the partial label alone matches nothing', () => {
+    const t = '|  G peak SL Voll | -15 % |\n| --- | --- |\n|  (A4C) |  |\n|  G peak SL Voll | -16 % |\n|  (Avg) |  |\n|  BA PSSL Voll | -10 % |';
+    const ocr = page(t, [block(t, t, [70, 100, 300, 200])]);
+    const c = findCandidates(ocr, 'gls', specOf('gls'));
+    expect(c.map((x) => [x.valueText, x.rawText])).toEqual([['-16', 'G peak SL Voll (Avg) -16 %']]);
+    expect(validateCandidates(specOf('gls'), c, 0.85, false)).toMatchObject({ ok: true, stored: -16 });
+  });
+
+  it('a row whose value cell is filled is never treated as a wrapped label', () => {
+    const t = '|  G peak SL Voll | -15 % |\n| --- | --- |\n|  (Avg) | -9 % |';
+    const ocr = page(t, [block(t, t, [70, 100, 300, 200])]);
+    expect(findCandidates(ocr, 'gls', specOf('gls'))).toEqual([]);
+  });
 });

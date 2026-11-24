@@ -4,7 +4,8 @@
 //
 // Three layouts are recognised (all verified on real OCR output, D-77):
 // 1. Table rows: a cell equal to the label, the value in the next cell
-//    ("| IVSd | 1.2 cm | MV E Max | 0.62 m/s |" — several pairs per row).
+//    ("| IVSd | 1.2 cm | MV E Max | 0.62 m/s |" — several pairs per row). A label wrapped onto
+//    the next row (whose value cell is empty) is joined: "G peak SL Voll" + "(Avg)".
 // 2. Text lines: "Label: 57 %" / "Label 57 %".
 // 3. Separate text blocks on one row: block "TAPSE" and block "2.2 cm" to its right.
 import { parseDecimal, parseQualified, type Qualified } from '../format';
@@ -104,9 +105,15 @@ interface Found {
 function inTables(page: OcrPage, label: string, spec: ExtractionSpec): Found[] {
   const out: Found[] = [];
   const units = [spec.unit, ...(spec.alternatives ?? []).map((a) => a.unit)].filter(Boolean).map(normaliseUnit);
-  for (const cells of tableRows(page)) {
+  const rows = tableRows(page);
+  rows.forEach((cells, r) => {
     cells.forEach((cell, i) => {
-      if (norm(cell.text) !== norm(label)) return;
+      // A long label wraps onto the next row, whose value cell is empty
+      // ("| G peak SL Voll | -16 % |" + "| (Avg) |  |"): the joined label also counts.
+      const below = rows[r + 1];
+      const wrapped = below?.[i]?.text && !below[i + 1]?.text ? `${cell.text} ${below[i]!.text}` : null;
+      const labelText = norm(cell.text) === norm(label) ? cell.text : wrapped && norm(wrapped) === norm(label) ? wrapped : null;
+      if (!labelText) return;
       const v = cells[i + 1];
       const m = v ? VALUE_CELL.exec(v.text) : null;
       if (!v || !m) return;
@@ -116,7 +123,7 @@ function inTables(page: OcrPage, label: string, spec: ExtractionSpec): Found[] {
       if (!unitText && next && units.includes(normaliseUnit(next.text))) unitText = next.text;
       const offset = v.text.indexOf(m[1]!);
       out.push({
-        rawText: [cell.text, v.text, unitText && !m[2] ? unitText : ''].filter(Boolean).join(' '),
+        rawText: [labelText, v.text, unitText && !m[2] ? unitText : ''].filter(Boolean).join(' '),
         valueText: m[1]!,
         unitText,
         from: v.start + offset,
@@ -124,7 +131,7 @@ function inTables(page: OcrPage, label: string, spec: ExtractionSpec): Found[] {
         box: blockFor(page, v.start)?.box ?? null,
       });
     });
-  }
+  });
   return out;
 }
 
