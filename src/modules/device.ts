@@ -29,10 +29,28 @@ const egmFields = Array.from({ length: MAX_EGM }, (_, i) => ({
   visibleIf: { all: [{ gte: ['episodes_total', i + 1] }, { lte: ['episodes_total', MAX_EGM] }] } as Cond,
 }));
 
+// Document extraction (D-79, verified on Vitatron and Medtronic printouts). Final-report
+// pages win over the initial interrogation (physician decision D-80); sensing is taken from
+// the in-office test, printed as a range or with ">" (D-72 b).
+const A_THRESHOLD = ['A. Output Management', 'A. Capture'];
+const V_THRESHOLD = ['V. Output Management', 'V. Capture'];
+const EXTRACTION = {
+  preferPages: ['Final Report', 'Abschlussbericht'],
+  sections: [
+    ...A_THRESHOLD,
+    ...V_THRESHOLD,
+    'Atrial Sensing Threshold', 'Atriale Wahrnehmungsschwelle', 'Ventricular Sensing Threshold', 'Ventrikuläre Wahrnehmungsschwelle',
+    'Sensing Assurance', 'In-Office Threshold Test Results', 'Bei der Schrittmacherkontrolle', 'Lead Status', 'Elektrodenstatus',
+    'Pacemaker Status', 'Schrittmacherstatus',
+  ],
+  columns: ['Atrial Lead', 'Ventricular Lead', 'Atrial', 'Ventricular', 'A. Elektrode', 'V. Elektrode', 'Ventrikulär', 'Initial', 'Final', 'Anfänglich', 'Letzte'],
+};
+
 export const device: ModuleSchema = {
   key: 'device',
   title: 'Device-Abfrage',
   version: 1,
+  extraction: EXTRACTION,
   rules: [
     'dev-sensing-ra', 'dev-sensing-rv', 'dev-sensing-lv', 'dev-impedance-ra', 'dev-impedance-rv', 'dev-impedance-lv',
     'dev-threshold-ra', 'dev-threshold-rv', 'dev-threshold-lv', 'dev-shock-impedance', 'dev-charge-time', 'dev-biv-pacing',
@@ -94,26 +112,26 @@ export const device: ModuleSchema = {
       key: 'impedanz',
       title: 'Elektroden (Impedanz)',
       fields: [
-        { key: 'impedance_ra', label: 'Impedanz RA', type: 'number', unit: 'Ω', decimals: 0, qualified: true, referenceRule: 'dev-impedance-ra', visibleIf: forTypes(WITH_RA), extractable: true },
-        { key: 'impedance_rv', label: 'Impedanz RV', type: 'number', unit: 'Ω', decimals: 0, qualified: true, referenceRule: 'dev-impedance-rv', visibleIf: forTypes(WITH_LEADS), extractable: true },
+        { key: 'impedance_ra', label: 'Impedanz RA', type: 'number', unit: 'Ω', decimals: 0, qualified: true, referenceRule: 'dev-impedance-ra', visibleIf: forTypes(WITH_RA), extractable: true, extraction: { labels: ['Measured Impedance', 'Gemessene Impedanz'], unit: 'Ω', column: ['Atrial Lead', 'A. Elektrode'], range: [100, 3000] } },
+        { key: 'impedance_rv', label: 'Impedanz RV', type: 'number', unit: 'Ω', decimals: 0, qualified: true, referenceRule: 'dev-impedance-rv', visibleIf: forTypes(WITH_LEADS), extractable: true, extraction: { labels: ['Measured Impedance', 'Gemessene Impedanz'], unit: 'Ω', column: ['Ventricular Lead', 'Ventricular', 'V. Elektrode', 'Ventrikulär'], range: [100, 3000] } },
       ],
     },
     {
       key: 'sensing',
       title: 'Wahrnehmung',
       fields: [
-        { key: 'sensing_ra', label: 'P-Welle (RA)', type: 'number', unit: 'mV', decimals: 1, qualified: true, referenceRule: 'dev-sensing-ra', visibleIf: forTypes(WITH_RA), extractable: true, help: 'Medtronic: "Measured P Wave" (D-59).' },
-        { key: 'sensing_rv', label: 'R-Zacke (RV)', type: 'number', unit: 'mV', decimals: 1, qualified: true, referenceRule: 'dev-sensing-rv', visibleIf: forTypes(WITH_LEADS), extractable: true, help: 'Medtronic: "Measured R Wave" (D-59).' },
+        { key: 'sensing_ra', label: 'P-Welle (RA)', type: 'number', unit: 'mV', decimals: 1, qualified: true, referenceRule: 'dev-sensing-ra', visibleIf: forTypes(WITH_RA), extractable: true, extraction: { labels: ['P-wave', 'P-Welle'], unit: 'mV', section: ['Atrial Sensing Threshold', 'Atriale Wahrnehmungsschwelle'], range: [0.1, 20] }, help: 'Aus den In-Office-Testergebnissen, als Bereich oder mit „>“ (D-80).' },
+        { key: 'sensing_rv', label: 'R-Zacke (RV)', type: 'number', unit: 'mV', decimals: 1, qualified: true, referenceRule: 'dev-sensing-rv', visibleIf: forTypes(WITH_LEADS), extractable: true, extraction: { labels: ['R-wave', 'R-Welle'], unit: 'mV', section: ['Ventricular Sensing Threshold', 'Ventrikuläre Wahrnehmungsschwelle'], range: [0.3, 40] }, help: 'Aus den In-Office-Testergebnissen, als Bereich oder mit „>“ (D-80).' },
       ],
     },
     {
       key: 'stimulation',
       title: 'Stimulation (Reizschwelle)',
       fields: [
-        { key: 'threshold_ra_v', label: 'Reizschwelle RA', type: 'number', unit: 'V', decimals: 2, referenceRule: 'dev-threshold-ra', visibleIf: forTypes(WITH_RA), extractable: true },
-        { key: 'threshold_ra_ms', label: 'Impulsdauer RA', type: 'number', unit: 'ms', decimals: 2, visibleIf: forTypes(WITH_RA), extractable: true },
-        { key: 'threshold_rv_v', label: 'Reizschwelle RV', type: 'number', unit: 'V', decimals: 2, referenceRule: 'dev-threshold-rv', visibleIf: forTypes(WITH_LEADS), extractable: true },
-        { key: 'threshold_rv_ms', label: 'Impulsdauer RV', type: 'number', unit: 'ms', decimals: 2, visibleIf: forTypes(WITH_LEADS), extractable: true },
+        { key: 'threshold_ra_v', label: 'Reizschwelle RA', type: 'number', unit: 'V', decimals: 2, referenceRule: 'dev-threshold-ra', visibleIf: forTypes(WITH_RA), extractable: true, extraction: { labels: ['Measured Threshold', 'Gemessener Reizschwellenwert'], unit: 'V', section: A_THRESHOLD, range: [0.1, 10] } },
+        { key: 'threshold_ra_ms', label: 'Impulsdauer RA', type: 'number', unit: 'ms', decimals: 2, visibleIf: forTypes(WITH_RA), extractable: true, extraction: { labels: ['Measured Threshold', 'Gemessener Reizschwellenwert'], unit: 'ms', second: true, section: A_THRESHOLD, range: [0.03, 2] } },
+        { key: 'threshold_rv_v', label: 'Reizschwelle RV', type: 'number', unit: 'V', decimals: 2, referenceRule: 'dev-threshold-rv', visibleIf: forTypes(WITH_LEADS), extractable: true, extraction: { labels: ['Measured Threshold', 'Gemessener Reizschwellenwert'], unit: 'V', section: V_THRESHOLD, range: [0.1, 10] } },
+        { key: 'threshold_rv_ms', label: 'Impulsdauer RV', type: 'number', unit: 'ms', decimals: 2, visibleIf: forTypes(WITH_LEADS), extractable: true, extraction: { labels: ['Measured Threshold', 'Gemessener Reizschwellenwert'], unit: 'ms', second: true, section: V_THRESHOLD, range: [0.03, 2] } },
       ],
     },
     {
@@ -149,8 +167,8 @@ export const device: ModuleSchema = {
       key: 'beobachtungen',
       title: 'Beobachtungen (Diagnostik-Speicher)',
       fields: [
-        { key: 'ap_anteil', label: 'AP-Anteil', type: 'number', unit: '%', decimals: 1, qualified: true, visibleIf: forTypes(WITH_RA), extractable: true },
-        { key: 'vp_anteil', label: 'VP-Anteil', type: 'number', unit: '%', decimals: 1, qualified: true, visibleIf: forTypes(WITH_LEADS), extractable: true },
+        { key: 'ap_anteil', label: 'AP-Anteil', type: 'number', unit: '%', decimals: 1, qualified: true, visibleIf: forTypes(WITH_RA), extractable: true, extraction: { labels: ['A. Paced'], unit: '%', unitOptional: true, range: [0, 100] } },
+        { key: 'vp_anteil', label: 'VP-Anteil', type: 'number', unit: '%', decimals: 1, qualified: true, visibleIf: forTypes(WITH_LEADS), extractable: true, extraction: { labels: ['V. Paced'], unit: '%', unitOptional: true, range: [0, 100] } },
         { key: 'af_burden', label: 'AF-Burden', type: 'number', unit: '%', decimals: 1, qualified: true, extractable: true },
         { key: 'at_af_episodes', label: 'AT/AF-Episoden', type: 'number', unit: 'n', decimals: 0 },
         { key: 'at_af_longest', label: 'Längste AT/AF-Episode', type: 'text', visibleIf: { gt: ['at_af_episodes', 0] } },

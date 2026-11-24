@@ -183,7 +183,7 @@ export const tte: ModuleSchema = {
         { key: 'e_a_ratio', label: 'E/A', type: 'number', unit: '', decimals: 2, extractable: true, extraction: { labels: ['MV E/A Ratio', 'E/A'], unit: '', unitOptional: true, range: [0.2, 6] } },
         { key: 'e_prime_septal', label: "e' septal", type: 'number', unit: 'cm/s', decimals: 2, referenceRule: 'tte-eprime-septal', extractable: true, extraction: { labels: ["E' Sept", "e' sept", "e' septal"], unit: 'cm/s', alternatives: [{ unit: 'm/s', factor: 100 }], range: [1, 25] } }, // D-78
         { key: 'e_prime_lateral', label: "e' lateral", type: 'number', unit: 'cm/s', decimals: 2, referenceRule: 'tte-eprime-lateral', extractable: true, extraction: { labels: ["E' Lat", "e' lat", "e' lateral"], unit: 'cm/s', alternatives: [{ unit: 'm/s', factor: 100 }], range: [1, 30] } }, // D-78
-        { key: 'e_e_prime', label: "E/e' (Mittelwert)", reportLabel: "E/e'", type: 'number', unit: '', decimals: 2, referenceRule: 'tte-hfpef-ee', extractable: true, help: 'Wert des Echogeräts (Mittelwert), wird nicht berechnet (D-10).', extraction: { labels: ["E/e' avg", "E/E' avg", "E/e' (Avg)", "E/E' Mitt", "E/e' Mittel"], unit: '', unitOptional: true, range: [2, 50] } },
+        { key: 'e_e_prime', label: "E/e' (Mittelwert)", reportLabel: "E/e'", type: 'number', unit: '', decimals: 2, referenceRule: 'tte-hfpef-ee', extractable: true, help: 'Wert des Echogeräts (Mittelwert; ist keiner gedruckt, der septale Wert, D-80), wird nicht berechnet (D-10).', extraction: { labels: ["E/e' avg", "E/E' avg", "E/e' (Avg)", "E/E' Mitt", "E/e' Mittel", "E/E' Sept", "E/e' sept"], unit: '', unitOptional: true, range: [2, 50] } },
       ],
     },
     {
@@ -242,7 +242,7 @@ export const tte: ModuleSchema = {
         { key: 'ak_vmax', label: 'Vmax', type: 'number', unit: 'm/s', decimals: 2, extractable: true, extraction: { labels: ['AV Vmax', 'Vmax Aorta', 'Vmax AV'], unit: 'm/s', alternatives: [{ unit: 'cm/s', factor: 0.01 }], range: [0.5, 7] } },
         { key: 'ak_dp_max', label: 'dp max', type: 'number', unit: 'mmHg', decimals: 2, extractable: true, extraction: { labels: ['AV maxPG', 'Pmax Aorta'], unit: 'mmHg', range: [2, 200] } },
         { key: 'ak_dp_mean', label: 'dp mean', type: 'number', unit: 'mmHg', decimals: 2, extractable: true, extraction: { labels: ['AV meanPG', 'Pmean Aorta'], unit: 'mmHg', range: [1, 150] } },
-        { key: 'ak_aoef', label: 'AÖF', type: 'number', unit: 'cm²', decimals: 2, extractable: true, extraction: { labels: ['AVA', 'AÖF', 'AV Area'], unit: 'cm²', range: [0.2, 6] } },
+        { key: 'ak_aoef', label: 'AÖF', type: 'number', unit: 'cm²', decimals: 2, extractable: true, extraction: { labels: ['AVA (VTI)', 'AVA', 'AÖF', 'AV Area'], unit: 'cm²', range: [0.2, 6] } },
         { key: 'ak_insuffizienz', label: 'Insuffizienz', reportLabel: 'Insuffizienz', type: 'select', normal: 'keine', options: grades('leichte'), visibleIf: nativ('ak') },
         { key: 'ak_jet', label: 'Jetrichtung', type: 'select', options: ['klein zentral', 'zentral bis Mitte LV', 'zentral bis LV-Spitze', 'exzentrisch bis Mitte LV', 'exzentrisch bis LV-Spitze'], visibleIf: { in: ['ak_insuffizienz', AI_DETAILS] } },
         { key: 'ak_pht', label: 'PHT', type: 'number', unit: 'ms', decimals: 2, visibleIf: { in: ['ak_insuffizienz', AI_DETAILS] } },
@@ -290,10 +290,10 @@ export const tte: ModuleSchema = {
       key: 'aorta',
       title: 'Aorta, V. cava inferior, Perikard',
       fields: [
-        { key: 'aortenwurzel', label: 'Aortenwurzel', type: 'number', unit: 'mm', decimals: 2, extractable: true, extraction: { labels: ['Ao Root', 'Aortenwurzel'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [15, 80] } },
+        { key: 'aortenwurzel', label: 'Aortenwurzel', type: 'number', unit: 'mm', decimals: 2, extractable: true, extraction: { labels: ['Ao Root', 'Aortenwurzel', 'Ao Wurzel Diam'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [15, 80] } },
         { key: 'aorta_ascendens_val', label: 'Aorta ascendens', type: 'number', unit: 'mm', decimals: 2, referenceRule: 'tte-aorta-asc', extractable: true, extraction: { labels: ['Ao Asc', 'Aorta ascendens'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [15, 80] } },
         { key: 'aorta_ascendens', label: 'Aorta ascendens (Beurteilung)', type: 'select', autoFrom: 'tte-aorta-asc', normal: 'normwertig', options: ['normwertig', 'dilatiert'] },
-        { key: 'vci', label: 'VCI', type: 'number', unit: 'mm', decimals: 2, referenceRule: 'tte-vci', extractable: true, extraction: { labels: ['IVC', 'VCI'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [3, 40] } },
+        { key: 'vci', label: 'VCI', type: 'number', unit: 'mm', decimals: 2, referenceRule: 'tte-vci', extractable: true, extraction: { labels: ['IVC', 'VCI', 'VCI Diam Exp'], unit: 'mm', alternatives: [{ unit: 'cm', factor: 10 }], range: [3, 40] } },
         { key: 'vci_kollaps', label: 'Atemabhängige Kaliberschwankung', reportLabel: 'Atemabhängige Kaliberschwankung der V. cava inferior', type: 'select', options: ['> 50 %', '< 50 %'] },
         { key: 'perikarderguss', label: 'Perikarderguss', type: 'select', normal: 'kein Perikarderguss', options: ['kein Perikarderguss', 'geringer Perikarderguss', 'mittelgroßer Perikarderguss', 'großer Perikarderguss'] },
         { key: 'perikard_text', label: 'Ergussbeschreibung', type: 'text', visibleIf: path('perikarderguss', ['kein Perikarderguss']) },

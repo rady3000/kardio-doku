@@ -2,7 +2,7 @@
 // sections, fields, derived values, rule references and sentence templates.
 // One generic form renderer and one report generator work on any schema.
 import type { Cond } from './conditions';
-import type { ExtractionSpec } from './extraction/spec';
+import type { ExtractionSpec, ModuleExtraction } from './extraction/spec';
 
 export const NB = 'nicht beurteilbar';
 
@@ -168,6 +168,8 @@ export interface ModuleSchema {
   rules: readonly string[];
   /** Library file with physician-selectable text blocks. */
   library?: string;
+  /** Module-wide document extraction settings (page preference, section headings). */
+  extraction?: ModuleExtraction;
   report: ReportSpec;
 }
 

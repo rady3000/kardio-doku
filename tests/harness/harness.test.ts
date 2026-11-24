@@ -25,7 +25,7 @@ it('evaluates extraction on all seed and sample documents', async () => {
   for (const file of docs) {
     const expected = JSON.parse(fs.readFileSync(file.replace(/\.[^.]+$/, '.expected.json'), 'utf-8')) as {
       module: string;
-      values: Record<string, number>;
+      values: Record<string, number | string>;
     };
     const schema = MODULE_SCHEMAS.get(expected.module)!;
     const t0 = Date.now();
@@ -42,7 +42,8 @@ it('evaluates extraction on all seed and sample documents', async () => {
       } else {
         totals.expected++;
         if (outcome.ok) {
-          const got = typeof outcome.stored === 'number' ? outcome.stored : readQualified(outcome.stored)?.a;
+          // Qualified values ("<5.6", "5.6..8") are compared as stored; plain numbers by value.
+          const got = typeof want === 'string' || typeof outcome.stored === 'number' ? outcome.stored : readQualified(outcome.stored)?.a;
           if (got === want) {
             result = 'correct';
             totals.correct++;

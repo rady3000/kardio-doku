@@ -5,6 +5,7 @@ import { parseMistralOcr, type OcrResult } from '../../src/core/extraction/ocr';
 import { findCandidates } from '../../src/core/extraction/match';
 import { extractFromOcr } from '../../src/core/extraction/run';
 import { validateCandidates } from '../../src/core/extraction/validate';
+import { normaliseUnit } from '../../src/core/extraction/spec';
 import { allFields } from '../../src/core/schema';
 import { tte } from '../../src/modules/tte';
 import geRaw from '../fixtures/ocr/tte-ge-synthetic.json';
@@ -141,7 +142,19 @@ describe('layouts seen on real GE printouts (D-77; synthetic data here)', () => 
     const t = "|  E' Sept | 0.05 m/s |\n| --- | --- |\n|  E/E' Sept | 12.18 |\n|  E' Lat | 0.11 m/s |";
     const ocr = page(t, [block(t, t, [70, 100, 300, 200])]);
     const r = Object.fromEntries(extractFromOcr(tte, ocr, 0.85).filter((x) => x.outcome.ok).map((x) => [x.field.key, x.outcome.ok && x.outcome.stored]));
-    expect(r).toEqual({ e_prime_septal: 5, e_prime_lateral: 11 });
+    // E/E' Sept fills E/e' only because no average is printed (D-80).
+    expect(r).toEqual({ e_prime_septal: 5, e_prime_lateral: 11, e_e_prime: 12.18 });
+  });
+
+  it('unit spellings from OCR: "cm^{2}" and "cm^2" are cm²', () => {
+    expect(normaliseUnit('cm^{2}')).toBe(normaliseUnit('cm²'));
+    expect(normaliseUnit('cm^2')).toBe(normaliseUnit('cm²'));
+  });
+
+  it("E/e' average wins over the septal ratio when both are printed (D-80)", () => {
+    const t = "|  E/E' Sept | 12.18 |\n| --- | --- |\n|  E/E' Mitt | 9.40 |";
+    const ocr = page(t, [block(t, t, [70, 100, 300, 200])]);
+    expect(findCandidates(ocr, 'e_e_prime', specOf('e_e_prime')).map((c) => c.valueText)).toEqual(['9.40']);
   });
 
   it('a label cell must match exactly: "G peak SL Voll" (APLAX) is not the average', () => {

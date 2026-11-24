@@ -437,7 +437,7 @@ The check uses the number after ">" or the lower end of a range (D-72 b).
 | `implantation_date` | date | DD.MM.YYYY, YYYY-MM-DD, MM/DD/YYYY only if unambiguous | 1980-01-01 – date of the interrogation | ambiguous day/month → discarded |
 | `battery_remaining` | Jahre | Monate (stored with its unit, not converted) | 0–20 Jahre / 0–240 Monate | |
 | `impedance_ra`, `impedance_rv`, `crt_lv_impedance` | Ω | ohm, Ohm | 100–3 000 | values like "> 3000" or "< 200" keep the qualifier |
-| `sensing_ra` | mV | — | 0.1–20.0 | Medtronic: "Measured P / R Wave" only (D-59) |
+| `sensing_ra` | mV | — | 0.1–20.0 | from the in-office test, range or ">" (D-80; supersedes D-59) |
 | `sensing_rv`, `crt_lv_sensing` | mV | — | 0.3–40.0 | |
 | `threshold_ra_v`, `threshold_rv_v`, `crt_lv_threshold_v` | V | — | 0.1–10.0 | `crt_lv_threshold` split into V and ms |
 | `threshold_ra_ms`, `threshold_rv_ms`, `crt_lv_threshold_ms` | ms | — | 0.03–2.0 | |

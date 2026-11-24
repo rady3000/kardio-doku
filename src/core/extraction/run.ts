@@ -14,6 +14,6 @@ export function extractFromOcr(schema: ModuleSchema, ocr: OcrResult, threshold: 
     .filter((f): f is NumberField => f.type === 'number' && !!f.extraction)
     .map((field) => ({
       field,
-      outcome: validateCandidates(field.extraction!, findCandidates(ocr, field.key, field.extraction!), threshold, !!field.qualified),
+      outcome: validateCandidates(field.extraction!, findCandidates(ocr, field.key, field.extraction!, schema.extraction), threshold, !!field.qualified),
     }));
 }

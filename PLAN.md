@@ -1,7 +1,7 @@
 # PLAN.md — Kardio-Doku build plan
 
 Status: **APPROVED 2026-10-02** (plan and dependencies P1–P5). Current
-milestone: **M4 — part 1 built (TTE extraction), part 2 waits for your sample documents.**
+milestone: **M4 — TTE (GE) and Device (Vitatron, Medtronic) extraction built and measured on real samples; waiting for Philips, Abbott, Biotronik samples and your test.**
 
 Scope: stage 1 (trial) per CLAUDE.md and SPEC-decisions D-04. Stage 2 is
 listed at the end for orientation only; it is not planned in detail.
@@ -109,9 +109,9 @@ check every generated sentence.
 
 Your test: 10 interrogations across SM, ICD, CRT.
 
-## M4 — Extraction gateway (TTE and Device) — PART 1 BUILT (TTE), awaiting samples and test
+## M4 — Extraction gateway (TTE and Device) — BUILT for GE, Vitatron, Medtronic; awaiting remaining vendors and test
 
-Status and open points: SPEC-decisions D-76, D-77.
+Status and open points: SPEC-decisions D-76, D-77, D-79, D-80.
 
 Precondition: your anonymized documents (D-54) — echo GE and Philips; device
 Vitatron, Abbott, Medtronic.
