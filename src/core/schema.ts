@@ -2,7 +2,7 @@
 // sections, fields, derived values, rule references and sentence templates.
 // One generic form renderer and one report generator work on any schema.
 import type { Cond } from './conditions';
-import type { ExtractionSpec, ModuleExtraction } from './extraction/spec';
+import type { ExtractionSpec, ModuleExtraction, ValueExtractionSpec } from './extraction/spec';
 
 export const NB = 'nicht beurteilbar';
 
@@ -42,6 +42,7 @@ export interface NumberField extends FieldBase {
 
 export interface DateField extends FieldBase {
   type: 'date';
+  extraction?: ValueExtractionSpec;
 }
 
 export interface SelectField extends FieldBase {
@@ -51,11 +52,13 @@ export interface SelectField extends FieldBase {
   allowNb?: boolean;
   /** Pre-selected from this rule set's category; the physician's choice wins (D-15). */
   autoFrom?: string;
+  extraction?: ValueExtractionSpec;
 }
 
 export interface TextField extends FieldBase {
   type: 'text';
   multiline?: boolean;
+  extraction?: ValueExtractionSpec;
 }
 
 export type Field = NumberField | SelectField | TextField | DateField;

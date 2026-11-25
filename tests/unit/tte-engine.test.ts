@@ -93,6 +93,12 @@ describe('TTE-R20 HFpEF (count line and conclusion)', () => {
     expect(lv({ ...HF, lvmi: 120, rwt: 0.5 })).toContain('1 von 4 Kriterien');
     expect(lv({ ...HF, lvmi: 120, rwt: 0.5, laesvi: 40, e_e_prime: 10, rvsp: 40 })).toContain('4 von 4 Kriterien');
   });
+  it('D-82: IVSd above the normal range alone fulfils LV hypertrophy (sex-specific)', () => {
+    expect(lv({ ...HF, ivsd: 11 })).toContain('1 von 4 Kriterien'); // men: > 10 mm
+    expect(lv({ ...HF, ivsd: 10 })).toContain('0 von 4 Kriterien');
+    expect(lv({ ...HF, ivsd: 10 }, 'weiblich')).toContain('1 von 4 Kriterien'); // women: > 9 mm
+    expect(lv({ ...HF, ivsd: 13, lvmi: 120, rwt: 0.5 })).toContain('1 von 4 Kriterien'); // one domain, counted once
+  });
   it('fewer than 4 of the 6 measurements → no HFpEF text', () => {
     expect(lv({ rhythm: 'Sinusrhythmus', lvef: 60, lvmi: 120, rwt: 0.5, laesvi: 40 })).not.toContain('HFpEF');
   });
@@ -196,5 +202,29 @@ describe('stored data', () => {
     const d = parseStudyData({ values: { lvef: 55, bad: { x: 1 }, lvedd: Infinity }, overrides: 'broken' });
     expect(d.values).toEqual({ lvef: 55 });
     expect(d.overrides).toEqual({});
+  });
+});
+
+describe('D-82 additions', () => {
+  it('no LVEF entered: qualitative LV function sentence and summary', () => {
+    const r = run({ lv_funktion: 'normal', rv_funktion: 'normal' });
+    expect(line(r.model, 'lv')).toBe('Die linksventrikuläre systolische Funktion ist normal.');
+    expect(line(r.model, 'zusammenfassung')).toBe('Normale biventrikuläre Pumpfunktion.');
+    expect(line(run({ lv_funktion: 'leicht reduziert' }).model, 'zusammenfassung')).toBe('Leicht reduzierte LV-Funktion.');
+  });
+  it('LVEF entered: its category wins over the qualitative field', () => {
+    const r = run({ lvef: 40, lv_funktion: 'normal' });
+    expect(line(r.model, 'lv')).toBe('Die globale systolische Pumpfunktion ist mittelgradig reduziert.');
+  });
+  it('TR PISA radius between VC and EROA, only from moderate TR', () => {
+    expect(line(run({ tk_insuffizienz: 'mittelgradige', tk_vc: 8, tk_pisa: 7.5, tk_eroa: 45 }).model, 'tk')).toContain(
+      '(VC 8 mm; PISA-Radius 7,5 mm; EROA 45 mm²)',
+    );
+    expect(line(run({ tk_insuffizienz: 'leichte', tk_pisa: 5 }).model, 'tk')).not.toContain('PISA');
+  });
+  it('AS free text from moderate AS, placed after the stenosis sentence', () => {
+    const t = line(run({ ak_stenose: 'mittelgradige', ak_vmax: 3.5, ak_stenose_text: 'Low-flow, SVi 30 ml/m².' }).model, 'ak');
+    expect(t).toBe('Es liegt eine mittelgradige Aortenstenose vor (Vmax 3,5 m/s). Low-flow, SVi 30 ml/m².');
+    expect(line(run({ ak_stenose: 'leichtgradige', ak_stenose_text: 'x' }).model, 'ak')).not.toContain('x');
   });
 });

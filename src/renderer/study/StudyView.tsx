@@ -303,12 +303,18 @@ function StudyForm(props: {
           <span>
             {pending.length} extrahierte Werte unbestätigt – bitte mit der Quelle vergleichen („Quelle“). Export bis zur Bestätigung gesperrt.
           </span>
+          {/* D-82: one click confirms all. If the source was not opened yet (gateway §4.1), the click
+              opens it first; after a look at the source the next click confirms all values. */}
           <button
             type="button"
-            className="ml-auto rounded-sm border border-amber-600 bg-white px-2 py-0.5 disabled:opacity-50"
-            disabled={!allViewed}
-            title={allViewed ? undefined : 'Zuerst mindestens einmal die Quelle öffnen'}
-            onClick={props.onConfirmAll}
+            className="ml-auto rounded-sm border border-amber-600 bg-white px-2 py-0.5"
+            title={allViewed ? 'Alle extrahierten Werte bestätigen' : 'Öffnet zuerst die Quelle; danach bestätigt ein weiterer Klick alle Werte'}
+            data-source-viewed={allViewed || undefined}
+            onClick={() => {
+              if (allViewed) return props.onConfirmAll();
+              const first = pending.find((k) => !props.data.sourceViewed.includes(props.data.provenance[k]!.documentId));
+              if (first) props.extraction.onSource(first);
+            }}
           >
             Alle bestätigen
           </button>

@@ -20,6 +20,10 @@ const grades = (first: string): (string | SelectOption)[] => [
   { value: 'hochgradige', short: 'III°' },
 ];
 
+/** D-82: from moderate upwards. */
+const AS_AB_MITTEL = ['mittelgradige', 'mittel- bis hochgradige', 'hochgradige'];
+const TR_AB_MITTEL = ['mittelgradige', 'mittel- bis hochgradige', 'hochgradige', 'hochgradige bis massive', 'massive', 'massive bis torrentielle', 'torrentielle'];
+
 /** TR: five grades (Hahn & Zamorano 2017, D-17) with intermediate grades. */
 const TR_GRADES: (string | SelectOption)[] = [
   'keine',
@@ -60,7 +64,7 @@ const HFPEF_BASE: Cond = {
   all: [
     { gte: ['hfpef_inputs', 4] },
     { not: { eq: ['rhythm', 'AV-Block III'] } },
-    { any: [{ empty: 'lvmi' }, { filled: 'sex' }] },
+    { any: [{ all: [{ empty: 'lvmi' }, { empty: 'ivsd' }] }, { filled: 'sex' }] },
     {
       any: [
         { all: [{ empty: 'laesvi' }, { empty: 'nt_probnp' }, { empty: 'bnp' }] },
@@ -71,7 +75,19 @@ const HFPEF_BASE: Cond = {
 };
 const HFPEF_CONCLUSION: Cond = { all: [HFPEF_BASE, { gte: ['lvef', 50] }] };
 const HFPEF_ITEMS = [
-  { label: 'R20-1 LV-Hypertrophie (LVMI oder RWT)', when: { any: [{ cat: ['tte-hfpef-lvmi', 'erfüllt'] }, { cat: ['tte-hfpef-rwt', 'erfüllt'] }] } as Cond },
+  // D-82: IVSd above the sex-specific normal range (tte-ivsd) is a third, equivalent criterion (physician decision).
+  {
+    label: 'R20-1 LV-Hypertrophie (LVMI, RWT oder IVSd)',
+    when: {
+      any: [
+        { cat: ['tte-hfpef-lvmi', 'erfüllt'] },
+        { cat: ['tte-hfpef-rwt', 'erfüllt'] },
+        { cat: ['tte-ivsd', 'leicht hypertrophiert'] },
+        { cat: ['tte-ivsd', 'mittelgradig hypertrophiert'] },
+        { cat: ['tte-ivsd', 'hochgradig hypertrophiert'] },
+      ],
+    } as Cond,
+  },
   { label: 'R20-2 LA-Dilatation (LAVI)', when: { cat: ['tte-hfpef-lavi', 'erfüllt'] } as Cond },
   { label: "R20-3 E/e' > 9", when: { cat: ['tte-hfpef-ee', 'erfüllt'] } as Cond },
   { label: 'R20-4 sPAP > 35 mmHg oder TR-Geschwindigkeit > 2,8 m/s', when: { any: [{ cat: ['tte-hfpef-spap', 'erfüllt'] }, { cat: ['tte-hfpef-trv', 'erfüllt'] }] } as Cond },
@@ -172,6 +188,21 @@ export const tte: ModuleSchema = {
           options: ['keine Kinetikstörungen', 'globale Hypokinesie', 'regionale Wandbewegungsstörungen'],
         },
         { key: 'lv_kinetik_text', label: 'Wandbewegungsstörung', type: 'text', visibleIf: { eq: ['lv_kinetik', 'regionale Wandbewegungsstörungen'] } },
+        {
+          // D-82: qualitative LV function; follows the LVEF category when LVEF is entered,
+          // otherwise "Alles normal" sets it to "normal".
+          key: 'lv_funktion',
+          label: 'LV-Funktion (qualitativ)',
+          type: 'select',
+          autoFrom: 'tte-lvef',
+          normal: 'normal',
+          options: [
+            { value: 'normal', forms: { adj: 'normale' } },
+            { value: 'leicht reduziert', forms: { adj: 'leicht reduzierte' } },
+            { value: 'mittelgradig reduziert', forms: { adj: 'mittelgradig reduzierte' } },
+            { value: 'hochgradig reduziert', forms: { adj: 'hochgradig reduzierte' } },
+          ],
+        },
       ],
     },
     {
@@ -242,6 +273,7 @@ export const tte: ModuleSchema = {
         { key: 'ak_vmax', label: 'Vmax', type: 'number', unit: 'm/s', decimals: 2, extractable: true, extraction: { labels: ['AV Vmax', 'Vmax Aorta', 'Vmax AV'], unit: 'm/s', alternatives: [{ unit: 'cm/s', factor: 0.01 }], range: [0.5, 7] } },
         { key: 'ak_dp_max', label: 'dp max', type: 'number', unit: 'mmHg', decimals: 2, extractable: true, extraction: { labels: ['AV maxPG', 'Pmax Aorta'], unit: 'mmHg', range: [2, 200] } },
         { key: 'ak_dp_mean', label: 'dp mean', type: 'number', unit: 'mmHg', decimals: 2, extractable: true, extraction: { labels: ['AV meanPG', 'Pmean Aorta'], unit: 'mmHg', range: [1, 150] } },
+        { key: 'ak_stenose_text', label: 'AS: Mechanismus / Besonderheiten', type: 'text', multiline: true, visibleIf: { in: ['ak_stenose', AS_AB_MITTEL] } }, // D-82
         { key: 'ak_aoef', label: 'AÖF', type: 'number', unit: 'cm²', decimals: 2, extractable: true, extraction: { labels: ['AVA (VTI)', 'AVA', 'AÖF', 'AV Area'], unit: 'cm²', range: [0.2, 6] } },
         { key: 'ak_insuffizienz', label: 'Insuffizienz', reportLabel: 'Insuffizienz', type: 'select', normal: 'keine', options: grades('leichte'), visibleIf: nativ('ak') },
         { key: 'ak_jet', label: 'Jetrichtung', type: 'select', options: ['klein zentral', 'zentral bis Mitte LV', 'zentral bis LV-Spitze', 'exzentrisch bis Mitte LV', 'exzentrisch bis LV-Spitze'], visibleIf: { in: ['ak_insuffizienz', AI_DETAILS] } },
@@ -278,6 +310,7 @@ export const tte: ModuleSchema = {
         { key: 'tk_segel', label: 'Segel', type: 'select', normal: 'zart', options: SKLEROSE, visibleIf: nativ('tk') },
         { key: 'tk_insuffizienz', label: 'Insuffizienz (TI)', reportLabel: 'Insuffizienz', type: 'select', normal: 'physiologisch', options: TR_GRADES, visibleIf: nativ('tk'), help: 'Grad ärztlich festgelegt; Kriterientabelle Hahn & Zamorano 2017 (TTE-R40).' },
         { key: 'tk_vc', label: 'Vena contracta', type: 'number', unit: 'mm', decimals: 2, visibleIf: nativ('tk') },
+        { key: 'tk_pisa', label: 'PISA-Radius', type: 'number', unit: 'mm', decimals: 1, visibleIf: { in: ['tk_insuffizienz', TR_AB_MITTEL] } }, // D-82
         { key: 'tk_eroa', label: 'EROA (PISA)', type: 'number', unit: 'mm²', decimals: 0, visibleIf: nativ('tk') },
         { key: 'tk_jet', label: 'Jet', type: 'select', options: ['zentral', 'exzentrisch medial', 'exzentrisch lateral'], visibleIf: path('tk_insuffizienz', ['keine', 'physiologisch']) },
         { key: 'tk_stenose', label: 'Stenose', reportLabel: 'Stenose', type: 'select', normal: 'keine', options: grades('leichte'), visibleIf: nativ('tk') },
@@ -313,7 +346,7 @@ export const tte: ModuleSchema = {
 
   derived: [
     // ESC 2026 HF guideline Table 10: six echo measurements; text only with ≥ 4 entered (D-65 n).
-    { key: 'hfpef_inputs', label: 'HFpEF-Messwerte eingegeben', source: 'ESC 2026 HF, Tabelle 10; D-65 n', kind: 'countFilled', fields: ['lvmi', 'rwt', 'laesvi', 'e_e_prime', 'rvsp', 'tr_vmax'] },
+    { key: 'hfpef_inputs', label: 'HFpEF-Messwerte eingegeben', source: 'ESC 2026 HF, Tabelle 10; D-65 n', kind: 'countFilled', fields: ['lvmi', 'rwt', 'ivsd', 'laesvi', 'e_e_prime', 'rvsp', 'tr_vmax'] },
     // ESC 2026 HF guideline Table 10: number of fulfilled criteria R20-1 … R20-4 (0–4).
     { key: 'hfpef_count', label: 'HFpEF-Kriterien erfüllt', source: 'ESC 2026 HF, Tabelle 10 (SPEC-textgen TTE-R20.1)', kind: 'countTrue', items: HFPEF_ITEMS },
     // Pieske 2019 cut-offs: elevated if NT-proBNP or BNP above the rhythm-specific cut-off (TTE-R20.2).
@@ -323,10 +356,10 @@ export const tte: ModuleSchema = {
   displays: [
     {
       section: 'diastole',
-      label: 'HFpEF-Kriterien (ESC 2026, Tabelle 10)',
-      template: '{hfpef_count} von 4 erfüllt · Messwerte {hfpef_inputs} von 6 (mind. 4 für den Befundtext)',
+      label: 'HFpEF-Kriterien (ESC 2026, Tabelle 10; LVH auch über IVSd, D-82)',
+      template: '{hfpef_count} von 4 erfüllt · Messwerte {hfpef_inputs} von 7 (mind. 4 für den Befundtext)',
       details: [...HFPEF_ITEMS, { label: 'Natriuretisches Peptid erhöht (Pieske 2019)', when: { gte: ['peptide_elevated', 1] } }],
-      inputs: ['lvmi', 'rwt', 'laesvi', 'e_e_prime', 'rvsp', 'tr_vmax', 'nt_probnp', 'bnp'],
+      inputs: ['lvmi', 'rwt', 'ivsd', 'laesvi', 'e_e_prime', 'rvsp', 'tr_vmax', 'nt_probnp', 'bnp'],
     },
   ],
 
@@ -402,7 +435,14 @@ export const tte: ModuleSchema = {
                   { id: 'c', text: 'Die Hinterwand ist {cat:tte-pwd}.' },
                 ],
               },
-              { id: 'lv.lvef', text: 'Die globale systolische Pumpfunktion ist {cat:tte-lvef}.' },
+              {
+                id: 'lv.lvef',
+                choose: [
+                  { id: 'a', text: 'Die globale systolische Pumpfunktion ist {cat:tte-lvef}.' },
+                  // D-82: no LVEF entered → qualitative statement.
+                  { id: 'b', when: { empty: 'lvef' }, text: 'Die linksventrikuläre systolische Funktion ist {lv_funktion}.' },
+                ],
+              },
               {
                 id: 'lv.kinetik',
                 choose: [
@@ -478,6 +518,7 @@ export const tte: ModuleSchema = {
                 when: path('ak_stenose'),
                 text: ['Es liegt eine {ak_stenose} Aortenstenose vor', { join: '; ', before: ' (', after: ')', items: ['Vmax {ak_vmax} m/s', dpAlternatives('ak'), 'AÖF {ak_aoef} cm²'] }, '.'],
               },
+              { id: 'ak.stenose_text', when: { in: ['ak_stenose', AS_AB_MITTEL] }, text: '{ak_stenose_text}' }, // D-82: physician's free text
               {
                 id: 'ak.insuffizienz',
                 when: path('ak_insuffizienz'),
@@ -518,7 +559,7 @@ export const tte: ModuleSchema = {
               {
                 id: 'tk.insuffizienz',
                 when: path('tk_insuffizienz', ['keine', 'physiologisch']),
-                text: ['Es besteht eine {tk_insuffizienz} Trikuspidalklappeninsuffizienz', { join: '; ', before: ' (', after: ')', items: ['Jet: {tk_jet}', 'VC {tk_vc} mm', 'EROA {tk_eroa} mm²'] }, '.'],
+                text: ['Es besteht eine {tk_insuffizienz} Trikuspidalklappeninsuffizienz', { join: '; ', before: ' (', after: ')', items: ['Jet: {tk_jet}', 'VC {tk_vc} mm', 'PISA-Radius {tk_pisa} mm', 'EROA {tk_eroa} mm²'] }, '.'],
               },
               { id: 'tk.unauffaellig', when: { in: ['tk_insuffizienz', ['keine', 'physiologisch']] }, text: 'Keine hämodynamisch relevante Insuffizienz.' },
               {
@@ -592,7 +633,10 @@ export const tte: ModuleSchema = {
                 id: 'zf.funktion',
                 choose: [
                   { id: 'a', when: { all: [{ cat: ['tte-lvef', 'normal'] }, { eq: ['rv_funktion', 'normal'] }] }, text: 'normale biventrikuläre Pumpfunktion (LVEF {lvef} %)' },
+                  // D-82: no LVEF entered, qualitative LV and RV function normal.
+                  { id: 'c', when: { all: [{ empty: 'lvef' }, { eq: ['lv_funktion', 'normal'] }, { eq: ['rv_funktion', 'normal'] }] }, text: 'normale biventrikuläre Pumpfunktion' },
                   { id: 'b', text: '{cat:tte-lvef:adj} LV-Funktion (LVEF {lvef} %)' },
+                  { id: 'd', when: { empty: 'lvef' }, text: '{lv_funktion:adj} LV-Funktion' },
                 ],
               },
               { id: 'zf.rv', when: { eq: ['rv_funktion', 'eingeschränkt'] }, text: 'eingeschränkte RV-Funktion' },
@@ -616,6 +660,19 @@ export const tte: ModuleSchema = {
               { id: 'zf.ak_prothese', when: prothese('ak'), text: ['Z. n. Aortenklappenersatz', { join: '; ', before: ' (', after: ')', items: ['{ak_prothese_typ}', '{ak_prothese_funktion}'] }] },
               { id: 'zf.mk_prothese', when: prothese('mk'), text: ['Z. n. Mitralklappenersatz', { join: '; ', before: ' (', after: ')', items: ['{mk_prothese_typ}', '{mk_prothese_funktion}'] }] },
               { id: 'zf.tk_prothese', when: prothese('tk'), text: ['Z. n. Trikuspidalklappenersatz', { join: '; ', before: ' (', after: ')', items: ['{tk_prothese_typ}', '{tk_prothese_funktion}'] }] },
+              // D-82: all valves without stenosis or regurgitation and no prosthesis.
+              {
+                id: 'zf.klappen',
+                when: {
+                  all: [
+                    { eq: ['ak_stenose', 'keine'] }, { eq: ['ak_insuffizienz', 'keine'] },
+                    { eq: ['mk_stenose', 'keine'] }, { eq: ['mk_insuffizienz', 'keine'] },
+                    { in: ['tk_insuffizienz', ['keine', 'physiologisch']] }, { eq: ['tk_stenose', 'keine'] }, { eq: ['pk_funktion', 'normal'] },
+                    { not: prothese('ak') }, { not: prothese('mk') }, { not: prothese('tk') },
+                  ],
+                },
+                text: 'keine relevanten Klappenvitien',
+              },
               {
                 id: 'zf.perikard',
                 choose: [

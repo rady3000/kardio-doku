@@ -435,7 +435,7 @@ The check uses the number after ">" or the lower end of a range (D-72 b).
 | Field | Expected unit | Accepted alternatives → conversion | Plausible range | Note |
 |---|---|---|---|---|
 | `implantation_date` | date | DD.MM.YYYY, YYYY-MM-DD, MM/DD/YYYY only if unambiguous | 1980-01-01 – date of the interrogation | ambiguous day/month → discarded |
-| `battery_remaining` | Jahre | Monate (stored with its unit, not converted) | 0–20 Jahre / 0–240 Monate | |
+| `battery_remaining` | Jahre | Monate (stored with its unit, not converted) | 0–240 (one bound for both units) | Biotronik "x J. y Mo." → years with 1 decimal; ranges kept (D-83) |
 | `impedance_ra`, `impedance_rv`, `crt_lv_impedance` | Ω | ohm, Ohm | 100–3 000 | values like "> 3000" or "< 200" keep the qualifier |
 | `sensing_ra` | mV | — | 0.1–20.0 | from the in-office test, range or ">" (D-80; supersedes D-59) |
 | `sensing_rv`, `crt_lv_sensing` | mV | — | 0.3–40.0 | |

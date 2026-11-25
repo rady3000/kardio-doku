@@ -54,10 +54,11 @@ test('extraction: import, anonymization, unconfirmed values, source, confirm, ex
   await expect(page.locator('#f-rv')).toHaveValue('32'); // 3,2 cm → mm in code
   await expect(page.getByTestId('unconfirmed-bar')).toBeVisible();
   await expect(page.getByRole('button', { name: /^Kopieren/ })).toBeDisabled(); // export block (gateway §4.2)
-  await expect(page.getByRole('button', { name: 'Alle bestätigen' })).toBeDisabled(); // source not opened yet
+  // Source not opened yet: "Alle bestätigen" first opens the source (gateway §4.1, D-82).
+  await expect(page.getByRole('button', { name: 'Alle bestätigen' })).not.toHaveAttribute('data-source-viewed');
 
   // Source view: page with the box and the exact source line.
-  await page.locator('[data-unconfirmed]').first().locator('..').getByRole('button', { name: 'Quelle' }).click();
+  await page.getByRole('button', { name: 'Alle bestätigen' }).click();
   await expect(page.getByTestId('source-box')).toBeVisible();
   await expect(page.getByTestId('source-line')).not.toBeEmpty();
   if (shots) await page.screenshot({ path: path.join(shots, 'm4-source.png') });

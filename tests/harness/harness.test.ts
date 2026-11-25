@@ -8,6 +8,13 @@ import { extractFromOcr } from '../../src/core/extraction/run';
 import { mistralOcrProvider, setKeySource } from '../../src/gateway/providers/mistralOcr';
 import { MODULE_SCHEMAS } from '../../src/modules';
 import { readQualified } from '../../src/core/format';
+import { parseMistralOcr, type OcrResult } from '../../src/core/extraction/ocr';
+
+/** A saved OCR result: parsed (OcrResult) or a raw Mistral response. */
+function readCached(file: string): OcrResult {
+  const j = JSON.parse(fs.readFileSync(file, 'utf-8')) as { pages: { text?: string }[] };
+  return j.pages[0]?.text !== undefined ? (j as unknown as OcrResult) : parseMistralOcr(j);
+}
 
 const MIME: Record<string, string> = { '.pdf': 'application/pdf', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg' };
 const THRESHOLD = Number(process.env.HARNESS_THRESHOLD ?? 0.85);
@@ -29,7 +36,13 @@ it('evaluates extraction on all seed and sample documents', async () => {
     };
     const schema = MODULE_SCHEMAS.get(expected.module)!;
     const t0 = Date.now();
-    const ocr = await mistralOcrProvider.ocr({ fileName: path.basename(file), mime: MIME[path.extname(file).toLowerCase()]!, bytes: fs.readFileSync(file) });
+    // HARNESS_CACHED=1: reuse a saved OCR result (<file>.ocr.json) instead of a provider call.
+    const cached = file.replace(/\.[^.]+$/, '.ocr.json');
+    const ocr =
+      process.env.HARNESS_CACHED && fs.existsSync(cached)
+        ? readCached(cached)
+        : await mistralOcrProvider.ocr({ fileName: path.basename(file), mime: MIME[path.extname(file).toLowerCase()]!, bytes: fs.readFileSync(file) });
+    if (!process.env.HARNESS_CACHED && file.startsWith('samples-real')) fs.writeFileSync(cached, JSON.stringify(ocr, null, 1));
     const ms = Date.now() - t0;
     totals.pages += ocr.pagesProcessed;
     for (const { field, outcome } of extractFromOcr(schema, ocr, THRESHOLD)) {
