@@ -32,7 +32,8 @@ export async function runExtraction(opts: {
   if (!schema) throw new Error('Kein Formular für dieses Modul.');
 
   const ocr = await provider.ocr({ fileName: doc.info.fileName, mime: doc.info.mime, bytes: doc.bytes });
-  const outcomes = extractFromOcr(schema, ocr, threshold);
+  // Serial numbers (localOnly fields) only in ECHTBETRIEB with a local provider (D-84, gateway §2.6.4).
+  const outcomes = extractFromOcr(schema, ocr, threshold, { localEchtbetrieb: mode === 'ECHTBETRIEB' && provider.isLocal });
   const data = parseStudyData(study.data);
   const summary: ExtractionSummary = { ok: true, message: '', accepted: [], rejected: [], skipped: [] };
 

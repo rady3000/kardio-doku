@@ -10,9 +10,11 @@ export interface Settings {
   provider: string;
   /** Confidence threshold for automatic rejection (gateway §4.3, default 0.85). */
   confidenceThreshold: number;
+  /** On-screen hint groups switched off (D-84, e.g. "icd-konsensus"); all are on by default. */
+  disabledHints: string[];
 }
 
-export const DEFAULT_SETTINGS: Settings = { mode: DEFAULT_MODE, provider: 'none', confidenceThreshold: 0.85 };
+export const DEFAULT_SETTINGS: Settings = { mode: DEFAULT_MODE, provider: 'none', confidenceThreshold: 0.85, disabledHints: [] };
 
 export function loadSettings(dir: string): Settings {
   try {
@@ -23,9 +25,10 @@ export function loadSettings(dir: string): Settings {
       mode: isMode(raw.mode) ? raw.mode : DEFAULT_MODE,
       provider: typeof raw.provider === 'string' ? raw.provider : 'none',
       confidenceThreshold: typeof threshold === 'number' && threshold >= 0.5 && threshold <= 1 ? threshold : 0.85,
+      disabledHints: Array.isArray(raw.disabledHints) ? raw.disabledHints.filter((h): h is string => typeof h === 'string') : [],
     };
   } catch {
-    return { ...DEFAULT_SETTINGS };
+    return { ...DEFAULT_SETTINGS, disabledHints: [] };
   }
 }
 

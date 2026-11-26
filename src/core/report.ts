@@ -1,7 +1,7 @@
 // The one report generator for all modules (CLAUDE.md "Report output").
 // Same schema + rules + data → byte-identical text (golden-file tested).
 import { evaluate as evalCond, type Scalar } from './conditions';
-import { evaluateStudy, optionFor, type Context, type Evaluation } from './evaluate';
+import { evaluateStudy, fieldLabel, optionFor, type Context, type Evaluation } from './evaluate';
 import { formatDecimal } from './format';
 import { formatGermanDate } from '../shared/dates';
 import type { RuleSet } from './rules/ruleSet';
@@ -37,6 +37,8 @@ export interface ReportLine {
   label?: string;
   sentences: ReportSentence[];
   library: boolean;
+  /** Label on its own line, sentences as bullets below it. */
+  bullets?: boolean;
 }
 
 export interface ReportSection {
@@ -90,6 +92,11 @@ export function generateReport(
       const c = ev.classifications.get(parts[1]!);
       if (!c || c.band.label === null) return undefined;
       return parts[2] ? c.band.forms?.[parts[2]] : c.band.label;
+    }
+    // {label:key}: the field's label for the current values (manufacturer zone names, D-84).
+    if (parts[0] === 'label') {
+      const f = fields.get(parts[1]!);
+      return f ? fieldLabel(f, ev.resolver) : undefined;
     }
     const [key, form] = parts as [string, string | undefined];
     if (ev.derived.has(key)) return String(ev.derived.get(key));
@@ -194,7 +201,7 @@ export function generateReport(
     if (extra) {
       sentences.push({ id: `extra.${line.id}`, text: extra, edited: false, removed: false, stale: false, kind: 'extra' });
     }
-    return { id: line.id, label: line.label, sentences, library: !!line.library };
+    return { id: line.id, label: line.label, sentences, library: !!line.library, bullets: line.bullets };
   };
 
   const buildSection = (sec: ReportSectionSpec): ReportSection => ({
@@ -228,7 +235,7 @@ export function generateReport(
 
   return {
     moduleKey: schema.key,
-    title: schema.report.title,
+    title: schema.report.titleWhen?.find((t) => evalCond(t.when, ev.resolver))?.text ?? schema.report.title,
     head: schema.report.head.map(buildSection),
     measurementsHeading: schema.report.measurementsHeading,
     measurements,
@@ -262,11 +269,18 @@ function capitalise(s: string): string {
 
 const visibleSentences = (l: ReportLine) => l.sentences.filter((s) => !s.removed && s.text.trim() !== '');
 
+/** Sentence text of a line; bullet lines start on a new line, one "· " bullet per sentence. */
+function lineBody(l: ReportLine): string {
+  const sentences = visibleSentences(l).map((s) => s.text);
+  if (!sentences.length) return '';
+  if (l.bullets) return '\n' + sentences.map((t) => `· ${t}`).join('\n');
+  return sentences.join(l.library ? '\n' : ' ');
+}
+
 function lineText(l: ReportLine): string | null {
-  const text = visibleSentences(l)
-    .map((s) => s.text)
-    .join(l.library ? '\n' : ' ');
+  const text = lineBody(l);
   if (!text) return null;
+  if (l.bullets) return `${l.label ?? ''}${text}`.replace(/^\n/, '');
   return l.label ? `${l.label} ${text}` : text;
 }
 
@@ -283,7 +297,8 @@ export function measurementText(i: MeasurementItem): string {
 /** Visible lines of a section as text (for DOCX/PDF). */
 export function sectionLines(s: ReportSection): { label?: string; text: string }[] {
   return s.lines
-    .map((l) => ({ label: l.label, text: visibleSentences(l).map((x) => x.text).join(l.library ? '\n' : ' ') }))
+    // Without a label, a bullet list starts on the first line (no leading break).
+    .map((l) => ({ label: l.label, text: l.label ? lineBody(l) : lineBody(l).replace(/^\n/, '') }))
     .filter((l) => l.text !== '');
 }
 

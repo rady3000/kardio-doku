@@ -13,8 +13,15 @@ describe('settings', () => {
 
   it('round-trips the mode', () => {
     const dir = tmp();
-    saveSettings(dir, { mode: 'ECHTBETRIEB', provider: 'none', confidenceThreshold: 0.85 });
+    saveSettings(dir, { mode: 'ECHTBETRIEB', provider: 'none', confidenceThreshold: 0.85, disabledHints: [] });
     expect(loadSettings(dir).mode).toBe('ECHTBETRIEB');
+  });
+
+  it('has all hint groups on by default and round-trips a switched-off group (D-84)', () => {
+    expect(loadSettings(tmp()).disabledHints).toEqual([]);
+    const dir = tmp();
+    saveSettings(dir, { mode: 'TESTBETRIEB', provider: 'none', confidenceThreshold: 0.85, disabledHints: ['icd-konsensus'] });
+    expect(loadSettings(dir).disabledHints).toEqual(['icd-konsensus']);
   });
 
   it('falls back to TESTBETRIEB for a corrupt or unknown value, never to ECHTBETRIEB', () => {

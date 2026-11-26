@@ -107,9 +107,13 @@ Permitted, under these rules:
    page regions (e.g. the top 12 % of page 1, the serial-number box) that are
    blanked to white in the image sent to the provider. Defence in depth — it
    does not replace step 1.
-4. Device serial numbers are **never** extractable fields. The device model (name/number) may be extracted (amended 2026-10-01, SPEC-decisions D-71).
-   Serial numbers link to the patient through manufacturer registries and are
-   identifiers, not device metadata.
+4. Device serial numbers are extractable **only in `ECHTBETRIEB` with a local
+   (self-hosted) provider**, where the document never leaves the institution
+   (amended 2026-11-26, SPEC-decisions D-84). A cloud provider never reads
+   them, and in `TESTBETRIEB` they must be removed from every document before
+   import. The device model (name/number) may be extracted (amended
+   2026-10-01, SPEC-decisions D-71). Serial numbers link to the patient through
+   manufacturer registries and are identifiers, not device metadata.
 5. A study created from an anonymized real document in `TESTBETRIEB` still
    carries the TESTDATEN marker on every export. It is never the patient's
    report of record.

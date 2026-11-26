@@ -66,13 +66,6 @@ export function buildDocx(model: ReportModel, meta: ExportMeta): Document {
       ]
     : [];
 
-  const footerLines = [
-    model.rulesUsed.length
-      ? `Regelwerke: ${model.rulesUsed.map((r) => `${r.id} v${r.version} (geprüft ${r.reviewedOn})`).join(', ')}`
-      : '',
-    `Erstellt mit Kardio-Doku ${meta.appVersion} – Prototyp, kein Medizinprodukt.`,
-  ].filter(Boolean);
-
   return new Document({
     creator: 'Kardio-Doku',
     title: model.title,
@@ -86,8 +79,9 @@ export function buildDocx(model: ReportModel, meta: ExportMeta): Document {
               : [new Paragraph({ children: [] })],
           }),
         },
+        // D-84: no rule-set line and no "Prototyp" line on exports; the rule sets stay visible in the app.
         footers: {
-          default: new Footer({ children: footerLines.map((l) => new Paragraph({ children: [run(l, { size: 14, color: '555555' })] })) }),
+          default: new Footer({ children: [new Paragraph({ children: [] })] }),
         },
         children: [
           new Paragraph({ children: [run(model.title.replace(/:$/, ''), { bold: true, size: 26 })], spacing: { after: 60 } }),

@@ -48,7 +48,9 @@ export function validateSchema(schema: ModuleSchema, rules: ReadonlyMap<string, 
       for (const name of names) {
         const [a, b] = name.split(':');
         if (a === 'cat') ruleKnown(b!, where);
-        else if (!keys.has(a!)) problems.push(`${where}: unknown placeholder ${name}`);
+        else if (a === 'label') {
+          if (!keys.has(b!)) problems.push(`${where}: unknown placeholder ${name}`);
+        } else if (!keys.has(a!)) problems.push(`${where}: unknown placeholder ${name}`);
       }
     }
   };
@@ -57,15 +59,17 @@ export function validateSchema(schema: ModuleSchema, rules: ReadonlyMap<string, 
     checkCond(f.visibleIf, `field ${f.key}`);
     if (f.type === 'number' && f.referenceRule) ruleKnown(f.referenceRule, `field ${f.key}`);
     if (f.type === 'select' && f.autoFrom) ruleKnown(f.autoFrom, `field ${f.key}`);
+    f.labelWhen?.forEach((l) => checkCond(l.when, `field ${f.key} label`));
   }
   for (const d of schema.derived) {
-    if (d.kind === 'countFilled' || d.kind === 'sum') for (const k of d.fields) if (!keys.has(k)) problems.push(`derived ${d.key}: unknown ${k}`);
+    if (d.kind === 'countFilled' || d.kind === 'sum' || d.kind === 'difference') for (const k of d.fields) if (!keys.has(k)) problems.push(`derived ${d.key}: unknown ${k}`);
     if (d.kind === 'countTrue') d.items.forEach((i) => checkCond(i.when, `derived ${d.key}`));
   }
   for (const w of schema.warnings ?? []) {
     checkCond(w.when, `warning ${w.text}`);
     if (!schema.sections.some((s) => s.key === w.section)) problems.push(`warning ${w.text}: unknown section ${w.section}`);
   }
+  schema.report.titleWhen?.forEach((t) => checkCond(t.when, 'report title'));
   for (const disp of schema.displays) {
     checkTemplate(disp.template, `display ${disp.label}`);
     disp.details?.forEach((d) => checkCond(d.when, `display ${disp.label}`));

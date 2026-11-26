@@ -112,11 +112,21 @@ function LineView({ line, extras, actions }: { line: ReportLine; extras: Record<
   const extra = line.sentences.find((s) => s.kind === 'extra');
   if (generated.length === 0 && !extra && !line.label) return null;
   return (
-    <p className="group">
+    <p className="group relative">
       {line.label && <span className="font-medium">{line.label} </span>}
-      {generated.map((s) => (
-        <SentenceView key={s.id} s={s} actions={actions} />
-      ))}
+      {line.bullets ? (
+        // Bullet lines: one sentence per row (D-84 device layout).
+        <span className="block">
+          {generated.map((s) => (
+            <span key={s.id} className="block">
+              {!s.removed && '· '}
+              <SentenceView s={s} actions={actions} />
+            </span>
+          ))}
+        </span>
+      ) : (
+        generated.map((s) => <SentenceView key={s.id} s={s} actions={actions} />)
+      )}
       {(extra || addingExtra) && (
         <EditableText
           initial={extras[line.id] ?? ''}
@@ -133,7 +143,8 @@ function LineView({ line, extras, actions }: { line: ReportLine; extras: Record<
         <button
           type="button"
           tabIndex={-1}
-          className="ml-1 rounded-sm px-1 text-[11px] text-slate-400 opacity-0 hover:bg-slate-100 group-hover:opacity-100"
+          // Positioned, so the hidden button never takes a line of its own.
+          className="absolute bottom-0 right-0 rounded-sm bg-white px-1 text-[11px] text-slate-400 opacity-0 hover:bg-slate-100 group-hover:opacity-100"
           title="Freitext ergänzen"
           onClick={() => setAddingExtra(true)}
         >

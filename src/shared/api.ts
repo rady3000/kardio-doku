@@ -40,7 +40,7 @@ export interface KardioApi {
   /** Audit: the physician's final value for an extracted field (gateway §4.4). */
   confirmExtraction(extractionId: number, value: string, corrected: boolean): Promise<void>;
   getExtractionSettings(): Promise<ExtractionSettings>;
-  setExtractionSettings(change: { provider?: string; confidenceThreshold?: number }): Promise<ExtractionSettings>;
+  setExtractionSettings(change: { provider?: string; confidenceThreshold?: number; disabledHints?: string[] }): Promise<ExtractionSettings>;
   /** Stored with Electron safeStorage; never returned. */
   setApiKey(key: string): Promise<ExtractionSettings>;
   deleteApiKey(): Promise<ExtractionSettings>;

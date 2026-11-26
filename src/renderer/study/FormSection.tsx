@@ -1,6 +1,6 @@
 // One form section, rendered from the schema.
 import { evaluate as evalCond } from '../../core/conditions';
-import type { Evaluation } from '../../core/evaluate';
+import { fieldLabel, type Evaluation } from '../../core/evaluate';
 import { RULES } from '../../core/rules/registry';
 import type { CriteriaTable, DerivedDisplay, Field, ModuleSchema, Section } from '../../core/schema';
 import { renderString } from '../../core/template';
@@ -69,6 +69,7 @@ function FieldRow(props: {
   setValue: (key: string, v: string | number | null | undefined) => void;
 }) {
   const { field, ev } = props;
+  const label = fieldLabel(field, ev.resolver);
   const value = ev.values.get(field.key);
   const wide = field.type === 'text';
   const unconfirmed = props.data.unconfirmed.includes(field.key);
@@ -76,8 +77,8 @@ function FieldRow(props: {
   const failed = props.data.extractionFailed[field.key];
   return (
     <div className={`flex items-center gap-2 ${wide ? 'col-span-2' : ''}`}>
-      <label htmlFor={`f-${field.key}`} className="w-36 shrink-0 truncate text-right text-slate-600" title={field.help ?? field.label}>
-        {field.label}
+      <label htmlFor={`f-${field.key}`} className="w-36 shrink-0 truncate text-right text-slate-600" title={field.help ?? label}>
+        {label}
       </label>
       <div
         className={`min-w-0 flex-1 ${unconfirmed ? 'rounded-sm outline-2 outline-offset-1 outline-dashed outline-amber-500' : ''}`}

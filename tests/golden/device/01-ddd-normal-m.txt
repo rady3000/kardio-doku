@@ -1,12 +1,24 @@
-Device-Abfrage:
+Schrittmacherabfrage
 
-Abfrage eines DDD-SM (Medtronic Azure XT DR MRI). Programmierter Modus: DDDR. Das Aggregat wurde am 03.05.2021 bei AV-Block III° implantiert.
-Klinisch zeigt sich die Aggregattasche reizlos, unauffällig. Der Patient ist in gutem Allgemeinzustand und beschwerdefrei.
-Grundrhythmus: Sinusrhythmus. EKG-Befund ohne Stimulation: AV-Block III° mit Ersatzrhythmus 38/min. EKG-Befund mit Stimulation: Regelrechte Stimulation mit LSB-Morphologie.
+Implantation & Programmierung:
+Z. n. Implantation eines 2-Kammer-Schrittmachers (Medtronic Azure XT DR MRI) am 03.05.2021 bei AV-Block III°. Programmierter Betriebsmodus: DDDR.
 
-Messwerte: Batteriestatus: OK, Restlaufzeit 8,5 Jahre. Stimulationsanteile: AP 12 % / VP 99,8 %. Wahrnehmung: RA 2,8 mV / RV > 12 mV. Reizschwellen: RA 0,75 V bei 0,4 ms / RV 1 V bei 0,4 ms. Impedanzen: RA 456 Ω / RV 589 Ω.
+Klinischer Befund:
+Reizlose, unauffällige Aggregattasche. Patient in gutem Allgemeinzustand und kardial beschwerdefrei.
 
-Beobachtungen: AF-Burden: < 1 %. Keine AT/AF-Episoden. Keine VT/VF-Episoden.
+EKG-Befund:
+· Spontanrhythmus: Sinusrhythmus (AV-Block III° mit Ersatzrhythmus 38/min)
+· Unter Stimulation: Regelrechte Stimulation mit LSB-Morphologie.
 
-Zusammenfassung:
+Geräte- und Sondenmesswerte:
+· Batteriestatus: Regelrecht (geschätzte Restlaufzeit: 8,5 Jahre)
+· Stimulationsanteile: AP 12 % / VP 99,8 %
+· Wahrnehmung (Sensing): RA 2,8 mV / RV > 12 mV
+· Reizschwellen: RA 0,75 V / 0,4 ms / RV 1 V / 0,4 ms
+· Sondenimpedanzen: RA 456 Ω / RV 589 Ω
+
+Beobachtungen:
+AF-Burden: < 1 %. Keine AT/AF-Episoden. Keine VT/VF-Episoden.
+
+Beurteilung und Procedere:
 Regelrechte Aggregat- und Sondenfunktion. Nächste Kontrolle: in 12 Monaten.

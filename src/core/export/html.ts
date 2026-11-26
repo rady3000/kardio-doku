@@ -35,11 +35,7 @@ export function reportToHtml(model: ReportModel, meta: ExportMeta): string {
         .join('')}</table></section>`
     : '';
 
-  const rules = model.rulesUsed.length
-    ? `<footer><div>Regelwerke: ${model.rulesUsed
-        .map((r) => `${esc(r.id)} v${r.version} (geprüft ${esc(r.reviewedOn)})`)
-        .join(', ')}</div><div>Erstellt mit Kardio-Doku ${esc(meta.appVersion)} – Prototyp, kein Medizinprodukt.</div></footer>`
-    : `<footer><div>Erstellt mit Kardio-Doku ${esc(meta.appVersion)} – Prototyp, kein Medizinprodukt.</div></footer>`;
+  // D-84: no rule-set line and no "Prototyp" line on exports; the rule sets stay visible in the app.
 
   return `<!doctype html><html lang="de"><head><meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
@@ -53,7 +49,6 @@ p { margin: 0 0 1.5mm; }
 table { border-collapse: collapse; font-size: 9pt; }
 th { text-align: left; padding: 1.5mm 0 0.5mm; }
 td { padding: 0.3mm 6mm 0.3mm 0; }
-footer { margin-top: 8mm; font-size: 7.5pt; color: #555; }
 .marker { color: #b45309; font-weight: bold; text-align: center; margin-bottom: 3mm; }
 .watermark { position: fixed; top: 45%; left: 0; right: 0; text-align: center; transform: rotate(-30deg);
   font-size: 34pt; font-weight: bold; color: rgba(180, 83, 9, 0.13); white-space: nowrap; }
@@ -61,7 +56,7 @@ footer { margin-top: 8mm; font-size: 7.5pt; color: #555; }
 ${test ? `<div class="watermark">TESTDATEN</div><div class="marker">${esc(TESTDATEN_MARKER)}</div>` : ''}
 <h1>${esc(model.title.replace(/:$/, ''))}</h1>
 <div class="meta">${esc(meta.patientLine)}<br>Untersuchungsdatum: ${esc(meta.studyDate)}</div>
-${sections(model.head)}${table}${sections(model.body)}${rules}
+${sections(model.head)}${table}${sections(model.body)}
 </body></html>`;
 }
 

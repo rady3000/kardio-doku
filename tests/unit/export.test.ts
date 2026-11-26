@@ -41,11 +41,12 @@ describe('PDF (HTML for Chromium print)', () => {
     expect(reportToHtml(model, meta('ECHTBETRIEB'))).not.toContain('TESTDATEN');
     expect(pdfHeaderTemplate(meta('ECHTBETRIEB'))).not.toContain('TESTDATEN');
   });
-  it('contains the report text, the measurement table and the rule sets', () => {
+  it('contains the report text and the measurement table, but no rule-set or prototype footer (D-84)', () => {
     const html = reportToHtml(model, meta('TESTBETRIEB'));
     expect(html).toContain('Die globale systolische Pumpfunktion ist normal.');
     expect(html).toContain('<td>LVEF</td><td>60 %</td>');
-    expect(html).toContain('tte-lvef v1');
+    expect(html).not.toContain('tte-lvef v1');
+    expect(html).not.toMatch(/Regelwerke|Prototyp/);
   });
   it('escapes entered text', () => {
     const r = run({ indication: 'Sonstige (Freitext)', indication_text: '<script>x</script>' }).model;

@@ -150,7 +150,13 @@ function registerIpc(): void {
   );
   ipcMain.handle(IPC.getExtractionSettings, () => extractionSettings());
   ipcMain.handle(IPC.setExtractionSettings, (_e, change: unknown) => {
-    const c = z.object({ provider: z.string().optional(), confidenceThreshold: z.number().min(0.5).max(1).optional() }).parse(change);
+    const c = z
+      .object({
+        provider: z.string().optional(),
+        confidenceThreshold: z.number().min(0.5).max(1).optional(),
+        disabledHints: z.array(z.string().max(50)).max(20).optional(),
+      })
+      .parse(change);
     if (c.provider !== undefined && c.provider !== 'none' && !availableProviders(mode).some((p) => p.id === c.provider && p.implemented && p.id !== 'mock')) {
       throw new Error('Dieser Anbieter ist im aktuellen Betriebsmodus nicht verfügbar.');
     }
@@ -191,6 +197,7 @@ function extractionSettings() {
     hasApiKey: hasApiKey(userDir()),
     encryptionAvailable: encryptionAvailable(),
     documentsProcessed: docs ? docs.documentsProcessed() : 0,
+    disabledHints: settings.disabledHints,
   };
 }
 

@@ -40,6 +40,11 @@ export interface ExtractionSpec {
    * Keys are the option values, entries the printed spellings.
    */
   unitField?: { key: string; units: Readonly<Record<string, readonly string[]>> };
+  /**
+   * Table cells only: the value is the first group of this pattern in the value cell, e.g.
+   * "(\\d+)\\s*Intervalle" in "171 min-1/350 ms 40 Intervalle" (D-84). The unit is the expected unit.
+   */
+  pattern?: string;
   /** Per label: "Stimulation in A/V [%] | 1/14" → part 0 (before "/") or part 1 (after it). */
   parts?: Readonly<Record<string, 0 | 1>>;
   /** "8 J. 5 Mo.": a second number with this unit is added as value × factor (8 + 5/12 years). */
@@ -71,6 +76,11 @@ export interface ValueExtractionSpec {
   strip?: readonly string[];
   /** date: earliest plausible date (ISO); the latest is today. */
   minDate?: string;
+  /**
+   * Identifying value (device serial number, D-84): read only in ECHTBETRIEB with a local
+   * provider, where the document never leaves the institution. Otherwise the field is skipped.
+   */
+  localOnly?: boolean;
 }
 
 /** Module-wide extraction settings. */

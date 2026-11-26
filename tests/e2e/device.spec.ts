@@ -35,10 +35,10 @@ test('Device-Abfrage: entry, report, warning, clipboard', async () => {
   await page.getByRole('button', { name: 'Anlegen' }).click();
 
   const preview = page.getByTestId('report-preview');
-  await expect(preview).toContainText('Device-Abfrage:');
+  await expect(preview).toContainText('Device-Abfrage');
   await expect(page.getByText('Muster, Erika, weiblich')).toBeVisible(); // study header shows the saved patient
 
-  await page.locator('#f-device_type').selectOption('DDD-SM');
+  await page.locator('#f-device_type').selectOption('2-Kammer-Schrittmacher');
   await expect(page.locator('#f-crt_lv_impedance')).toHaveCount(0); // CRT section hidden for a pacemaker
   await page.locator('#f-pacing_mode').selectOption('DDDR');
   await page.locator('#f-device_company').selectOption('Vitatron');
@@ -52,9 +52,10 @@ test('Device-Abfrage: entry, report, warning, clipboard', async () => {
   await page.locator('#f-conclusion').selectOption('Regelrechte Aggregat- und Sondenfunktion');
   await page.keyboard.press('Alt+Shift+N');
 
-  await expect(preview).toContainText('Abfrage eines DDD-SM (Vitatron Q50A2). Programmierter Modus: DDDR. Das Aggregat wurde am 03.05.2021 bei Sick-Sinus-Syndrom implantiert.');
-  await expect(preview).toContainText('Die Patientin ist in gutem Allgemeinzustand und beschwerdefrei.');
-  await expect(preview).toContainText('Wahrnehmung: RA > 2,8 mV / RV 3,9 mV.');
+  await expect(preview).toContainText('Schrittmacherabfrage');
+  await expect(preview).toContainText('Z. n. Implantation eines 2-Kammer-Schrittmachers (Vitatron Q50A2) am 03.05.2021 bei Sick-Sinus-Syndrom. Programmierter Betriebsmodus: DDDR.');
+  await expect(preview).toContainText('Patientin in gutem Allgemeinzustand und kardial beschwerdefrei.');
+  await expect(preview).toContainText('· Wahrnehmung (Sensing): RA > 2,8 mV / RV 3,9 mV');
   await expect(page.getByRole('note').first()).toContainText('außerhalb des Referenzbereichs');
   if (shots) await page.screenshot({ path: path.join(shots, 'm3-device.png') });
 
@@ -63,10 +64,55 @@ test('Device-Abfrage: entry, report, warning, clipboard', async () => {
   const clip = await app.evaluate(({ clipboard }) => clipboard.readText());
   expect(clip.split(/\r?\n/)[0]).toBe(TESTDATEN_MARKER);
   expect(clip).toContain('Regelrechte Aggregat- und Sondenfunktion.');
+  expect(clip).toMatch(/Geräte- und Sondenmesswerte:\r?\n· /); // bullets in the clipboard text
   expect(clip).not.toContain('Hinweis:'); // warnings never enter the report
 
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Device-Abfrage' }).click();
   await expect(page.locator('#f-sensing_ra')).toHaveValue('> 2,8');
+  await app.close();
+});
+
+test('ICD programming check: notice on screen only, switchable in the settings (D-84)', async () => {
+  const args = process.platform === 'linux' ? ['--no-sandbox', '.'] : ['.'];
+  const app = await electron.launch({ args, env: { ...process.env, KARDIO_E2E_USER_DATA: userData } });
+  const page = await app.firstWindow();
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await page.waitForSelector('header');
+
+  await page.keyboard.press('Control+n');
+  await page.keyboard.type('Zonen');
+  await page.keyboard.press('Tab');
+  await page.keyboard.type('Ida');
+  await page.keyboard.press('Control+u');
+  await page.locator('form select').selectOption('device');
+  await page.getByRole('button', { name: 'Anlegen' }).click();
+
+  await page.locator('#f-device_type').selectOption('1-Kammer-ICD');
+  await page.locator('#f-device_company').selectOption('Abbott');
+  await expect(page.locator('label[for="f-icd_vt_zone"]')).toHaveText('VT-2: Frequenz'); // manufacturer's zone name
+  await page.locator('#f-vt_history').selectOption('keine VT bekannt');
+  await page.locator('#f-icd_vt_zone').fill('171');
+  const notes = page.locator('section[data-section="icd"] [role="note"]');
+  await expect(notes).toContainText('Abweichung vom Konsensus-Vorschlag');
+  await page.locator('#f-icd_konsensus_entscheidung').selectOption('bewusst so belassen');
+  const preview = page.getByTestId('report-preview');
+  await expect(preview).toContainText('ICD-Abfrage');
+  await expect(preview).toContainText('Detektionszonen: VT-2 171 bpm');
+  await expect(preview).not.toContainText('Konsensus');
+  if (shots) await page.screenshot({ path: path.join(shots, 'm4-icd-konsensus.png') });
+
+  await page.getByRole('button', { name: /Einstellungen/ }).click();
+  const box = page.locator('input[data-hint="icd-konsensus"]');
+  await expect(box).toBeChecked(); // on by default
+  await box.click(); // the state follows the saved settings
+  await expect(box).not.toBeChecked();
+
+  await page.getByRole('button', { name: /Patienten/ }).click();
+  await page.getByText('Zonen, Ida').click();
+  await page.getByRole('button', { name: 'Device-Abfrage' }).click();
+  await expect(page.locator('#f-icd_vt_zone')).toHaveValue('171');
+  await expect(notes).toHaveCount(0);
+  await expect(page.locator('#f-icd_konsensus_entscheidung')).toHaveCount(0);
   await app.close();
 });

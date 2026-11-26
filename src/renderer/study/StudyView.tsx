@@ -1,6 +1,7 @@
 // Study page: generic form (left) and live report (right) for any module.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { allFields, type ModuleSchema } from '../../core/schema';
+import { applyHintSettings } from '../../core/hints';
 import { buildStudyReport } from '../../core/studyReport';
 import { parseStudyData, type StudyData } from '../../core/studyData';
 import { formatGermanDate } from '../../shared/dates';
@@ -33,10 +34,17 @@ export function StudyView(props: { study: Study; patient: Patient; onBack: () =>
     await api.updateStudy(study.id, { studyDate: v.studyDate ?? undefined, data: v.data });
   });
 
-  const report = useMemo(() => buildStudyReport(study, patient, data), [study, patient, data]);
+  const [disabledHints, setDisabledHints] = useState<string[]>([]);
+  const built = useMemo(() => buildStudyReport(study, patient, data), [study, patient, data]);
+  // Switched-off hint groups disappear from the screen; the report text is unaffected (D-84).
+  const report = useMemo(
+    () => (built ? { ...built, evaluation: applyHintSettings(built.evaluation, built.schema, disabledHints) } : built),
+    [built, disabledHints],
+  );
 
   useEffect(() => {
     void api.libraryBlocks(study.moduleKey).then(setLibrary);
+    void api.getExtractionSettings().then((s) => setDisabledHints(s.disabledHints));
   }, [study.moduleKey]);
 
   const dataRef = useRef(data);

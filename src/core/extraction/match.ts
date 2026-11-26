@@ -215,6 +215,13 @@ function inTables(page: OcrPage, segs: Segment[], label: string, spec: Extractio
   for (const { labelText, value: v, idx, row } of pairs(segs, label, spec, known)) {
     // "590 Ω (Bi)", "73 Ω (RV zu Gehäuse)": a trailing remark in brackets is not part of the value.
     const cellText = v.text.replace(/\s*\([^()]*\)\s*$/, '');
+    if (spec.pattern) {
+      const pm = new RegExp(spec.pattern, 'i').exec(v.text);
+      if (!pm?.[1]) continue;
+      const offset = pm.index + pm[0].indexOf(pm[1]);
+      out.push({ rawText: `${labelText} ${v.text}`, valueText: pm[1], unitText: spec.unit, from: v.start + offset, to: v.start + offset + pm[1].length, box: blockFor(page, v.start)?.box ?? null, seg: idx });
+      continue;
+    }
     const partNo = spec.parts?.[label];
     if (partNo !== undefined) {
       // "Stimulation in A/V [%] | 1/14": one part of an "a/b" pair.
@@ -372,7 +379,8 @@ export function findCandidates(ocr: OcrResult, fieldKey: string, spec: Extractio
         const segs = segments(page);
         const tables = inTables(page, segs, label, spec, known);
         // A value already read as a table pair (with its unit cell) is not read again as a line.
-        const lines = inLines(page, segs, label, spec, known).filter((l) => !tables.some((t) => t.from === l.from));
+        // A pattern field is read from its table cell only.
+        const lines = spec.pattern ? [] : inLines(page, segs, label, spec, known).filter((l) => !tables.some((t) => t.from === l.from));
         // Side-by-side blocks carry no column information: never used for a field bound to a column
         // (otherwise "Elektrodenimpedanz [Ω]" would pair with the atrial value for the RV field, D-83).
         const blocks = spec.column ? [] : inBlockPairs(page, segs, label, spec.parts?.[label]);

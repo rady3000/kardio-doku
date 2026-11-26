@@ -76,6 +76,26 @@ const MIGRATIONS: readonly string[] = [
   );
   CREATE INDEX extractions_study ON extractions(study_id);
   `,
+  // D-84: device types renamed by chamber count (VVI-SM → 1-Kammer-Schrittmacher, …).
+  `
+  UPDATE studies SET data_json = json_set(data_json, '$.values.device_type',
+    CASE json_extract(data_json, '$.values.device_type')
+      WHEN 'VVI-SM' THEN '1-Kammer-Schrittmacher'
+      WHEN 'DDD-SM' THEN '2-Kammer-Schrittmacher'
+      WHEN 'VVI-ICD' THEN '1-Kammer-ICD'
+      WHEN 'DDD-ICD' THEN '2-Kammer-ICD'
+      WHEN 'CRT-P' THEN '3-Kammer-Schrittmacher'
+      WHEN 'CRT-D' THEN '3-Kammer-ICD'
+    END)
+  WHERE module_key = 'device' AND json_valid(data_json)
+    AND json_extract(data_json, '$.values.device_type') IN ('VVI-SM', 'DDD-SM', 'VVI-ICD', 'DDD-ICD', 'CRT-P', 'CRT-D');
+  `,
+  // D-84: report wording "Patient in gutem Allgemeinzustand und kardial beschwerdefrei."
+  `
+  UPDATE studies SET data_json = json_set(data_json, '$.values.patient_condition', 'in gutem Allgemeinzustand und kardial beschwerdefrei')
+  WHERE module_key = 'device' AND json_valid(data_json)
+    AND json_extract(data_json, '$.values.patient_condition') = 'ist in gutem Allgemeinzustand und beschwerdefrei';
+  `,
 ];
 
 export function databasePath(dataDir: string, mode: Betriebsmodus): string {

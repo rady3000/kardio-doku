@@ -108,4 +108,6 @@ export interface ExtractionSettings {
   encryptionAvailable: boolean;
   /** Documents sent to a cloud provider so far in this database (for the cost estimate). */
   documentsProcessed: number;
+  /** On-screen hint groups switched off (D-84). */
+  disabledHints: string[];
 }

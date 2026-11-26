@@ -53,7 +53,42 @@ describe('database per Betriebsmodus', () => {
   it('migrates idempotently', () => {
     openDatabase(dir, 'TESTBETRIEB').close();
     const db = openDatabase(dir, 'TESTBETRIEB');
-    expect(db.pragma('user_version', { simple: true })).toBe(2);
+    expect(db.pragma('user_version', { simple: true })).toBe(4);
+    db.close();
+  });
+
+  it('migration 3 renames old device types (D-84) and leaves other studies alone', () => {
+    let db = openDatabase(dir, 'TESTBETRIEB');
+    const now = '2026-11-26T00:00:00Z';
+    db.prepare("INSERT INTO patients (id, created_at, updated_at) VALUES (1, ?, ?)").run(now, now);
+    const add = db.prepare('INSERT INTO studies (patient_id, module_key, study_date, data_json, created_at, updated_at) VALUES (1, ?, ?, ?, ?, ?)');
+    add.run('device', '2026-11-26', JSON.stringify({ values: { device_type: 'DDD-SM', pacing_mode: 'DDDR' } }), now, now);
+    add.run('device', '2026-11-26', JSON.stringify({ values: { device_type: 'CRT-D' } }), now, now);
+    add.run('tte', '2026-11-26', JSON.stringify({ values: { device_type: 'DDD-SM' } }), now, now);
+    db.pragma('user_version = 2');
+    db.close();
+    db = openDatabase(dir, 'TESTBETRIEB');
+    const types = db.prepare("SELECT module_key, json_extract(data_json, '$.values.device_type') AS t FROM studies ORDER BY id").all();
+    expect(types).toEqual([
+      { module_key: 'device', t: '2-Kammer-Schrittmacher' },
+      { module_key: 'device', t: '3-Kammer-ICD' },
+      { module_key: 'tte', t: 'DDD-SM' },
+    ]);
+    db.close();
+  });
+
+  it('migration 4 updates the patient-condition wording (D-84)', () => {
+    let db = openDatabase(dir, 'TESTBETRIEB');
+    const now = '2026-11-26T00:00:00Z';
+    db.prepare("INSERT INTO patients (id, created_at, updated_at) VALUES (1, ?, ?)").run(now, now);
+    const add = db.prepare('INSERT INTO studies (patient_id, module_key, study_date, data_json, created_at, updated_at) VALUES (1, ?, ?, ?, ?, ?)');
+    add.run('device', '2026-11-26', JSON.stringify({ values: { patient_condition: 'ist in gutem Allgemeinzustand und beschwerdefrei' } }), now, now);
+    add.run('device', '2026-11-26', JSON.stringify({ values: { patient_condition: 'berichtet über Schwindel' } }), now, now);
+    db.pragma('user_version = 3');
+    db.close();
+    db = openDatabase(dir, 'TESTBETRIEB');
+    const rows = db.prepare("SELECT json_extract(data_json, '$.values.patient_condition') AS c FROM studies ORDER BY id").all();
+    expect(rows).toEqual([{ c: 'in gutem Allgemeinzustand und kardial beschwerdefrei' }, { c: 'berichtet über Schwindel' }]);
     db.close();
   });
 });

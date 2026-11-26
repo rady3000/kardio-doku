@@ -1,15 +1,29 @@
-Device-Abfrage:
+CRT-Abfrage
 
-Abfrage eines CRT-D (Abbott Gallant HF). Programmierter Modus: DDD. Das Aggregat wurde am 20.11.2019 bei ischämische Kardiomyopathie mit LSB, Primärprophylaxe implantiert.
-Klinisch zeigt sich ein Hämatom an der Aggregattasche. Die Patientin berichtet über Palpitationen.
-Grundrhythmus: Vorhofflimmern.
+Implantation & Programmierung:
+Z. n. Implantation eines 3-Kammer-ICD (Abbott Gallant HF) am 20.11.2019 bei ischämische Kardiomyopathie mit LSB, Primärprophylaxe. Programmierter Betriebsmodus: DDD.
 
-Messwerte: Batteriestatus: OK, Restlaufzeit 14 Monate. Wahrnehmung: RA 1,1 mV / RV 5,6–22,4 mV. Reizschwellen: RV 1,25 V bei 0,4 ms. Impedanzen: RA 410 Ω / RV < 200 Ω.
-ICD-spezifische Parameter: VT-Zone > 171 bpm; VF-Zone > 214 bpm. Schockimpedanz 62 Ω; Ladezeit 9,8 s.
-CRT-spezifische Parameter: LV-Vektor: Quadripolar: LV2 zu LV4; BiV-Stimulation 93,5 %; LV-Impedanz 720 Ω; LV-Wahrnehmung 9,4 mV; LV-Reizschwelle 2,75 V bei 0,5 ms.
+Klinischer Befund:
+Hämatom an der Aggregattasche. Patientin berichtet über Palpitationen.
 
-Beobachtungen: AF-Burden: 34 %. AT/AF-Episoden: 2 (längste Episode 18 h). VT/VF-Episoden: 1 (ATP: 1; Schocks: 0). Nach Sichtung des EGMs handelt es sich am ehesten um paroxysmales Vorhofflimmern. Nach Sichtung des EGMs handelt es sich am ehesten um Vorhofflimmern mit schneller Überleitung. Nach Sichtung des EGMs handelt es sich am ehesten um eine langsame VT, durch ATP terminiert.
-Folgende Umprogrammierung wurde vorgenommen: VT-Zone auf 171/min belassen, Modus DDD.
+EKG-Befund:
+· Spontanrhythmus: Vorhofflimmern
 
-Zusammenfassung:
+Geräte- und Sondenmesswerte:
+· Batteriestatus: Regelrecht (geschätzte Restlaufzeit: 14 Monate)
+· Stimulationsanteile: BiV 93,5 %
+· Wahrnehmung (Sensing): RA 1,1 mV / RV 5,6–22,4 mV / LV 9,4 mV
+· Reizschwellen: RV 1,25 V / 0,4 ms / LV 2,75 V / 0,5 ms
+· Sondenimpedanzen: RA 410 Ω / RV < 200 Ω / LV 720 Ω
+· LV-Vektor: Quadripolar: LV2 zu LV4
+· Detektionszonen: VT-2 > 171 bpm / VF > 214 bpm
+· Schockimpedanz: 62 Ω
+· Ladezeit: 9,8 s
+
+Beobachtungen:
+AF-Burden: 34 %. AT/AF-Episoden: 2 (längste Episode 18 h). VT/VF-Episoden: 1 (ATP: 1; Schocks: 0). Nach Sichtung des EGMs handelt es sich am ehesten um paroxysmales Vorhofflimmern. Nach Sichtung des EGMs handelt es sich am ehesten um Vorhofflimmern mit schneller Überleitung. Nach Sichtung des EGMs handelt es sich am ehesten um eine langsame VT, durch ATP terminiert.
+
+Programmänderung: VT-Zone auf 171/min belassen, Modus DDD.
+
+Beurteilung und Procedere:
 Auffälligkeit: erniedrigte RV-Impedanz, Kontrolle der Sonde empfohlen. Nächste Kontrolle: in 4 Wochen.

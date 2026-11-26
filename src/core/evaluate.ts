@@ -27,7 +27,7 @@ export interface Evaluation {
   /** Fields outside their reference range (neutral highlight only). */
   outOfRange: Set<string>;
   /** Neutral warnings that currently apply (never part of the report). */
-  warnings: { section: string; text: string }[];
+  warnings: { section: string; text: string; group?: string }[];
   resolver: Resolver;
 }
 
@@ -52,6 +52,10 @@ export function evaluateStudy(
   const derivedValue = (d: Derived): number => {
     if (d.kind === 'countFilled') return d.fields.filter((f) => values.has(f)).length;
     if (d.kind === 'sum') return d.fields.reduce((s, f) => s + (typeof values.get(f) === 'number' ? (values.get(f) as number) : 0), 0);
+    if (d.kind === 'difference') {
+      const [a, b] = [values.get(d.fields[0]), values.get(d.fields[1])];
+      return typeof a === 'number' && typeof b === 'number' ? a - b : Number.NaN;
+    }
     return d.items.filter((i) => evalCond(i.when, resolver)).length;
   };
 
@@ -140,7 +144,7 @@ export function evaluateStudy(
 
   const warnings = (schema.warnings ?? [])
     .filter((w) => evalCond(w.when, resolver))
-    .map((w) => ({ section: w.section, text: w.text }));
+    .map((w) => ({ section: w.section, text: w.text, group: w.group }));
 
   return { values, display, source, visible, classifications, suggestions, derived, outOfRange, warnings, resolver };
 }
@@ -149,4 +153,9 @@ export function evaluateStudy(
 export function optionFor(field: Field, value: Scalar) {
   if (field.type !== 'select') return undefined;
   return selectOptions(field).find((o) => optionValue(o) === value);
+}
+
+/** The field's label for the current values (labelWhen, first match), D-84. */
+export function fieldLabel(field: Field, resolver: Resolver): string {
+  return field.labelWhen?.find((l) => evalCond(l.when, resolver))?.label ?? field.label;
 }

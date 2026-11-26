@@ -105,6 +105,16 @@ source PDF → extraction (model) → UNCONFIRMED values
   preselects or triggers a recommendation automatically from values, scores
   or classifications. Warning labels on input fields stay neutral
   ("außerhalb des Referenzbereichs") and give no advice.
+  - Exception 1 (decided 2026-11-26, D-84): "Beurteilung und Procedere" in the
+    device report is a free-text field that only I fill in. My own text may
+    contain recommendations; the app never pre-fills or suggests it.
+  - Exception 2 (decided 2026-11-26, D-84): ICD programming check. The app may
+    compare the programmed ICD detection zones with the manufacturer-specific
+    translation of the HRS/EHRA/APHRS/LAHRS consensus (Stiles et al. 2019) and
+    show a neutral notice **on screen only**, with the consensus values and the
+    source, never in the report text. My response ("bewusst so belassen" /
+    "umprogrammiert") is stored with the study. The check can be switched off
+    in the settings.
 - **Language.** UI and report text: German. Code, comments, identifiers,
   docs, commit messages: English.
 - **Platform.** Windows, installable as a single package.
@@ -143,7 +153,9 @@ live, inputs shown on hover. Continuous autosave.
 
 Fluent German from sentence templates, editable before export. One click
 each: clipboard (primary — pasted into the hospital system), DOCX, PDF.
-Footer names the rule sets and versions used.
+The rule sets and versions used are shown in the app and stored with each
+study; exports carry no rule-set footer and no "Prototyp" line (D-84). The
+TESTDATEN marker is unaffected.
 
 ## Design
 

@@ -154,7 +154,7 @@ describe('device extraction (Vitatron / Medtronic layouts)', () => {
       '|  Detektionsparameter | 171 min-1 | 187 min-1 | 240 min-1 |',
     ].join('\n');
     expect(accepted(ocr(wrap))).toEqual({
-      device_type: 'VVI-ICD',
+      device_type: '1-Kammer-ICD',
       device_company: 'Abbott',
       device_model: 'Ellipse VR 1377-36QC',
       device_indication: 'Z.n. Kammerflimmern',
@@ -167,6 +167,8 @@ describe('device extraction (Vitatron / Medtronic layouts)', () => {
       threshold_rv_ms: 0.5,
       icd_shock_impedance: 80,
       icd_vf_zone: 240,
+      icd_vt_zone: 187, // VT-2 (D-84)
+      icd_z1_rate: 171, // VT-1
       vp_anteil: '<1',
     });
   });
@@ -193,7 +195,7 @@ describe('device extraction (Vitatron / Medtronic layouts)', () => {
       '|  Atriale Arrhythmielast [%] | 2 |',
     ].join('\n');
     expect(accepted(ocr(t))).toEqual({
-      device_type: 'DDD-SM',
+      device_type: '2-Kammer-Schrittmacher',
       device_company: 'Biotronik',
       device_model: 'Effecta DR',
       pacing_mode: 'DDD',
@@ -253,5 +255,29 @@ describe('device extraction (Vitatron / Medtronic layouts)', () => {
     expect(parseDocumentDate('05.07.12')).toBe('2012-07-05');
     expect(parseDocumentDate('04/05/2018')).toBeNull(); // day/month order unknown
     expect(parseDocumentDate('31.02.2020')).toBeNull();
+  });
+
+  it('D-84 Abbott: detection intervals from the parameter page, tachy therapy from the Wrap-up page', () => {
+    const params = [
+      '# Parameter',
+      '|   | VT-1 | VT-2 | VF |',
+      '| --- | --- | --- | --- |',
+      '|  Detektionsparameter | 171 min-1/350 ms 40 Intervalle | 187 min-1/320 ms 30 Intervalle | 240 min-1/250 ms 16 Intervalle |',
+    ].join('\n');
+    const wrap = [
+      'Wrap-up™ Report',
+      '|  Zonenkonfiguration | VT-1 | VT-2 | VF |',
+      '| --- | --- | --- | --- |',
+      '|  Detektionsparameter | 171 min-1 | 187 min-1 | 240 min-1 |',
+      '',
+      '|  Neue Programmierung | Initial | Endgültig |',
+      '| --- | --- | --- |',
+      '|  Tachy-Therapie | Aktiviert | Deaktiviert |',
+    ].join('\n');
+    expect(accepted(ocr(params, wrap))).toMatchObject({
+      icd_z1_rate: 171, icd_vt_zone: 187, icd_vf_zone: 240,
+      icd_z1_det: 40, icd_z2_det: 30, icd_z4_det: 16,
+      tachy_therapy: 'deaktiviert',
+    });
   });
 });

@@ -34,10 +34,10 @@ describe('DEV-REF reference bands (Ellenbogen & Kaszala; Asirvatham)', () => {
     expect(normal('dev-threshold-lv', 2.6)).toBe(false);
   });
   it('shock impedance: transvenous 25–100 Ω, S-ICD 25–110 Ω', () => {
-    expect(normal('dev-shock-impedance', 105, { device_type: 'VVI-ICD' })).toBe(false);
+    expect(normal('dev-shock-impedance', 105, { device_type: '1-Kammer-ICD' })).toBe(false);
     expect(normal('dev-shock-impedance', 105, { device_type: 'S-ICD' })).toBe(true);
-    expect(normal('dev-shock-impedance', 24, { device_type: 'CRT-D' })).toBe(false);
-    expect(normal('dev-shock-impedance', 100, { device_type: 'DDD-ICD' })).toBe(true);
+    expect(normal('dev-shock-impedance', 24, { device_type: '3-Kammer-ICD' })).toBe(false);
+    expect(normal('dev-shock-impedance', 100, { device_type: '2-Kammer-ICD' })).toBe(true);
     expect(normal('dev-shock-impedance', 111, { device_type: 'S-ICD' })).toBe(false);
     expect(normal('dev-shock-impedance', 60)).toBeUndefined(); // no device type: no highlight
   });
@@ -65,17 +65,17 @@ describe('qualified values (D-72 b)', () => {
   });
   it.each(['22,4 - 5,6', '>', 'abc', '-3', '>> 2'])('rejects %s', (input) => expect(parseQualified(input)).toBeNull());
   it('checks use the number after > / < or the lower end of a range', () => {
-    const { ev, text } = runDevice({ device_type: 'DDD-SM', sensing_rv: '4.2..12', sensing_ra: '>1' });
+    const { ev, text } = runDevice({ device_type: '2-Kammer-Schrittmacher', sensing_rv: '4.2..12', sensing_ra: '>1' });
     expect(ev.values.get('sensing_rv')).toBe(4.2);
     expect([...ev.outOfRange].sort()).toEqual(['sensing_ra', 'sensing_rv']);
-    expect(text).toContain('Wahrnehmung: RA > 1 mV / RV 4,2–12 mV.');
+    expect(text).toContain('· Wahrnehmung (Sensing): RA > 1 mV / RV 4,2–12 mV\n');
   });
 });
 
 describe('visibility by device type', () => {
   const visible = (type: string | null) => runDevice(type ? { device_type: type } : {}).ev.visible;
   it('single-chamber pacemaker: no RA fields, no ICD/CRT section', () => {
-    const v = visible('VVI-SM');
+    const v = visible('1-Kammer-Schrittmacher');
     expect(v.has('sensing_rv')).toBe(true);
     expect(v.has('sensing_ra')).toBe(false);
     expect(v.has('icd_shock_impedance')).toBe(false);
@@ -90,7 +90,7 @@ describe('visibility by device type', () => {
     expect(v.has('icd_shock_impedance')).toBe(true);
   });
   it('CRT-D: ICD and CRT sections', () => {
-    const v = visible('CRT-D');
+    const v = visible('3-Kammer-ICD');
     expect(v.has('crt_lv_threshold_v')).toBe(true);
     expect(v.has('icd_vt_zone')).toBe(true);
     expect(v.has('atp_count')).toBe(true);
@@ -101,7 +101,7 @@ describe('visibility by device type', () => {
     expect(v.has('icd_vt_zone')).toBe(false);
   });
   it('hidden values never reach the report', () => {
-    expect(runDevice({ device_type: 'VVI-SM', sensing_ra: 2, sensing_rv: 9 }).text).toContain('Wahrnehmung: RV 9 mV.');
+    expect(runDevice({ device_type: '1-Kammer-Schrittmacher', sensing_ra: 2, sensing_rv: 9 }).text).toContain('· Wahrnehmung (Sensing): RV 9 mV\n');
   });
 });
 
@@ -124,11 +124,11 @@ describe('episodes and EGM sentences (D-60, D-72 c)', () => {
 
 describe('conclusion (D-62) and empty is safe', () => {
   it('no conclusion without a physician selection', () => {
-    const { text } = runDevice({ device_type: 'DDD-SM', sensing_rv: 10, impedance_rv: 600 });
+    const { text } = runDevice({ device_type: '2-Kammer-Schrittmacher', sensing_rv: 10, impedance_rv: 600 });
     expect(text).not.toMatch(/Regelrechte|Zusammenfassung/);
   });
   it('warning (no block) when "regelrecht" meets a highlighted value', () => {
-    const r = runDevice({ device_type: 'DDD-SM', sensing_rv: 3, conclusion: 'Regelrechte Aggregat- und Sondenfunktion' });
+    const r = runDevice({ device_type: '2-Kammer-Schrittmacher', sensing_rv: 3, conclusion: 'Regelrechte Aggregat- und Sondenfunktion' });
     expect(r.ev.warnings.map((w) => w.text).join()).toMatch(/außerhalb des Referenzbereichs/);
     expect(r.text).toContain('Regelrechte Aggregat- und Sondenfunktion.');
     expect(r.text).not.toContain('Hinweis');
@@ -143,17 +143,17 @@ describe('conclusion (D-62) and empty is safe', () => {
     expect(r({ pocket_finding: 'reizlos, unauffällig' })).toBe('');
   });
   it('ICD/CRT indications (D-75 d)', () => {
-    expect(runDevice({ implantation_date: '2020-01-02', device_indication: 'Z.n. Kammerflimmern' }).text).toContain(
-      'Das Aggregat wurde am 02.01.2020 bei Z.n. Kammerflimmern implantiert.',
+    expect(runDevice({ device_type: '1-Kammer-ICD', implantation_date: '2020-01-02', device_indication: 'Z.n. Kammerflimmern' }).text).toContain(
+      'Z. n. Implantation eines 1-Kammer-ICD am 02.01.2020 bei Z.n. Kammerflimmern.',
     );
   });
   it('no warning when all values are inside the reference ranges', () => {
-    expect(runDevice({ device_type: 'DDD-SM', sensing_rv: 9, conclusion: 'Regelrechte Aggregat- und Sondenfunktion' }).ev.warnings).toEqual([]);
+    expect(runDevice({ device_type: '2-Kammer-Schrittmacher', sensing_rv: 9, conclusion: 'Regelrechte Aggregat- und Sondenfunktion' }).ev.warnings).toEqual([]);
   });
   it('patient sentence follows the sex; none without it (D-40)', () => {
     const v = { patient_condition: 'berichtet über Schwindel' };
-    expect(runDevice(v, 'weiblich').text).toContain('Die Patientin berichtet über Schwindel.');
-    expect(runDevice(v, 'männlich').text).toContain('Der Patient berichtet über Schwindel.');
+    expect(runDevice(v, 'weiblich').text).toContain('Patientin berichtet über Schwindel.');
+    expect(runDevice(v, 'männlich').text).toContain('\nPatient berichtet über Schwindel.');
     expect(runDevice(v, null).text).not.toContain('berichtet');
   });
   it('follow-up is a plain fact, only when filled (D-63)', () => {
@@ -161,9 +161,9 @@ describe('conclusion (D-62) and empty is safe', () => {
     expect(runDevice({ next_follow_up: 'in 6 Monaten' }).text).toContain('Nächste Kontrolle: in 6 Monaten.');
   });
   it('free text ending with a period gets no second period', () => {
-    expect(runDevice({ reprogramming: 'Modus DDD.' }).text).toContain('Folgende Umprogrammierung wurde vorgenommen: Modus DDD.\n');
+    expect(runDevice({ reprogramming: 'Modus DDD.' }).text).toContain('Programmänderung: Modus DDD.\n');
   });
   it('serial number is stored but not printed', () => {
-    expect(runDevice({ device_type: 'VVI-SM', device_serial: 'ABC123' }).text).not.toContain('ABC123');
+    expect(runDevice({ device_type: '1-Kammer-Schrittmacher', device_serial: 'ABC123' }).text).not.toContain('ABC123');
   });
 });

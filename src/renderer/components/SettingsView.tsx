@@ -1,5 +1,6 @@
 // Settings: Betriebsmodus switch (gateway §2.3) and extraction providers.
 import { useEffect, useState } from 'react';
+import { HINT_GROUPS } from '../../core/hints';
 import type { ExtractionSettings } from '../../shared/types';
 import { api } from '../api';
 import { buttonClass as btn, inputClass } from './ui';
@@ -206,6 +207,26 @@ function ExtractionSettingsForm({ mode }: { mode: Betriebsmodus }) {
       <span className="text-slate-600">
         {s.documentsProcessed} Dokumente in dieser Datenbank (Mistral OCR: ca. 0,004 USD je Seite)
       </span>
+      <span className="text-right text-slate-600">Hinweise</span>
+      <div className="flex flex-col gap-1">
+        {HINT_GROUPS.map((g) => {
+          const on = !s.disabledHints.includes(g.key);
+          return (
+            <label key={g.key} className="flex items-center gap-2 text-slate-700">
+              <input
+                type="checkbox"
+                data-hint={g.key}
+                checked={on}
+                onChange={() => {
+                  const next = on ? [...s.disabledHints, g.key] : s.disabledHints.filter((h) => h !== g.key);
+                  void run(() => api.setExtractionSettings({ disabledHints: next }), 'Gespeichert.');
+                }}
+              />
+              {g.label} – nur auf dem Bildschirm, nie im Befund
+            </label>
+          );
+        })}
+      </div>
       {msg && <p className="col-start-2 text-[12px] text-slate-700">{msg}</p>}
     </div>
   );

@@ -2,7 +2,7 @@
   "sex": "weiblich",
   "data": {
     "values": {
-      "device_type": "CRT-D", "pacing_mode": "DDD", "device_company": "Abbott", "device_model": "Gallant HF",
+      "device_type": "3-Kammer-ICD", "pacing_mode": "DDD", "device_company": "Abbott", "device_model": "Gallant HF",
       "implantation_date": "2019-11-20", "device_indication": "Andere", "other_indication_text": "ischämische Kardiomyopathie mit LSB, Primärprophylaxe",
       "pocket_finding": "Hämatom", "patient_condition": "berichtet über Palpitationen", "base_rhythm": "Vorhofflimmern",
       "battery_status": "OK", "battery_remaining": 14, "battery_remaining_unit": "Monate",

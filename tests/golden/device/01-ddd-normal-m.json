@@ -2,7 +2,7 @@
   "sex": "männlich",
   "data": {
     "values": {
-      "device_type": "DDD-SM", "pacing_mode": "DDDR", "device_company": "Medtronic", "device_model": "Azure XT DR MRI",
+      "device_type": "2-Kammer-Schrittmacher", "pacing_mode": "DDDR", "device_company": "Medtronic", "device_model": "Azure XT DR MRI",
       "device_serial": "TEST-0001", "implantation_date": "2021-05-03", "device_indication": "AV-Block III°",
       "base_rhythm": "Sinusrhythmus", "ecg_native": "AV-Block III° mit Ersatzrhythmus 38/min", "ecg_pacing": "Regelrechte Stimulation mit LSB-Morphologie.",
       "battery_remaining": 8.5, "battery_remaining_unit": "Jahre",

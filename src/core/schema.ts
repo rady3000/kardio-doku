@@ -25,6 +25,10 @@ interface FieldBase {
   /** Document extraction allowed (gateway §3.4); used from milestone M4. */
   extractable?: boolean;
   help?: string;
+  /** Label depending on other values (first match), e.g. the manufacturer's zone name (D-84). */
+  labelWhen?: readonly { when: Cond; label: string }[];
+  /** Optional hint group the field belongs to; hidden when the group is switched off in the settings. */
+  group?: string;
 }
 
 export interface NumberField extends FieldBase {
@@ -73,7 +77,9 @@ export interface Section {
 export type Derived =
   | { key: string; label: string; source: string; kind: 'countFilled'; fields: readonly string[] }
   | { key: string; label: string; source: string; kind: 'countTrue'; items: readonly { label: string; when: Cond }[] }
-  | { key: string; label: string; source: string; kind: 'sum'; fields: readonly string[] };
+  | { key: string; label: string; source: string; kind: 'sum'; fields: readonly string[] }
+  /** fields[0] − fields[1]; not a number while either is missing. */
+  | { key: string; label: string; source: string; kind: 'difference'; fields: readonly [string, string] };
 
 /** Live display of a derived value inside a form section; hover shows its inputs. */
 export interface DerivedDisplay {
@@ -90,6 +96,8 @@ export interface Warning {
   section: string;
   when: Cond;
   text: string;
+  /** Optional hint group (e.g. "icd-konsensus"); switchable in the settings (D-84). */
+  group?: string;
 }
 
 /** Criteria table shown next to a section; the entered value's column is highlighted. */
@@ -136,6 +144,8 @@ export interface LineSpec {
   fragments?: boolean;
   /** Physician-inserted library blocks are placed here. */
   library?: boolean;
+  /** Label on its own line, each sentence as a bullet ("· …") below it (D-84). */
+  bullets?: boolean;
 }
 
 export interface ReportSectionSpec {
@@ -151,6 +161,8 @@ export interface MeasurementGroup {
 
 export interface ReportSpec {
   title: string;
+  /** Title depending on the values (first match); `title` otherwise (D-84). */
+  titleWhen?: readonly { when: Cond; text: string }[];
   measurementsHeading: string;
   measurements: readonly MeasurementGroup[];
   /** Sections before the measurement block (e.g. indication). */

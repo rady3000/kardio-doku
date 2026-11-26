@@ -9,11 +9,17 @@ export interface FieldOutcome {
   outcome: Outcome;
 }
 
-export function extractFromOcr(schema: ModuleSchema, ocr: OcrResult, threshold: number): FieldOutcome[] {
+export interface ExtractionContext {
+  /** ECHTBETRIEB with a local provider: identifying fields (localOnly) may be read (D-84). */
+  localEchtbetrieb?: boolean;
+}
+
+export function extractFromOcr(schema: ModuleSchema, ocr: OcrResult, threshold: number, ctx: ExtractionContext = {}): FieldOutcome[] {
   const fields = allFields(schema);
   const out: FieldOutcome[] = [];
   for (const field of fields) {
     if (!field.extraction) continue;
+    if (field.type !== 'number' && field.extraction.localOnly && !ctx.localEchtbetrieb) continue;
     if (field.type === 'number') {
       const spec = field.extraction;
       const outcome = validateCandidates(spec, findCandidates(ocr, field.key, spec, schema.extraction), threshold, !!field.qualified);
