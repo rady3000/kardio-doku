@@ -127,7 +127,7 @@ describe('device extraction (Vitatron / Medtronic layouts)', () => {
       'Wrap-up™ Report',
       '|  Patient | Indikationen für die Implantation |',
       '| --- | --- |',
-      '|  EF % | Kammerflimmern, Vorhofflimmern (AF) |',
+      '|  EF % | Kammerflimmern |',
       '',
       '|  Aggregat | Hersteller | Modell | S/N | Impl.datum |',
       '| --- | --- | --- | --- | --- |',
@@ -279,5 +279,61 @@ describe('device extraction (Vitatron / Medtronic layouts)', () => {
       icd_z1_det: 40, icd_z2_det: 30, icd_z4_det: 16,
       tachy_therapy: 'deaktiviert',
     });
+  });
+
+  it('D-84 two different indications stay empty (physician chooses "Andere"); repeated items are fine', () => {
+    const ind = (text: string) =>
+      accepted(ocr(['Wrap-up™ Report', '|  Patient | Indikationen für die Implantation |', '| --- | --- |', `|  EF % | ${text} |`].join('\n'))).device_indication;
+    expect(ind('Kammerflimmern, Vorhofflimmern (AF)')).toBeUndefined();
+    expect(ind('SSS SA-Exit-Block, SSS Brady-Tachykardie')).toBeUndefined();
+    expect(ind('Sick-Sinus-Syndrom, SSS')).toBe('Sick-Sinus-Syndrom');
+  });
+
+  it('D-84 Biotronik: the final "Nachsorge" page wins; first-interrogation pages are not used for values', () => {
+    const initial = [
+      '|  Nachsorge |   | (1. Abfrage)  |',
+      '| --- | --- | --- |',
+      '|  Testergebnisse |   |   |',
+      '|   | A | V  |',
+      '|  Wahrnehmungsampl. [mV] | 7.6 | 17.0  |',
+      '|  Reizschwelle [V] |  | 0.9  |',
+      '|  Impulsdauer [ms] |  | 0.2  |',
+      '|  Stimulation in A/V [%] |  | 25/43  |',
+    ].join('\n');
+    const final = [
+      '# **Nachsorge**',
+      '|  **Testergebnisse** | A | V  |',
+      '| --- | --- | --- |',
+      '|  Wahrnehmungsampl. [mV] | 5.8 | 13.7  |',
+      '',
+      // OCR splits the table: these rows continue the A/V table above.
+      '|  Reizschwelle [V] | 0.6 | 0.8  |',
+      '| --- | --- | --- |',
+      '|  Impulsdauer [ms] | 0.4 | 0.5  |',
+    ].join('\n');
+    const r = accepted(ocr(initial, final));
+    expect(r).toMatchObject({ sensing_ra: 5.8, sensing_rv: 13.7, threshold_ra_v: 0.6, threshold_rv_v: 0.8, threshold_ra_ms: 0.4, threshold_rv_ms: 0.5 });
+    // Not on the final page: stays empty rather than coming from the first interrogation.
+    expect(r.ap_anteil).toBeUndefined();
+    expect(r.vp_anteil).toBeUndefined();
+    // Without a final page the first interrogation is used as before.
+    expect(accepted(ocr(initial)).sensing_ra).toBe(7.6);
+  });
+
+  it('D-84 Abbott OCR artifacts: "59 Ω (RV zu Gehäuse) A" and "8,0 s("', () => {
+    const r = accepted(
+      ocr(
+        [
+          'Wrap-up™ Report',
+          '|  Laufzeit: 5,1-5,4 Jahre | Letzte max. Aufladung | 8,0 s( |',
+          '| --- | --- | --- |',
+          '|   | Reizschw. | Signalamplitude | Elektrodenimpedanz  |',
+          '| --- | --- | --- | --- |',
+          '|  V | 1,5V @ 0,5ms (Bi) | 11,9mV (Bi) | 340 Ω (Bi)  |',
+          '|  HV |  |  | 59 Ω (RV zu Gehäuse) A  |',
+        ].join('\n'),
+      ),
+    );
+    expect(r).toMatchObject({ icd_shock_impedance: 59, icd_charge_time: 8, impedance_rv: 340 });
   });
 });

@@ -99,6 +99,17 @@ export function validateValueCandidates(spec: ValueExtractionSpec, candidates: C
     const bad = all.find((r) => r.v === null) ?? all[0]!;
     return { ok: false, candidate: bad.c, reason: spec.kind === 'date' ? 'kein eindeutiges Datum' : spec.kind === 'choice' ? `"${bad.c.valueText}" passt zu keiner Auswahl` : 'leer' };
   }
+  // Several printed items ("Kammerflimmern, Vorhofflimmern (AF)") are taken only if every item maps
+  // to the same choice; otherwise the physician chooses (two indications: "Andere" + free text, D-84).
+  if (spec.kind === 'choice' && spec.singleItem) {
+    for (const { c: x } of results) {
+      const items = x.valueText.split(/\s*(?:[,;]|\bund\b)\s*/).filter(Boolean);
+      const mapped = items.map((i) => mapChoice(spec, i, options));
+      if (items.length > 1 && (mapped.includes(null) || new Set(mapped).size > 1)) {
+        return { ok: false, candidate: x, reason: 'mehrere Angaben (bitte selbst auswählen)' };
+      }
+    }
+  }
   const c = results[0]!.c;
   if (new Set(results.map((r) => r.v)).size > 1) return { ok: false, candidate: c, reason: 'mehrdeutig (verschiedene Werte im Dokument)' };
   for (const { c: x } of results) {
@@ -117,14 +128,17 @@ export function validateValueCandidates(spec: ValueExtractionSpec, candidates: C
 
 function valueOf(spec: ValueExtractionSpec, c: Candidate, options: readonly string[]): string | null {
   if (spec.kind === 'date') return parseDocumentDate(c.valueText);
-  if (spec.kind === 'choice') {
-    for (const [pattern, option] of spec.map ?? []) {
-      if (new RegExp(pattern, 'i').test(spec.mapOn === 'value' ? c.valueText : `${c.label} ${c.valueText}`)) return options.length && !options.includes(option) ? null : option;
-    }
-    return null;
-  }
+  if (spec.kind === 'choice') return mapChoice(spec, spec.mapOn === 'value' ? c.valueText : `${c.label} ${c.valueText}`, options);
   let t = c.valueText;
   for (const p of spec.strip ?? []) t = t.replace(new RegExp(p, 'gi'), '');
   t = t.replace(/\s+/g, ' ').trim();
   return t || null;
+}
+
+/** First mapping rule that matches the text; null if none does or its option is not offered. */
+function mapChoice(spec: ValueExtractionSpec, text: string, options: readonly string[]): string | null {
+  for (const [pattern, option] of spec.map ?? []) {
+    if (new RegExp(pattern, 'i').test(text)) return options.length && !options.includes(option) ? null : option;
+  }
+  return null;
 }

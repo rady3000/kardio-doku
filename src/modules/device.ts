@@ -49,6 +49,7 @@ const A_THRESHOLD = ['A. Output Management', 'A. Capture', 'Testergebnisse'];
 const V_THRESHOLD = ['V. Output Management', 'V. Capture', 'Testergebnisse'];
 const EXTRACTION = {
   preferPages: ['Final Report', 'Abschlussbericht', 'Nachsorge', 'Wrap-up™ Report', 'Wrap-up Report'],
+  initialPages: ['(1. Abfrage)'], // Biotronik: first interrogation; the final "Nachsorge" page wins (D-84)
   sections: [
     ...A_THRESHOLD,
     ...V_THRESHOLD,
@@ -399,7 +400,7 @@ export const device: ModuleSchema = {
         // Device implant date only where it is unambiguous (Biotronik "Implantationsdatum", Abbott row "ICD" column
         // "Impl.datum"); Vitatron and Medtronic print "Implanted:" also for each lead, so they are not read (D-83).
         { key: 'implantation_date', label: 'Implantationsdatum', type: 'date', extractable: true, extraction: { kind: 'date', labels: ['Implantationsdatum', 'ICD'], column: ['Impl.datum'], columnOptional: false } },
-        { key: 'device_indication', label: 'Indikation', type: 'select', allowNb: false, options: ['AV-Block III°', 'AV-Block II° Mobitz', 'Sick-Sinus-Syndrom', 'Tachy-Brady-Syndrom', 'Z.n. Kammerflimmern', 'Primärprävention bei LVEF < 35 %', 'LVEF < 35 % und LSB', 'Andere'], extractable: true, extraction: { kind: 'choice', labels: ['Indikationen für die Implantation', 'EKG-Indikation', 'Verlauf'], below: true, map: INDICATION_RULES } }, // D-75 d, D-83
+        { key: 'device_indication', label: 'Indikation', type: 'select', allowNb: false, options: ['AV-Block III°', 'AV-Block II° Mobitz', 'Sick-Sinus-Syndrom', 'Tachy-Brady-Syndrom', 'Z.n. Kammerflimmern', 'Primärprävention bei LVEF < 35 %', 'LVEF < 35 % und LSB', 'Andere'], extractable: true, extraction: { kind: 'choice', labels: ['Indikationen für die Implantation', 'EKG-Indikation', 'Verlauf'], below: true, singleItem: true, map: INDICATION_RULES } }, // D-75 d, D-83
         { key: 'other_indication_text', label: 'Indikation (Freitext)', type: 'text', visibleIf: { eq: ['device_indication', 'Andere'] } },
         { key: 'pocket_finding', label: 'Aggregattasche', type: 'select', normal: 'reizlos, unauffällig', options: ['reizlos, unauffällig', 'Infektzeichen', 'Hämatom', 'Druckstelle'] },
         {

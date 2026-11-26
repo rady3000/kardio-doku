@@ -70,6 +70,8 @@ export interface ValueExtractionSpec {
   mapOn?: 'raw' | 'value';
   /** The value ends before these words (e.g. "Serial Number", "Seriennummer"), so a serial is never taken along. */
   stopAt?: readonly string[];
+  /** choice: a value listing several items ("A, B", "A und B") is taken only if all items map to the same option. */
+  singleItem?: boolean;
   /** choice: [pattern, option] pairs tried in order on "label value" (case-insensitive regular expressions). */
   map?: readonly (readonly [string, string])[];
   /** text: patterns removed from the value (case-insensitive), e.g. the manufacturer prefix or "™". */
@@ -90,6 +92,11 @@ export interface ModuleExtraction {
    * on such pages, only those values count; otherwise all pages count.
    */
   preferPages?: readonly string[];
+  /**
+   * Text marking a page of the first interrogation ("(1. Abfrage)"). If the document also has a
+   * preferred page without this mark, marked pages are not searched at all.
+   */
+  initialPages?: readonly string[];
   /** All section headings that delimit sections (prefixes, case-insensitive). */
   sections?: readonly string[];
   /** All table column headers that `column` may name (a row containing one is a header row). Matching ignores a trailing colon. */
@@ -103,6 +110,6 @@ export function normaliseUnit(u: string): string {
     .toLowerCase()
     .replace(/²|\^\{2\}|\^2/g, '2') // OCR writes "cm²" also as "cm^{2}" or "cm^2"
     .replace(/\s+/g, '')
-    .replace(/[,;]$/, '') // "years," at the end of a list
+    .replace(/[,;(]$/, '') // "years," at the end of a list; "s(" where OCR reads an icon as "(" (Abbott)
     .replace(/^ohm$|^ohms$/, 'ω');
 }

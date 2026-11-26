@@ -50,7 +50,7 @@ const VALUE_CELL = new RegExp(String.raw`^(${NUMBER})\s*([^\s\d][^\s]*)?$`);
 /** "5.60 mV - 8.00 mV", "2.00 - 2.80 mV", "0.500 V", "22.8%". Groups: n1, u1, n2, u2. */
 const VALUE = String.raw`(${NUM})\s*(${UNIT})?(?:\s*(?:-|–|bis|to)\s*(\d+(?:[.,]\d+)?)\s*(${UNIT})?)?`;
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const norm = (s: string) => s.replace(/\s+/g, ' ').trim().replace(/:$/, '').trim().toLowerCase();
+const norm = (s: string) => s.replace(/\*\*/g, '').replace(/\s+/g, ' ').trim().replace(/:$/, '').trim().toLowerCase();
 const startsWithAny = (text: string, prefixes: readonly string[] | undefined) =>
   !!prefixes?.some((p) => norm(text).startsWith(norm(p)));
 
@@ -140,7 +140,14 @@ const cellAt = (segs: Segment[], table: number, row: number, col: number) =>
  * OCR may place it in the first cell; it is accepted only if the label row has exactly
  * one value, which is then that value.
  */
-function columnIndex(segs: Segment[], cell: Segment, names: readonly string[], known: readonly string[]): number | null | 'no-header' {
+function columnIndex(
+  segs: Segment[],
+  cell: Segment,
+  names: readonly string[],
+  known: readonly string[],
+  /** The label cell itself, when the header is looked up in the table above (continued table). */
+  own: Segment = cell,
+): number | null | 'no-header' {
   const isKnownText = (s: Segment) => known.some((k) => norm(k) === norm(s.text));
   const isName = (s: Segment) => names.some((n) => norm(n) === norm(s.text));
   const inRow = (r: number) => segs.filter((s) => s.table === cell.table && s.row === r);
@@ -154,8 +161,17 @@ function columnIndex(segs: Segment[], cell: Segment, names: readonly string[], k
     const hit = header.find(isName);
     if (!hit) return null;
     if (hit.col! > cell.col!) return hit.col!;
-    const values = inRow(cell.row!).filter((s) => s.col! > cell.col! && s.text);
+    const values = segs.filter((s) => s.table === own.table && s.row === own.row && s.col! > cell.col! && s.text);
     return knownCells.length === 1 && values.length === 1 ? values[0]!.col! : null;
+  }
+  // OCR splits one printed table into several ("| Reizschwelle [V] | 0.6 | 0.8 |" below the
+  // "| Testergebnisse | A | V |" table, Biotronik): a table without a header continues the table
+  // directly above it on the same page if both have the same number of columns.
+  const width = (t: number) => Math.max(-1, ...segs.filter((s) => s.table === t).map((s) => s.col!)) + 1;
+  const prev = cell.table! - 1;
+  if (prev >= 0 && width(prev) === width(cell.table!)) {
+    const rows = Math.max(...segs.filter((s) => s.table === prev).map((s) => s.row!));
+    return columnIndex(segs, { ...cell, table: prev, row: rows + 1 }, names, known, own);
   }
   return 'no-header';
 }
@@ -213,8 +229,9 @@ function inTables(page: OcrPage, segs: Segment[], label: string, spec: Extractio
     .filter(Boolean)
     .map(normaliseUnit);
   for (const { labelText, value: v, idx, row } of pairs(segs, label, spec, known)) {
-    // "590 Ω (Bi)", "73 Ω (RV zu Gehäuse)": a trailing remark in brackets is not part of the value.
-    const cellText = v.text.replace(/\s*\([^()]*\)\s*$/, '');
+    // "590 Ω (Bi)", "73 Ω (RV zu Gehäuse)": a trailing remark in brackets is not part of the value,
+    // nor Abbott's "Autom." icon after it, which OCR reads as a letter ("59 Ω (RV zu Gehäuse) A").
+    const cellText = v.text.replace(/\s*\([^()]*\)(\s+A)?\s*$/, '');
     if (spec.pattern) {
       const pm = new RegExp(spec.pattern, 'i').exec(v.text);
       if (!pm?.[1]) continue;
@@ -369,8 +386,7 @@ function sectionOf(segs: Segment[], idx: number, headings: readonly string[]): s
  * is not found on them at all.
  */
 export function findCandidates(ocr: OcrResult, fieldKey: string, spec: ExtractionSpec, module: ModuleExtraction = {}): Candidate[] {
-  const preferred = ocr.pages.filter((p) => startsWithAnyLine(p.text, module.preferPages));
-  const pageSets = preferred.length ? [preferred, ocr.pages] : [ocr.pages];
+  const pageSets = pageSetsFor(ocr, module);
   const known = (module.columns ?? []) as readonly string[];
   for (const pages of pageSets) {
     for (const label of spec.labels) {
@@ -427,6 +443,20 @@ function dedupe(found: Candidate[]): Candidate[] {
 }
 
 /** A page is preferred if one of its lines (or first cells) is a marker, e.g. the title "Final Report". */
+/**
+ * Pages to search, in order: the preferred (final-report) pages, then all pages. Pages marked as
+ * the first interrogation ("(1. Abfrage)", module `initialPages`) are left out entirely when the
+ * document has a final page without that mark: a value the final page does not yield stays empty
+ * instead of being taken from the initial interrogation (D-84, Biotronik).
+ */
+function pageSetsFor(ocr: OcrResult, module: ModuleExtraction, keepInitial = false): OcrPage[][] {
+  const initial = (p: OcrPage) => !!module.initialPages?.some((m) => p.text.includes(m));
+  const preferred = ocr.pages.filter((p) => startsWithAnyLine(p.text, module.preferPages));
+  const final = preferred.filter((p) => !initial(p));
+  if (final.length && final.length < preferred.length) return [final, keepInitial ? ocr.pages : ocr.pages.filter((p) => !initial(p))];
+  return preferred.length ? [preferred, ocr.pages] : [ocr.pages];
+}
+
 function startsWithAnyLine(text: string, markers: readonly string[] | undefined): boolean {
   if (!markers?.length) return false;
   return text.split('\n').some((l) => {
@@ -452,8 +482,9 @@ function cutValue(text: string, stopAt: readonly string[] | undefined): string {
  * provenance as for numbers: page, box, the source text and the word confidences.
  */
 export function findValueCandidates(ocr: OcrResult, fieldKey: string, spec: ValueExtractionSpec, module: ModuleExtraction = {}): Candidate[] {
-  const preferred = ocr.pages.filter((p) => startsWithAnyLine(p.text, module.preferPages));
-  const pageSets = preferred.length ? [preferred, ocr.pages] : [ocr.pages];
+  // Device identity and settings are printed on every interrogation: the final pages come first,
+  // but the first-interrogation pages are not excluded (the letterhead may stand only there).
+  const pageSets = pageSetsFor(ocr, module, true);
   const known = (module.columns ?? []) as readonly string[];
   for (const pages of pageSets) {
     // A choice is decided by its mapping rules, so all labels count (the "Implantat" line names no
